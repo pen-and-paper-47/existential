@@ -364,6 +364,28 @@
         // В следующем шаге мы заменим alert на запуск генерации PDF и отправки письма
     }
 </script>
+<!-- СКРЫТЫЙ МАКЕТ ДЛЯ PDF -->
+<div id="pdf-template" style="display: none; padding: 40px; background: #fff; width: 800px; color: #2b3a4a; font-family: 'Roboto', sans-serif;">
+    <div style="border: 4px solid #4caf50; padding: 30px; border-radius: 10px; position: relative;">
+        <!-- Печать/Логотип -->
+        <div style="position: absolute; top: 20px; right: 20px; width: 100px; height: 100px; border: 3px solid #ff9800; border-radius: 50%; display: flex; align-items: center; justify-content: center; transform: rotate(-15deg); color: #ff9800; font-weight: bold; text-align: center; font-size: 12px;">
+            ВЕЧНЫЙ<br>АРХИВ
+        </div>
+        
+        <h1 style="color: #4caf50; border-bottom: 2px dashed #d1e8e2; padding-bottom: 10px;">СЕРТИФИКАТ ПОКРЫТИЯ</h1>
+        <h3 style="color: #8fa3b3;">Форма 404-Алеф[cite: 4]</h3>
+        
+        <div style="margin-top: 30px; font-size: 16px; line-height: 1.6;">
+            <p><strong>Идентификатор субъекта (Имя/ID):</strong> <span id="pdf-name"></span>[cite: 4]</p>
+            <p><strong>Уровень базовой тревожности (0-10):</strong> <span id="pdf-anxiety"></span>[cite: 4]</p>
+            <p><strong>Метод списания премии за покрытие:</strong> <span id="pdf-payment"></span>[cite: 4]</p>
+        </div>
 
+        <div style="margin-top: 40px; padding: 15px; background: #fff3e0; border-left: 5px solid #ff9800; font-size: 12px;">
+            <p><strong>ОФИЦИАЛЬНОЕ УВЕДОМЛЕНИЕ:</strong></p>
+            <p>Субъект подтвердил согласие на обработку экзистенциальных данных и осознает бессмысленность данного действия[cite: 4]. Данный портал является симуляцией художественного бюрократического процесса[cite: 4].</p>
+        </div>
+    </div>
+</div>
 </body>
 </html>
