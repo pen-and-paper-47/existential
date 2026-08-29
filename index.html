@@ -6,15 +6,22 @@
     <title>Управление Фиксации Неизбежного</title>
     <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --primary-red: #E3000F;
-            --primary-hover: #b3000b;
-            --bg-color: #F4F7F6;
-            --card-bg: #FFFFFF;
-            --text-main: #333333;
-            --text-muted: #888888;
-            --border-color: #E0E0E0;
-        }
+       :root {
+    --bg-color: #1a1a1d; /* Темно-титановый фон */
+    --card-bg: #2d2d30; /* Чуть более светлый серый для самой формы */
+    --text-main: #e0e0e0; /* Светло-серый текст */
+    --text-muted: #888890; /* Приглушенный текст */
+    --border-color: #44444a; /* Темные границы */
+    --primary-red: #00d2ff; /* Неоново-голубой вместо красного */
+    --primary-hover: #00a8cc; /* Чуть темнее при наведении */
+}
+
+/* Переопределение желтого баннера для техно-стиля */
+.warning-banner {
+    background-color: rgba(255, 204, 0, 0.1) !important;
+    color: #ffcc00 !important; /* Сигнальный желтый */
+    border-left: 4px solid #ffcc00 !important;
+}
 
         body {
             background-color: var(--bg-color);
