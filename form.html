@@ -235,8 +235,8 @@
             <div class="modal-title">АЛЕФ 404 says:</div>
             <div id="timeout-msg" style="font-size: 16px;">Продолжаем фиксацию или прерываемся?</div>
             <div class="timer-text" id="countdown-timer">15</div>
-            <button class="btn-primary" onclick="continueSession()">Продолжаем</button>
-            <button class="btn-secondary" onclick="resetToMain()" style="border: 1px solid var(--border-color); border-radius: 20px; margin-top: 10px;">Прерываемся</button>
+            <button class="btn-primary" id="btn-continue" onclick="continueSession()">Продолжаем</button>
+            <button class="btn-secondary" id="btn-abort" onclick="resetToMain()" style="border: 1px solid var(--border-color); border-radius: 20px; margin-top: 10px;">Прерываемся</button>
         </div>
     </div>
 
@@ -382,6 +382,8 @@
         document.getElementById('t-finish-btn').innerText = dict['finish-btn'];
         document.getElementById('t-back-2').innerText = dict['back-2'];
         document.getElementById('t-disclaimer').innerText = dict['disclaimer'];
+        document.getElementById('btn-continue').innerText = dict['timeout-continue'] || "Продолжаем";
+        document.getElementById('btn-abort').innerText = dict['timeout-abort'] || "Прерываемся";
 
         // Генерация рисков из таблицы (risk1 - risk9)
         const risksContainer = document.getElementById('risks-container');
@@ -562,8 +564,11 @@ function collectFinalData() {
     const newsLevelsRu = ["5 минут", "15 минут", "30 минут", "1 час", "1.5 часа", "2 часа", "2.5 часа", "3 часа", "4 часа", "король думскроллинга"];
     const newsLevelsEn = ["5 minutes", "15 minutes", "30 minutes", "1 hour", "1.5 hours", "2 hours", "2.5 hours", "3 hours", "4 hours", "doomscrolling king"];
 
-    // Замена стандартного alert() на окно АЛЕФ 404
+// Замена стандартного alert() на окно АЛЕФ 404 с правильным заголовком
     function alephAlert(msg) {
+        const dict = translations[currentLang];
+        // Подтягиваем заголовок из словаря
+        document.querySelector('#aleph-alert-modal .modal-title').innerText = dict['modal-title'] || "АЛЕФ 404 says:";
         document.getElementById('aleph-alert-msg').innerText = msg;
         document.getElementById('aleph-alert-modal').style.display = 'flex';
     }
@@ -584,20 +589,29 @@ let inactivityTimer;
     let countdownInterval;
     let timeLeft = 15;
 
-    function resetInactivity() {
+function resetInactivity() {
+        // НОВОЕ: Если окно таймера уже открыто, игнорируем движения мыши
+        if (document.getElementById('timeout-modal').style.display === 'flex') {
+            return;
+        }
+        
         clearTimeout(inactivityTimer);
         clearInterval(countdownInterval);
         document.getElementById('timeout-modal').style.display = 'none';
         
-        // 30 секунд бездействия
-        inactivityTimer = setTimeout(showTimeoutModal, 30000); 
+        // 45 секунд бездействия
+        inactivityTimer = setTimeout(showTimeoutModal, 45000); 
     }
 
-    function showTimeoutModal() {
+function showTimeoutModal() {
+        const dict = translations[currentLang];
         document.getElementById('timeout-modal').style.display = 'flex';
         timeLeft = 15;
         document.getElementById('countdown-timer').innerText = timeLeft;
-        document.getElementById('timeout-msg').innerText = currentLang === 'ru' ? "Продолжаем фиксацию или прерываемся?" : "Shall we continue or abort?";
+        
+        // Подтягиваем переводы для таймера
+        document.querySelector('#timeout-modal .modal-title').innerText = dict['modal-title'] || "АЛЕФ 404 says:";
+        document.getElementById('timeout-msg').innerText = dict['timeout-msg'] || "Продолжаем фиксацию или прерываемся?";
         
         countdownInterval = setInterval(() => {
             timeLeft--;
