@@ -197,10 +197,6 @@
         <!-- СКРЫТЫЙ БЛОК: Выпадает только при выборе оплаты данными -->
         <div id="data-payment-fields" style="display: none; padding: 18px; border: 2px dashed var(--primary-red); margin-bottom: 15px; background: #fff3e0; border-radius: 12px; animation: fadeIn 0.4s ease forwards;">
             <div class="field-group" style="margin-bottom: 15px;">
-                <label style="font-size: 14px; color: #e65100;">Электронная почта (для связи в постапокалипсисе):</label>
-                <input type="email" id="userEmail" class="modern-input" placeholder="ваша@почта.com">
-            </div>
-            <div class="field-group" style="margin-bottom: 15px;">
                 <label style="font-size: 14px; color: #e65100;">Дата рождения (для калибровки цифрового следа):</label>
                 <input type="date" id="userDob" class="modern-input">
             </div>
@@ -213,9 +209,33 @@
         <button class="btn-primary" id="t-finish-btn" onclick="collectFinalData()">Получить План Защиты (PDF)</button>
         <button class="btn-secondary" onclick="goToStep2()" id="t-back-2">Вернуться назад</button>
     </div>
+    <!-- Обязательный сбор email вынесен сюда -->
+        <div class="field-group" style="margin-top: 25px; padding-top: 20px; border-top: 2px dashed var(--border-color);">
+            <label style="color: var(--primary-red); font-size: 14px;">Обязательная передача цифрового следа (Email для отправки Плана):</label>
+            <input type="email" id="userEmail" class="modern-input" placeholder="ваша@почта.com">
+        </div>
     <div class="disclaimer" id="t-disclaimer"></div>
 </div>
+<!-- МАКЕТ ДЛЯ PDF (С лозунгом и рисками) -->
+    <div id="pdf-template" style="display: none; padding: 40px; background: #fff; width: 800px; color: #2b3a4a; font-family: 'Roboto', sans-serif;">
+        <div style="border: 4px solid #4caf50; padding: 30px; border-radius: 10px; position: relative;">
+            <div style="position: absolute; top: 20px; right: 20px; width: 100px; height: 100px; border: 3px solid #ff9800; border-radius: 50%; display: flex; align-items: center; justify-content: center; transform: rotate(-15deg); color: #ff9800; font-weight: bold; text-align: center; font-size: 12px;">ВЕЧНЫЙ<br>АРХИВ</div>
+            
+            <h1 id="pdf-title-text" style="color: #4caf50; border-bottom: 2px dashed #d1e8e2; padding-bottom: 10px;">СЕРТИФИКАТ ПОКРЫТИЯ</h1>
+            <h3 style="color: #8fa3b3; font-style: italic;" id="pdf-slogan"></h3>
+            
+            <div style="margin-top: 30px; font-size: 16px; line-height: 1.6;">
+                <p><strong>ID:</strong> <span id="pdf-name"></span></p>
+                <p><strong>Тревожность (0-10):</strong> <span id="pdf-anxiety"></span></p>
+                <p><strong>Оплата:</strong> <span id="pdf-payment"></span></p>
+            </div>
 
+            <div style="margin-top: 20px; padding: 15px; background: #f1f8e9; border-radius: 8px;">
+                <strong>Объекты покрытия:</strong>
+                <ul id="pdf-risks-list" style="font-size: 14px; margin-top: 10px;"></ul>
+            </div>
+        </div>
+    </div>
 <script>
     const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQeKQogEEDNWY626wZDamnMfGNimCIMFqwP9_spwPc-qotu_yQq7jKMzF1YeFzfBSrFAbCCO8UNvMwZ/pub?output=tsv'; 
     let translations = {};
@@ -337,118 +357,101 @@
         }
     });
 
-   function collectFinalData() {
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbxqQ2-n-HH0GISk2voxPV5NVBzbv21aPs5mCysmfCF-iZ7LoYR9QpfauzIbgkjR1MeDfg/exec';
+
+    function collectFinalData() {
         const selectedPayment = document.querySelector('input[name="payment"]:checked');
+        const email = document.getElementById('userEmail').value;
+        const dict = translations[currentLang];
         
         if (!selectedPayment) {
-            alert(translations[currentLang]?.alertConsent || "Пожалуйста, выберите метод списания премии!");
+            alert(dict['alertConsent'] || "Выберите метод списания!");
+            return;
+        }
+        if (!email) {
+            alert(currentLang === 'ru' ? "Цифровой след (Email) обязателен!" : "Email is required!");
             return;
         }
 
-        // 1. Собираем данные
-        const subjectData = {
-            name: document.getElementById('t-name-placeholder').value || "Аноним",
-            anxiety: document.getElementById('anxietySlider').value,
-            paymentMethodText: selectedPayment.nextElementSibling.innerText,
-            email: "Не предоставлен"
-        };
-
-        if (selectedPayment.value === 'data') {
-            const email = document.getElementById('userEmail').value;
-            const dob = document.getElementById('userDob').value;
-            const consent = document.getElementById('dataConsentCheck').checked;
-
-            if (!email || !dob || !consent) {
-                alert("Для оплаты данными необходимо заполнить email, дату рождения и поставить галочку абсурдной прозрачности.");
-                return;
-            }
-            subjectData.email = email;
-        }
-
-        // Кнопка переходит в режим загрузки
         const finishBtn = document.getElementById('t-finish-btn');
         const originalBtnText = finishBtn.innerText;
-        finishBtn.innerText = "Фиксация в Вечном Архиве...";
+        finishBtn.innerText = currentLang === 'ru' ? "Связь с Вечным Архивом..." : "Connecting to Archive...";
         finishBtn.disabled = true;
 
-        // 2. Заполняем скрытый PDF-шаблон
-        document.getElementById('pdf-name').innerText = subjectData.name;
-        document.getElementById('pdf-anxiety').innerText = subjectData.anxiety;
-        document.getElementById('pdf-payment').innerText = subjectData.paymentMethodText;
+        // 1. Заполняем PDF (переводы берутся из словаря по выбранному языку)
+        document.getElementById('pdf-title-text').innerText = dict['window-title'];
+        document.getElementById('pdf-slogan').innerText = dict['slogan'];
+        document.getElementById('pdf-name').innerText = document.getElementById('t-name-placeholder').value || "Anonymous";
+        document.getElementById('pdf-anxiety').innerText = document.getElementById('anxietySlider').value;
+        document.getElementById('pdf-payment').innerText = selectedPayment.nextElementSibling.innerText;
+
+        // Собираем риски
+        const riskCheckboxes = document.querySelectorAll('input[name="risks"]:checked');
+        const risksList = document.getElementById('pdf-risks-list');
+        risksList.innerHTML = '';
+        riskCheckboxes.forEach(cb => {
+            risksList.innerHTML += `<li>${cb.nextElementSibling.innerText}</li>`;
+        });
 
         const pdfElement = document.getElementById('pdf-template');
-        pdfElement.style.display = 'block'; // Показываем блок для скрипта
+        pdfElement.style.display = 'block';
 
-        // 3. Настройки для PDF
-        const opt = {
-            margin:       0.5,
-            filename:     'Form_404_Aleph_Certificate.pdf',
-            image:        { type: 'jpeg', quality: 0.98 },
-            html2canvas:  { scale: 2 },
-            jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
-        };
+        const opt = { margin: 0.5, filename: 'Plan.pdf', html2canvas: { scale: 2 }, jsPDF: { format: 'letter', orientation: 'portrait' } };
 
-        // 4. Генерируем PDF
-        html2pdf().set(opt).from(pdfElement).save().then(() => {
-            pdfElement.style.display = 'none'; // Снова прячем макет
-
-            // 5. Отправляем письмо, если указан email
-            if (subjectData.email !== "Не предоставлен") {
-                const templateParams = {
-                    email_to: subjectData.email,
-                    subject_name: subjectData.name
-                };
-
-                emailjs.send('service_kluawpl', 'template_34kowi9', templateParams)
-                    .then(function(response) {
-                        console.log('УСПЕХ!', response.status, response.text);
-                        alert("План Защиты сгенерирован. Уведомление об аннуляции экзистенции успешно отправлено на вашу почту.");
-                        resetForm(finishBtn, originalBtnText);
-                    }, function(error) {
-                        console.log('ОШИБКА...', error);
-                        alert("План Защиты сгенерирован, но курьер EmailJS столкнулся с бюрократической сингулярностью. Письмо не отправлено.");
+        // 2. Генерируем Base64 и отправляем в Google Drive
+        html2pdf().set(opt).from(pdfElement).outputPdf('datauristring').then(function(pdfBase64) {
+            pdfElement.style.display = 'none';
+            const base64Data = pdfBase64.split(',')[1];
+            
+            fetch(GAS_URL, {
+                method: 'POST',
+                body: JSON.stringify({ base64: base64Data, filename: 'Form_404_Aleph.pdf' }),
+                headers: { "Content-Type": "text/plain;charset=utf-8" }
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    // 3. Отправляем письмо со ссылкой (в шаблоне EmailJS добавьте переменную {{pdf_link}})
+                    emailjs.send('service_kluawpl', 'template_34kowi9', {
+                        email_to: email,
+                        subject_name: document.getElementById('t-name-placeholder').value || "Anonymous",
+                        pdf_link: data.url
+                    }).then(() => {
+                        alert(currentLang === 'ru' ? "Документ сгенерирован. Ссылка на архив отправлена на почту." : "Document generated. Link sent to email.");
                         resetForm(finishBtn, originalBtnText);
                     });
-            } else {
-                alert("План Защиты успешно скачан на ваше устройство. Цифровой след не передан.");
+                } else {
+                    throw new Error("Ошибка Drive");
+                }
+            })
+            .catch(err => {
+                alert("Ошибка Вечного Архива. Бюрократическая сингулярность.");
                 resetForm(finishBtn, originalBtnText);
-            }
+            });
         });
     }
 
+    // 4. Очистка и возврат
     function resetForm(btn, text) {
         btn.innerText = text;
         btn.disabled = false;
         
-        // Перенаправление на стартовую страницу (index.html) после паузы
+        // Очистка данных формы
+        document.getElementById('t-name-placeholder').value = '';
+        document.getElementById('anxietySlider').value = 7;
+        document.getElementById('anxietyVal').innerText = 7;
+        document.getElementById('userEmail').value = '';
+        document.getElementById('consentCheck').checked = false;
+        
+        document.querySelectorAll('input[name="risks"]:checked').forEach(cb => cb.checked = false);
+        const paymentRadio = document.querySelector('input[name="payment"]:checked');
+        if (paymentRadio) paymentRadio.checked = false;
+
+        // Перенаправление на стартовую страницу через 3 секунды
         setTimeout(() => {
-            // Если ваш файл стартовой страницы называется иначе, измените 'index.html'
             window.location.href = 'index.html'; 
-        }, 3000); // 3000 миллисекунд (3 секунды) задержки, чтобы субъект успел прочитать всплывающее окно
+        }, 3000);
     }
 </script>
-<!-- СКРЫТЫЙ МАКЕТ ДЛЯ PDF -->
-<div id="pdf-template" style="display: none; padding: 40px; background: #fff; width: 800px; color: #2b3a4a; font-family: 'Roboto', sans-serif;">
-    <div style="border: 4px solid #4caf50; padding: 30px; border-radius: 10px; position: relative;">
-        <!-- Печать/Логотип -->
-        <div style="position: absolute; top: 20px; right: 20px; width: 100px; height: 100px; border: 3px solid #ff9800; border-radius: 50%; display: flex; align-items: center; justify-content: center; transform: rotate(-15deg); color: #ff9800; font-weight: bold; text-align: center; font-size: 12px;">
-            ВЕЧНЫЙ<br>АРХИВ
-        </div>
-        
-        <h1 style="color: #4caf50; border-bottom: 2px dashed #d1e8e2; padding-bottom: 10px;">СЕРТИФИКАТ ПОКРЫТИЯ</h1>
-        <h3 style="color: #8fa3b3;">Форма 404-Алеф[cite: 4]</h3>
-        
-        <div style="margin-top: 30px; font-size: 16px; line-height: 1.6;">
-            <p><strong>Идентификатор субъекта (Имя/ID):</strong> <span id="pdf-name"></span>[cite: 4]</p>
-            <p><strong>Уровень базовой тревожности (0-10):</strong> <span id="pdf-anxiety"></span>[cite: 4]</p>
-            <p><strong>Метод списания премии за покрытие:</strong> <span id="pdf-payment"></span>[cite: 4]</p>
-        </div>
-
-        <div style="margin-top: 40px; padding: 15px; background: #fff3e0; border-left: 5px solid #ff9800; font-size: 12px;">
-            <p><strong>ОФИЦИАЛЬНОЕ УВЕДОМЛЕНИЕ:</strong></p>
-            <p>Субъект подтвердил согласие на обработку экзистенциальных данных и осознает бессмысленность данного действия[cite: 4]. Данный портал является симуляцией художественного бюрократического процесса[cite: 4].</p>
-        </div>
-    </div>
-</div>
 </body>
 </html>
