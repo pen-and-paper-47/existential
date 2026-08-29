@@ -419,13 +419,12 @@
     function resetForm(btn, text) {
         btn.innerText = text;
         btn.disabled = false;
-        // Возвращаем на первый экран для следующего посетителя выставки
+        
+        // Перенаправление на стартовую страницу (index.html) после паузы
         setTimeout(() => {
-            document.getElementById('block3').classList.remove('active');
-            document.getElementById('block1').classList.add('active');
-            // Очистка полей (опционально)
-            document.getElementById('t-name-placeholder').value = '';
-        }, 3000);
+            // Если ваш файл стартовой страницы называется иначе, измените 'index.html'
+            window.location.href = 'index.html'; 
+        }, 3000); // 3000 миллисекунд (3 секунды) задержки, чтобы субъект успел прочитать всплывающее окно
     }
 </script>
 <!-- СКРЫТЫЙ МАКЕТ ДЛЯ PDF -->
