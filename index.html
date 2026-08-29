@@ -5,138 +5,153 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Управление Фиксации Неизбежного</title>
     <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-    <style>
-       :root {
-    --bg-color: #1a1a1d; /* Темно-титановый фон */
-    --card-bg: #2d2d30; /* Чуть более светлый серый для самой формы */
-    --text-main: #e0e0e0; /* Светло-серый текст */
-    --text-muted: #888890; /* Приглушенный текст */
-    --border-color: #44444a; /* Темные границы */
-    --primary-red: #00d2ff; /* Неоново-голубой вместо красного */
-    --primary-hover: #00a8cc; /* Чуть темнее при наведении */
-}
+   <style>
+    /* НОВЫЙ БЛОК CSS-ПЕРЕМЕННЫХ: СТИЛЬ "ИРОНИЧНЫЙ КОНТРАСТ (ВИТАЛЬНОСТЬ И РОСТ)" */
+    :root {
+        --bg-color: #fdfbf7; /* Очень светлый, залитый солнцем теплый фон */
+        --card-bg: #ffffff; /* Ослепительно белая карточка (чистота и надежда) */
+        --text-main: #2b3a4a; /* Глубокий сине-серый для хорошей читаемости текста */
+        --text-muted: #8fa3b3; /* Мягкий приглушенный цвет */
+        --border-color: #d1e8e2; /* Нежный мятно-бирюзовый для границ */
+        --primary-red: #ff9800; /* Солнечный оранжевый (заменяет тревожный красный) */
+        --primary-hover: #f57c00; /* Чуть более насыщенный оранжевый при наведении */
+        --growth-green: #4caf50; /* Цвет свежей листвы для особых акцентов */
+    }
 
-/* Переопределение желтого баннера для техно-стиля */
-.warning-banner {
-    background-color: rgba(255, 204, 0, 0.1) !important;
-    color: #ffcc00 !important; /* Сигнальный желтый */
-    border-left: 4px solid #ffcc00 !important;
-}
+    body {
+        background-color: var(--bg-color);
+        font-family: 'Roboto', 'Heebo', sans-serif;
+        color: var(--text-main);
+        margin: 0;
+        padding: 20px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        /* Добавим легкий жизнерадостный градиент на фон */
+        background-image: linear-gradient(120deg, #fdfbf7 0%, #e8f5e9 100%);
+    }
 
-        body {
-            background-color: var(--bg-color);
-            font-family: 'Roboto', 'Heebo', sans-serif;
-            color: var(--text-main);
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-        }
+    .card {
+        background: var(--card-bg);
+        border-radius: 20px; /* Чуть более скругленные, мягкие формы */
+        box-shadow: 0 10px 30px rgba(0, 150, 136, 0.08); /* Легкая бирюзовая тень */
+        width: 100%;
+        max-width: 700px;
+        padding: 35px;
+        box-sizing: border-box;
+        position: relative;
+    }
 
-        .card {
-            background: var(--card-bg);
-            border-radius: 16px;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.06);
-            width: 100%;
-            max-width: 700px;
-            padding: 30px;
-            box-sizing: border-box;
-            position: relative;
-        }
+    .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 2px dashed var(--border-color); /* Игривая пунктирная линия */
+        padding-bottom: 15px;
+        margin-bottom: 25px;
+    }
 
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 15px;
-            margin-bottom: 25px;
-        }
+    h1 { font-size: 22px; margin: 0; font-weight: 700; color: var(--growth-green); }
 
-        h1 { font-size: 20px; margin: 0; font-weight: 700; }
+    /* Жизнерадостный баннер, который сообщает ужасные вещи */
+    .warning-banner {
+        background-color: #fff3e0 !important; /* Мягкий персиковый */
+        color: #e65100 !important; /* Насыщенный оранжевый */
+        padding: 15px;
+        border-radius: 12px;
+        font-size: 13px;
+        font-weight: 700;
+        text-align: center;
+        margin-bottom: 25px;
+        border-left: 5px solid var(--primary-red) !important;
+        box-shadow: 0 4px 10px rgba(255, 152, 0, 0.1);
+    }
 
-        .warning-banner {
-            background-color: #FFF3F4;
-            color: var(--primary-red);
-            padding: 12px 16px;
-            border-radius: 8px;
-            font-size: 12px;
-            font-weight: 700;
-            text-align: center;
-            margin-bottom: 25px;
-            border-left: 4px solid var(--primary-red);
-        }
+    .field-group { margin-bottom: 25px; }
+    label { display: block; font-weight: 600; margin-bottom: 8px; font-size: 15px; }
+    .sub-label { font-size: 12px; color: var(--text-muted); margin-bottom: 10px; line-height: 1.5; }
 
-        .field-group { margin-bottom: 25px; }
-        label { display: block; font-weight: 500; margin-bottom: 8px; font-size: 15px; }
-        .sub-label { font-size: 12px; color: var(--text-muted); margin-bottom: 10px; line-height: 1.4; }
+    .slider-container { display: flex; align-items: center; gap: 15px; }
+    input[type=range] { flex-grow: 1; accent-color: var(--primary-red); cursor: pointer; }
+    .slider-value { 
+        background: #fff; padding: 6px 14px; border-radius: 16px; 
+        font-weight: 700; color: var(--primary-red); border: 2px solid var(--border-color);
+        min-width: 20px; text-align: center;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    }
 
-        .slider-container { display: flex; align-items: center; gap: 15px; }
-        input[type=range] { flex-grow: 1; accent-color: var(--primary-red); cursor: pointer; }
-        .slider-value { 
-            background: var(--bg-color); padding: 4px 12px; border-radius: 12px; 
-            font-weight: 700; color: var(--primary-red); border: 1px solid var(--border-color);
-            min-width: 20px; text-align: center;
-        }
+    .modern-input {
+        width: 100%; padding: 14px; border-radius: 12px; 
+        border: 2px solid var(--border-color); font-family: inherit; font-size: 15px;
+        box-sizing: border-box; outline: none;
+        transition: border-color 0.3s;
+    }
+    .modern-input:focus { border-color: var(--primary-red); }
 
-        .modern-input {
-            width: 100%; padding: 12px; border-radius: 8px; 
-            border: 1px solid var(--border-color); font-family: inherit; font-size: 15px;
-            box-sizing: border-box; outline: none;
-        }
+    .radio-group, .check-group { display: flex; flex-direction: column; gap: 12px; }
+    .radio-group label, .check-group label { 
+        display: flex; align-items: flex-start; font-weight: 400; cursor: pointer; font-size: 15px;
+    }
+    input[type="radio"], input[type="checkbox"] { 
+        accent-color: var(--primary-red); margin: 3px 10px 0 0; transform: scale(1.2); 
+        flex-shrink: 0;
+    }
+    [dir="rtl"] input[type="radio"], [dir="rtl"] input[type="checkbox"] { margin: 3px 0 0 10px; }
 
-        .radio-group, .check-group { display: flex; flex-direction: column; gap: 12px; }
-        .radio-group label, .check-group label { 
-            display: flex; align-items: flex-start; font-weight: 400; cursor: pointer; font-size: 14px;
-        }
-        input[type="radio"], input[type="checkbox"] { 
-            accent-color: var(--primary-red); margin: 3px 10px 0 0; transform: scale(1.1); 
-            flex-shrink: 0;
-        }
-        [dir="rtl"] input[type="radio"], [dir="rtl"] input[type="checkbox"] { margin: 3px 0 0 10px; }
+    .btn-primary {
+        background-color: var(--primary-red); color: white; border: none;
+        padding: 18px 24px; border-radius: 30px; font-size: 16px; font-weight: 700;
+        width: 100%; cursor: pointer; transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); margin-top: 15px;
+        font-family: inherit;
+        box-shadow: 0 4px 15px rgba(255, 152, 0, 0.3);
+    }
+    .btn-primary:hover { 
+        background-color: var(--primary-hover); 
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(255, 152, 0, 0.4);
+    }
 
-        .btn-primary {
-            background-color: var(--primary-red); color: white; border: none;
-            padding: 16px 24px; border-radius: 28px; font-size: 16px; font-weight: 700;
-            width: 100%; cursor: pointer; transition: background-color 0.2s; margin-top: 10px;
-            font-family: inherit;
-        }
-        .btn-primary:hover { background-color: var(--primary-hover); }
+    .btn-lang {
+        background: #fff;
+        color: var(--text-main);
+        border: 2px solid var(--border-color);
+        padding: 15px;
+        margin-bottom: 12px;
+        border-radius: 16px;
+        text-align: center;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    .btn-lang:hover { border-color: var(--growth-green); color: var(--growth-green); }
 
-        .btn-lang {
-            background: var(--bg-color);
-            color: var(--text-main);
-            border: 1px solid var(--border-color);
-            padding: 15px;
-            margin-bottom: 10px;
-            border-radius: 12px;
-            text-align: center;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        .btn-lang:hover { border-color: var(--primary-red); background: #fff; }
+    .btn-secondary {
+        background: none; color: var(--text-muted); border: none; padding: 12px;
+        width: 100%; cursor: pointer; font-size: 14px; text-decoration: none; font-family: inherit;
+        transition: color 0.2s;
+    }
+    .btn-secondary:hover { color: var(--text-main); }
 
-        .btn-secondary {
-            background: none; color: var(--text-muted); border: none; padding: 10px;
-            width: 100%; cursor: pointer; font-size: 14px; text-decoration: underline; font-family: inherit;
-        }
+    .block { display: none; animation: fadeIn 0.5s ease forwards; }
+    .block.active { display: block; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
 
-        .block { display: none; animation: fadeIn 0.4s ease forwards; }
-        .block.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    .risk-card {
+        background: #fff; padding: 18px; border-radius: 16px;
+        margin-bottom: 12px; border: 2px solid var(--border-color);
+        transition: all 0.2s;
+    }
+    .risk-card:has(input:checked) { 
+        border-color: var(--growth-green); 
+        background: #f1f8e9; /* Очень светлый зеленый фон при выборе */
+    }
+    .risk-card strong { display: block; margin-bottom: 5px; color: var(--text-main); font-size: 16px; }
 
-        .risk-card {
-            background: var(--bg-color); padding: 15px; border-radius: 12px;
-            margin-bottom: 12px; border: 1px solid var(--border-color);
-        }
-        .risk-card:has(input:checked) { border-color: var(--primary-red); background: #fff; }
-        .risk-card strong { display: block; margin-bottom: 5px; color: var(--primary-red); }
+    .disclaimer { font-size: 12px; color: var(--text-muted); text-align: center; margin-top: 30px; line-height: 1.6; }
+</style>
 
-        .disclaimer { font-size: 11px; color: var(--text-muted); text-align: center; margin-top: 25px; line-height: 1.5; }
-    </style>
+
 </head>
 <body>
 
@@ -150,67 +165,66 @@
         </div>
     </div>
 
-    <div id="main-content" style="display: none;">
-        <div class="header">
-            <h1 id="t-window-title">Форма 404-Алеф</h1>
-            <div id="t-current-lang" style="font-size: 12px; color: var(--text-muted);"></div>
-        </div>
-
-        <div class="warning-banner" id="t-warning"></div>
-
-        <div id="block1" class="block">
-            <div class="field-group">
-                <label id="t-name"></label>
-                <input type="text" class="modern-input" id="t-name-placeholder" placeholder="">
-            </div>
-            <div class="field-group">
-                <label id="t-anxiety"></label>
-                <div class="slider-container">
-                    <input type="range" id="anxietySlider" min="0" max="10" value="7" oninput="enforceMinAnxiety(this)">
-                    <div class="slider-value" id="anxietyVal">7</div>
-                </div>
-            </div>
-            <div class="field-group">
-                <label id="t-wear"></label>
-                <div class="sub-label" id="t-wear-desc"></div>
-                <select class="modern-input" id="conflictSelect"></select>
-            </div>
-            <div class="field-group">
-                <label id="t-news"></label>
-                <div class="radio-group">
-                    <label><input type="radio" name="news" value="yes" checked> <span class="t-yes"></span></label>
-                    <label><input type="radio" name="news" value="no"> <span class="t-no"></span></label>
-                </div>
-            </div>
-            <div class="field-group">
-                <label id="t-consent" style="font-weight: 400; font-size: 13px;">
-                    <input type="checkbox" id="consentCheck"> 
-                    <span id="t-consent-text"></span>
-                </label>
-            </div>
-            <button class="btn-primary" id="t-next-btn" onclick="validateStep1()"></button>
-        </div>
-
-        <div id="block2" class="block">
-            <label id="t-risks-title" style="font-size: 18px; margin-bottom: 20px;"></label>
-            <div id="risks-container"></div>
-            <button class="btn-primary" id="t-pay-btn" onclick="goToStep3()"></button>
-            <button class="btn-secondary" onclick="goToStep1()" id="t-back-1"></button>
-        </div>
-
-        <div id="block3" class="block">
-            <label id="t-pay-title" style="font-size: 18px; margin-bottom: 20px;"></label>
-            <div class="radio-group">
-                <label class="risk-card"><input type="radio" name="payment" value="nerves"> <span id="t-pay-1"></span></label>
-                <label class="risk-card"><input type="radio" name="payment" value="sleep"> <span id="t-pay-2"></span></label>
-                <label class="risk-card"><input type="radio" name="payment" value="oblivion"> <span id="t-pay-3"></span></label>
-            </div>
-            <button class="btn-primary" id="t-finish-btn"></button>
-            <button class="btn-secondary" onclick="goToStep2()" id="t-back-2"></button>
-        </div>
-
-        <div class="disclaimer" id="t-disclaimer"></div>
+    <div id="main-content" style="display: none;" class="card">
+    <div class="header">
+        <h1 id="t-window-title">Форма 404-Алеф</h1>
+        <div id="t-current-lang" style="font-size: 12px; color: var(--text-muted); background: var(--bg-color); padding: 4px 10px; border-radius: 10px;"></div>
     </div>
+
+    <div class="warning-banner" id="t-warning"></div>
+
+    <div id="block1" class="block">
+        <div class="field-group">
+            <label id="t-name"></label>
+            <input type="text" class="modern-input" id="t-name-placeholder" placeholder="">
+        </div>
+        <div class="field-group">
+            <label id="t-anxiety"></label>
+            <div class="slider-container">
+                <input type="range" id="anxietySlider" min="0" max="10" value="7" oninput="enforceMinAnxiety(this)">
+                <div class="slider-value" id="anxietyVal">7</div>
+            </div>
+        </div>
+        <div class="field-group">
+            <label id="t-wear"></label>
+            <div class="sub-label" id="t-wear-desc"></div>
+            <select class="modern-input" id="conflictSelect"></select>
+        </div>
+        <div class="field-group">
+            <label id="t-news"></label>
+            <div class="radio-group">
+                <label><input type="radio" name="news" value="yes" checked> <span class="t-yes"></span></label>
+                <label><input type="radio" name="news" value="no"> <span class="t-no"></span></label>
+            </div>
+        </div>
+        <div class="field-group">
+            <label id="t-consent" style="font-weight: 400; font-size: 13px;">
+                <input type="checkbox" id="consentCheck"> 
+                <span id="t-consent-text"></span>
+            </label>
+        </div>
+        <button class="btn-primary" id="t-next-btn" onclick="validateStep1()"></button>
+    </div>
+
+    <div id="block2" class="block">
+        <label id="t-risks-title" style="font-size: 18px; margin-bottom: 20px; color: var(--growth-green); font-weight: 700;"></label>
+        <div id="risks-container"></div>
+        <button class="btn-primary" id="t-pay-btn" onclick="goToStep3()"></button>
+        <button class="btn-secondary" onclick="goToStep1()" id="t-back-1"></button>
+    </div>
+
+    <div id="block3" class="block">
+        <label id="t-pay-title" style="font-size: 18px; margin-bottom: 20px; color: var(--growth-green); font-weight: 700;"></label>
+        <div class="radio-group">
+            <label class="risk-card"><input type="radio" name="payment" value="nerves"> <span id="t-pay-1"></span></label>
+            <label class="risk-card"><input type="radio" name="payment" value="sleep"> <span id="t-pay-2"></span></label>
+            <label class="risk-card"><input type="radio" name="payment" value="oblivion"> <span id="t-pay-3"></span></label>
+        </div>
+        <button class="btn-primary" id="t-finish-btn"></button>
+        <button class="btn-secondary" onclick="goToStep2()" id="t-back-2"></button>
+    </div>
+
+    <div class="disclaimer" id="t-disclaimer"></div>
 </div>
 
 <script>
