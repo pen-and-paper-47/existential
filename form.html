@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Управление Фиксации Неизбежного</title>
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+   <style>
+    /* НОВЫЙ БЛОК CSS-ПЕРЕМЕННЫХ: СТИЛЬ "ИРОНИЧНЫЙ КОНТРАСТ (ВИТАЛЬНОСТЬ И РОСТ)" */
+    :root {
+        --bg-color: #fdfbf7; /* Очень светлый, залитый солнцем теплый фон */
+        --card-bg: #ffffff; /* Ослепительно белая карточка (чистота и надежда) */
+        --text-main: #2b3a4a; /* Глубокий сине-серый для хорошей читаемости текста */
+        --text-muted: #8fa3b3; /* Мягкий приглушенный цвет */
+        --border-color: #d1e8e2; /* Нежный мятно-бирюзовый для границ */
+        --primary-red: #ff9800; /* Солнечный оранжевый (заменяет тревожный красный) */
+        --primary-hover: #f57c00; /* Чуть более насыщенный оранжевый при наведении */
+        --growth-green: #4caf50; /* Цвет свежей листвы для особых акцентов */
+    }
+
+    body {
+        background-color: var(--bg-color);
+        font-family: 'Roboto', 'Heebo', sans-serif;
+        color: var(--text-main);
+        margin: 0;
+        padding: 20px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        /* Добавим легкий жизнерадостный градиент на фон */
+        background-image: linear-gradient(120deg, #fdfbf7 0%, #e8f5e9 100%);
+    }
+
+    .card {
+        background: var(--card-bg);
+        border-radius: 20px; /* Чуть более скругленные, мягкие формы */
+        box-shadow: 0 10px 30px rgba(0, 150, 136, 0.08); /* Легкая бирюзовая тень */
+        width: 100%;
+        max-width: 700px;
+        padding: 35px;
+        box-sizing: border-box;
+        position: relative;
+    }
+
+    .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 2px dashed var(--border-color); /* Игривая пунктирная линия */
+        padding-bottom: 15px;
+        margin-bottom: 25px;
+    }
+
+    h1 { font-size: 22px; margin: 0; font-weight: 700; color: var(--growth-green); }
+
+    /* Жизнерадостный баннер, который сообщает ужасные вещи */
+    .warning-banner {
+        background-color: #fff3e0 !important; /* Мягкий персиковый */
+        color: #e65100 !important; /* Насыщенный оранжевый */
+        padding: 15px;
+        border-radius: 12px;
+        font-size: 13px;
+        font-weight: 700;
+        text-align: center;
+        margin-bottom: 25px;
+        border-left: 5px solid var(--primary-red) !important;
+        box-shadow: 0 4px 10px rgba(255, 152, 0, 0.1);
+    }
+
+    .field-group { margin-bottom: 25px; }
+    label { display: block; font-weight: 600; margin-bottom: 8px; font-size: 15px; }
+    .sub-label { font-size: 12px; color: var(--text-muted); margin-bottom: 10px; line-height: 1.5; }
+
+    .slider-container { display: flex; align-items: center; gap: 15px; }
+    input[type=range] { flex-grow: 1; accent-color: var(--primary-red); cursor: pointer; }
+    .slider-value { 
+        background: #fff; padding: 6px 14px; border-radius: 16px; 
+        font-weight: 700; color: var(--primary-red); border: 2px solid var(--border-color);
+        min-width: 20px; text-align: center;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    }
+
+    .modern-input {
+        width: 100%; padding: 14px; border-radius: 12px; 
+        border: 2px solid var(--border-color); font-family: inherit; font-size: 15px;
+        box-sizing: border-box; outline: none;
+        transition: border-color 0.3s;
+    }
+    .modern-input:focus { border-color: var(--primary-red); }
+
+    .radio-group, .check-group { display: flex; flex-direction: column; gap: 12px; }
+    .radio-group label, .check-group label { 
+        display: flex; align-items: flex-start; font-weight: 400; cursor: pointer; font-size: 15px;
+    }
+    input[type="radio"], input[type="checkbox"] { 
+        accent-color: var(--primary-red); margin: 3px 10px 0 0; transform: scale(1.2); 
+        flex-shrink: 0;
+    }
+    [dir="rtl"] input[type="radio"], [dir="rtl"] input[type="checkbox"] { margin: 3px 0 0 10px; }
+
+    .btn-primary {
+        background-color: var(--primary-red); color: white; border: none;
+        padding: 18px 24px; border-radius: 30px; font-size: 16px; font-weight: 700;
+        width: 100%; cursor: pointer; transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); margin-top: 15px;
+        font-family: inherit;
+        box-shadow: 0 4px 15px rgba(255, 152, 0, 0.3);
+    }
+    .btn-primary:hover { 
+        background-color: var(--primary-hover); 
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(255, 152, 0, 0.4);
+    }
+
+    .btn-lang {
+        background: #fff;
+        color: var(--text-main);
+        border: 2px solid var(--border-color);
+        padding: 15px;
+        margin-bottom: 12px;
+        border-radius: 16px;
+        text-align: center;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    .btn-lang:hover { border-color: var(--growth-green); color: var(--growth-green); }
+
+    .btn-secondary {
+        background: none; color: var(--text-muted); border: none; padding: 12px;
+        width: 100%; cursor: pointer; font-size: 14px; text-decoration: none; font-family: inherit;
+        transition: color 0.2s;
+    }
+    .btn-secondary:hover { color: var(--text-main); }
+
+    .block { display: none; animation: fadeIn 0.5s ease forwards; }
+    .block.active { display: block; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+
+    .risk-card {
+        background: #fff; padding: 18px; border-radius: 16px;
+        margin-bottom: 12px; border: 2px solid var(--border-color);
+        transition: all 0.2s;
+    }
+    .risk-card:has(input:checked) { 
+        border-color: var(--growth-green); 
+        background: #f1f8e9; /* Очень светлый зеленый фон при выборе */
+    }
+    .risk-card strong { display: block; margin-bottom: 5px; color: var(--text-main); font-size: 16px; }
+
+    .disclaimer { font-size: 12px; color: var(--text-muted); text-align: center; margin-top: 30px; line-height: 1.6; }
+</style>
+
+
+</head>
+<body>
+
+<div class="card">
+    <div id="block0" class="block active">
+        <h1 style="text-align: center; margin-bottom: 30px;">Выберите язык / Choose Language / בחר שפה</h1>
+        <div style="display: flex; flex-direction: column;">
+            <div class="btn-lang" onclick="setLanguage('he')">עברית</div>
+            <div class="btn-lang" onclick="setLanguage('ru')">Русский</div>
+            <div class="btn-lang" onclick="setLanguage('en')">English</div>
+        </div>
+    </div>
+
+    <div id="main-content" style="display: none;" class="card">
+    <div class="header">
+        <h1 id="t-window-title">Форма 404-Алеф</h1>
+        <div id="t-current-lang" style="font-size: 12px; color: var(--text-muted); background: var(--bg-color); padding: 4px 10px; border-radius: 10px;"></div>
+    </div>
+
+    <div class="warning-banner" id="t-warning"></div>
+
+    <div id="block1" class="block">
+        <div class="field-group">
+            <label id="t-name"></label>
+            <input type="text" class="modern-input" id="t-name-placeholder" placeholder="">
+        </div>
+        <div class="field-group">
+            <label id="t-anxiety"></label>
+            <div class="slider-container">
+                <input type="range" id="anxietySlider" min="0" max="10" value="7" oninput="enforceMinAnxiety(this)">
+                <div class="slider-value" id="anxietyVal">7</div>
+            </div>
+        </div>
+        <div class="field-group">
+            <label id="t-wear"></label>
+            <div class="sub-label" id="t-wear-desc"></div>
+            <select class="modern-input" id="conflictSelect"></select>
+        </div>
+        <div class="field-group">
+            <label id="t-news"></label>
+            <div class="radio-group">
+                <label><input type="radio" name="news" value="yes" checked> <span class="t-yes"></span></label>
+                <label><input type="radio" name="news" value="no"> <span class="t-no"></span></label>
+            </div>
+        </div>
+        <div class="field-group">
+            <label id="t-consent" style="font-weight: 400; font-size: 13px;">
+                <input type="checkbox" id="consentCheck"> 
+                <span id="t-consent-text"></span>
+            </label>
+        </div>
+        <button class="btn-primary" id="t-next-btn" onclick="validateStep1()"></button>
+    </div>
+
+    <div id="block2" class="block">
+        <label id="t-risks-title" style="font-size: 18px; margin-bottom: 20px; color: var(--growth-green); font-weight: 700;"></label>
+        <div id="risks-container"></div>
+        <button class="btn-primary" id="t-pay-btn" onclick="goToStep3()"></button>
+        <button class="btn-secondary" onclick="goToStep1()" id="t-back-1"></button>
+    </div>
+
+    <div id="block3" class="block">
+        <label id="t-pay-title" style="font-size: 18px; margin-bottom: 20px; color: var(--growth-green); font-weight: 700;"></label>
+        <div class="radio-group">
+            <label class="risk-card"><input type="radio" name="payment" value="nerves"> <span id="t-pay-1"></span></label>
+            <label class="risk-card"><input type="radio" name="payment" value="sleep"> <span id="t-pay-2"></span></label>
+            <label class="risk-card"><input type="radio" name="payment" value="oblivion"> <span id="t-pay-3"></span></label>
+        </div>
+        <button class="btn-primary" id="t-finish-btn"></button>
+        <button class="btn-secondary" onclick="goToStep2()" id="t-back-2"></button>
+    </div>
+
+    <div class="disclaimer" id="t-disclaimer"></div>
+</div>
+
+<script>
+    let currentLang = 'ru';
+    
+    // Базовый словарь для элементов, которых нет в таблице
+    const translations = {
+        ru: { dir: "ltr", yes: "Да", no: "Нет" },
+        en: { dir: "ltr", yes: "Yes", no: "No" }
+    };
+
+    const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQeKQogEEDNWY626wZDamnMfGNimCIMFqwP9_spwPc-qotu_yQq7jKMzF1YeFzfBSrFAbCCO8UNvMwZ/pub?output=tsv';
+
+    async function loadDataFromCloud() {
+        try {
+            const response = await fetch(SHEET_URL);
+            const data = await response.text();
+            const lines = data.split('\n');
+            
+            for (let i = 1; i < lines.length; i++) {
+                const columns = lines[i].split('\t');
+                if (columns.length >= 3) {
+                    const key = columns[0].trim();
+                    translations.ru[key] = columns[1].trim();
+                    translations.en[key] = columns[2].trim();
+                }
+            }
+        } catch (error) {
+            console.error("Сбой матрицы:", error);
+            alert("Ошибка связи с облаком. Данные не загружены.");
+        }
+    }
+
+    async function setLanguage(lang) {
+        if (lang === 'he') {
+            alert("Иврит временно отключен (отсутствует в базе данных).");
+            return;
+        }
+        
+        document.getElementById('block0').innerHTML = "<h2 style='text-align:center;'>Устанавливаем связь с сервером...</h2>";
+        
+        await loadDataFromCloud(); 
+        
+        currentLang = lang;
+        document.getElementById('block0').style.display = 'none';
+        document.getElementById('main-content').style.display = 'block';
+        changeLanguage();
+        goToStep1();
+    }
+
+    function enforceMinAnxiety(slider) {
+        if (parseInt(slider.value) < 4) slider.value = 4;
+        document.getElementById('anxietyVal').innerText = slider.value;
+    }
+
+    function validateStep1() {
+        if (!document.getElementById('consentCheck').checked) {
+            alert(translations[currentLang].alertConsent || "Подтвердите согласие.");
+            return;
+        }
+        goToStep2();
+    }
+
+    function goToStep1() { switchBlock('block1'); }
+    function goToStep2() { renderRisks(); switchBlock('block2'); }
+    function goToStep3() { switchBlock('block3'); }
+
+    function switchBlock(id) {
+        document.querySelectorAll('.block').forEach(b => b.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        window.scrollTo(0,0);
+    }
+
+    function renderRisks() {
+        const container = document.getElementById('risks-container');
+        const risksKeys = ['risk1','risk2','risk3','risk4','risk5','risk6','risk7','risk8','risk9'];
+        container.innerHTML = risksKeys.map(k => translations[currentLang][k] ? `
+            <div class="risk-card">
+                <label><input type="checkbox"><span>${translations[currentLang][k]}</span></label>
+            </div>
+        ` : '').join('');
+    }
+
+    function populateConflictSelect(lang) {
+        const select = document.getElementById('conflictSelect');
+        const cur = select.value || "0";
+        select.innerHTML = '';
+        for (let i = 0; i <= 47; i++) {
+            let text = i + (lang === 'ru' ? ' конфл.' : ' conf.');
+            const opt = document.createElement('option');
+            opt.value = i; opt.innerText = text;
+            if (i.toString() === cur) opt.selected = true;
+            select.appendChild(opt);
+        }
+    }
+
+    function changeLanguage() {
+        const dict = translations[currentLang];
+        
+        const setTxt = (id, key) => { if(document.getElementById(id) && dict[key]) document.getElementById(id).innerText = dict[key]; };
+        const setHtml = (id, key) => { if(document.getElementById(id) && dict[key]) document.getElementById(id).innerHTML = dict[key]; };
+
+        setTxt('t-window-title', 'window-title');
+        setTxt('t-warning', 'warning');
+        setTxt('t-name', 'name');
+        if (document.getElementById('t-name-placeholder')) document.getElementById('t-name-placeholder').placeholder = dict['name-placeholder'] || '';
+        setTxt('t-anxiety', 'anxiety');
+        setTxt('t-wear', 'wear');
+        setTxt('t-wear-desc', 'wear-desc');
+        setTxt('t-news', 'news');
+        setTxt('t-consent-text', 'consent-text');
+        setTxt('t-next-btn', 'next-btn');
+        setTxt('t-risks-title', 'risks-title');
+        setTxt('t-pay-btn', 'pay-btn');
+        setTxt('t-pay-title', 'pay-title');
+        
+        setHtml('t-pay-1', 'pay-1');
+        setHtml('t-pay-2', 'pay-2');
+        setHtml('t-pay-3', 'pay-3');
+        
+        setTxt('t-finish-btn', 'finish-btn');
+        setTxt('t-back-1', 'back-1');
+        setTxt('t-back-2', 'back-2');
+        setTxt('t-disclaimer', 'disclaimer');
+        
+        document.querySelectorAll('.t-yes').forEach(el => el.innerText = dict["yes"]);
+        document.querySelectorAll('.t-no').forEach(el => el.innerText = dict["no"]);
+        
+        populateConflictSelect(currentLang);
+    }
+</script>
+</body>
+</html>
