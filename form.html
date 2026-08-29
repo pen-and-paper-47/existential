@@ -170,17 +170,37 @@
         <button class="btn-secondary" onclick="goToStep1()" id="t-back-1"></button>
     </div>
 
-    <div id="block3" class="block">
-        <label id="t-pay-title" style="font-size: 18px; margin-bottom: 20px; color: var(--growth-green); font-weight: 700;"></label>
-        <div class="radio-group">
-            <label class="risk-card"><input type="radio" name="payment" value="nerves"> <span id="t-pay-1"></span></label>
-            <label class="risk-card"><input type="radio" name="payment" value="sleep"> <span id="t-pay-2"></span></label>
-            <label class="risk-card"><input type="radio" name="payment" value="oblivion"> <span id="t-pay-3"></span></label>
+   <div id="block3" class="block">
+        <label id="t-pay-title" style="font-size: 18px; margin-bottom: 20px; color: var(--growth-green); font-weight: 700;">Метод списания премии за покрытие:</label>
+        
+        <div class="radio-group" id="payment-options">
+            <label class="risk-card"><input type="radio" name="payment" value="nerves"> <span id="t-pay-1"><strong>Нервные клетки</strong> (списываются в момент генерации PDF)</span></label>
+            <label class="risk-card"><input type="radio" name="payment" value="sleep"> <span id="t-pay-2"><strong>Часы здорового сна</strong> (удерживаются из будущего ресурса)</span></label>
+            <label class="risk-card"><input type="radio" name="payment" value="oblivion"> <span id="t-pay-3"><strong>Право на забвение</strong> (полный отказ от исторического следа)</span></label>
+            
+            <!-- НОВАЯ ОПЦИЯ: ОПЛАТА ДАННЫМИ -->
+            <label class="risk-card"><input type="radio" name="payment" value="data" id="pay-data-radio"> <span><strong>Передача цифрового следа</strong> (оплата личными данными)</span></label>
         </div>
-        <button class="btn-primary" id="t-finish-btn" onclick="alert('PDF Generated (Simulation)')"></button>
-        <button class="btn-secondary" onclick="goToStep2()" id="t-back-2"></button>
-    </div>
 
+        <!-- СКРЫТЫЙ БЛОК: Выпадает только при выборе оплаты данными -->
+        <div id="data-payment-fields" style="display: none; padding: 18px; border: 2px dashed var(--primary-red); margin-bottom: 15px; background: #fff3e0; border-radius: 12px; animation: fadeIn 0.4s ease forwards;">
+            <div class="field-group" style="margin-bottom: 15px;">
+                <label style="font-size: 14px; color: #e65100;">Электронная почта (для связи в постапокалипсисе):</label>
+                <input type="email" id="userEmail" class="modern-input" placeholder="ваша@почта.com">
+            </div>
+            <div class="field-group" style="margin-bottom: 15px;">
+                <label style="font-size: 14px; color: #e65100;">Дата рождения (для калибровки цифрового следа):</label>
+                <input type="date" id="userDob" class="modern-input">
+            </div>
+            <label style="font-weight: 400; font-size: 13px; display: flex; align-items: start; gap: 8px;">
+                <input type="checkbox" id="dataConsentCheck">
+                <span style="line-height: 1.4; color: var(--text-main);">Я добровольно передаю свой цифровой след. Осознаю, что данные сохраняются в Вечном Архиве исключительно с целью приглашения на будущие выставки (на которых, как мы надеемся, можно будет бесплатно выпить).</span>
+            </label>
+        </div>
+
+        <button class="btn-primary" id="t-finish-btn" onclick="collectFinalData()">Получить План Защиты (PDF)</button>
+        <button class="btn-secondary" onclick="goToStep2()" id="t-back-2">Вернуться назад</button>
+    </div>
     <div class="disclaimer" id="t-disclaimer"></div>
 </div>
 
