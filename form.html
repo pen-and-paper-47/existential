@@ -199,11 +199,7 @@
                 <input type="date" id="userDob" class="modern-input">
             </div>
         </div>
-
-        <button class="btn-primary" id="t-finish-btn" onclick="collectFinalData()">Получить План Защиты (PDF)</button>
-        <button class="btn-secondary" onclick="goToStep2()" id="t-back-2">Вернуться назад</button>
-    </div>
-    <!-- Обязательный сбор email вынесен сюда -->
+<!-- Обязательный сбор email вынесен сюда -->
         <div class="field-group" style="margin-top: 25px; padding-top: 20px; border-top: 2px dashed var(--border-color);">
             <label style="color: var(--primary-red); font-size: 14px;">Обязательная передача цифрового следа (Email для отправки Плана):</label>
             <input type="email" id="userEmail" class="modern-input" placeholder="ваша@почта.com">
@@ -212,6 +208,9 @@
                 <span style="line-height: 1.4; color: var(--text-main);">Я добровольно передаю свой цифровой след. Осознаю, что данные сохраняются в Вечном Архиве исключительно с целью приглашения на будущие выставки (на которых, как мы надеемся, можно будет бесплатно выпить).</span>
             </label>
         </div>
+        <button class="btn-primary" id="t-finish-btn" onclick="collectFinalData()">Получить План Защиты (PDF)</button>
+        <button class="btn-secondary" onclick="goToStep2()" id="t-back-2">Вернуться назад</button>
+    </div>
     <div class="disclaimer" id="t-disclaimer"></div>
 </div>
 
