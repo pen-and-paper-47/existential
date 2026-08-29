@@ -189,8 +189,6 @@
             <label class="risk-card"><input type="radio" name="payment" value="nerves"> <span id="t-pay-1"><strong>Нервные клетки</strong> (списываются в момент генерации PDF)</span></label>
             <label class="risk-card"><input type="radio" name="payment" value="sleep"> <span id="t-pay-2"><strong>Часы здорового сна</strong> (удерживаются из будущего ресурса)</span></label>
             <label class="risk-card"><input type="radio" name="payment" value="oblivion"> <span id="t-pay-3"><strong>Право на забвение</strong> (полный отказ от исторического следа)</span></label>
-            
-            <!-- НОВАЯ ОПЦИЯ: ОПЛАТА ДАННЫМИ -->
             <label class="risk-card"><input type="radio" name="payment" value="data" id="pay-data-radio"> <span><strong>Передача цифрового следа</strong> (оплата личными данными)</span></label>
         </div>
 
@@ -200,10 +198,6 @@
                 <label style="font-size: 14px; color: #e65100;">Дата рождения (для калибровки цифрового следа):</label>
                 <input type="date" id="userDob" class="modern-input">
             </div>
-            <label style="font-weight: 400; font-size: 13px; display: flex; align-items: start; gap: 8px;">
-                <input type="checkbox" id="dataConsentCheck">
-                <span style="line-height: 1.4; color: var(--text-main);">Я добровольно передаю свой цифровой след. Осознаю, что данные сохраняются в Вечном Архиве исключительно с целью приглашения на будущие выставки (на которых, как мы надеемся, можно будет бесплатно выпить).</span>
-            </label>
         </div>
 
         <button class="btn-primary" id="t-finish-btn" onclick="collectFinalData()">Получить План Защиты (PDF)</button>
@@ -213,29 +207,46 @@
         <div class="field-group" style="margin-top: 25px; padding-top: 20px; border-top: 2px dashed var(--border-color);">
             <label style="color: var(--primary-red); font-size: 14px;">Обязательная передача цифрового следа (Email для отправки Плана):</label>
             <input type="email" id="userEmail" class="modern-input" placeholder="ваша@почта.com">
+             <label style="font-weight: 400; font-size: 13px; display: flex; align-items: start; gap: 8px;">
+                <input type="checkbox" id="dataConsentCheck">
+                <span style="line-height: 1.4; color: var(--text-main);">Я добровольно передаю свой цифровой след. Осознаю, что данные сохраняются в Вечном Архиве исключительно с целью приглашения на будущие выставки (на которых, как мы надеемся, можно будет бесплатно выпить).</span>
+            </label>
         </div>
     <div class="disclaimer" id="t-disclaimer"></div>
 </div>
-<!-- МАКЕТ ДЛЯ PDF (С лозунгом и рисками) -->
-    <div id="pdf-template" style="display: none; padding: 40px; background: #fff; width: 800px; color: #2b3a4a; font-family: 'Roboto', sans-serif;">
-        <div style="border: 4px solid #4caf50; padding: 30px; border-radius: 10px; position: relative;">
-            <div style="position: absolute; top: 20px; right: 20px; width: 100px; height: 100px; border: 3px solid #ff9800; border-radius: 50%; display: flex; align-items: center; justify-content: center; transform: rotate(-15deg); color: #ff9800; font-weight: bold; text-align: center; font-size: 12px;">ВЕЧНЫЙ<br>АРХИВ</div>
+
+    <!-- ЭКРАН 4: СПАСИБО ЗА ДОВЕРИЕ -->
+    <div id="block4" class="block" style="text-align: center; padding: 40px 20px;">
+        <h2 style="color: var(--growth-green); margin-bottom: 20px;">Спасибо за доверие</h2>
+        <p id="thank-you-message" style="margin-bottom: 30px; font-size: 16px; line-height: 1.5;"></p>
+        <button class="btn-secondary" onclick="resetToMain()" style="border: 2px solid var(--border-color); border-radius: 12px;">Возврат на главную страницу</button>
+    </div>
+    
+<!-- МАКЕТ ДЛЯ PDF (СТРОГИЙ ФОРМАТ А4) -->
+    <div id="pdf-template" style="display: none; width: 210mm; min-height: 297mm; padding: 20mm; box-sizing: border-box; background: #fff; color: #2b3a4a; font-family: 'Roboto', sans-serif;">
+        <div style="border: 2px solid #4caf50; padding: 20mm; height: 100%; position: relative; box-sizing: border-box;">
+            <div style="position: absolute; top: 15mm; right: 15mm; width: 30mm; height: 30mm; border: 2px solid #ff9800; border-radius: 50%; display: flex; align-items: center; justify-content: center; transform: rotate(-15deg); color: #ff9800; font-weight: bold; text-align: center; font-size: 10px;">ВЕЧНЫЙ<br>АРХИВ</div>
             
-            <h1 id="pdf-title-text" style="color: #4caf50; border-bottom: 2px dashed #d1e8e2; padding-bottom: 10px;">СЕРТИФИКАТ ПОКРЫТИЯ</h1>
-            <h3 style="color: #8fa3b3; font-style: italic;" id="pdf-slogan"></h3>
+            <h1 id="pdf-title-text" style="color: #4caf50; border-bottom: 2px solid #d1e8e2; padding-bottom: 10px; font-size: 24px;">СЕРТИФИКАТ ПОКРЫТИЯ</h1>
+            <h3 style="color: #8fa3b3; font-style: italic; font-size: 16px; margin-bottom: 30px;" id="pdf-slogan"></h3>
             
-            <div style="margin-top: 30px; font-size: 16px; line-height: 1.6;">
-                <p><strong>ID:</strong> <span id="pdf-name"></span></p>
-                <p><strong>Тревожность (0-10):</strong> <span id="pdf-anxiety"></span></p>
-                <p><strong>Оплата:</strong> <span id="pdf-payment"></span></p>
+            <div style="font-size: 14px; line-height: 1.8;">
+                <p><strong>Идентификатор субъекта:</strong> <span id="pdf-name" style="border-bottom: 1px solid #ccc; padding-bottom: 2px;"></span></p>
+                <p><strong>Уровень тревожности (0-10):</strong> <span id="pdf-anxiety"></span></p>
+                <p><strong>Метод списания премии:</strong> <span id="pdf-payment"></span></p>
             </div>
 
-            <div style="margin-top: 20px; padding: 15px; background: #f1f8e9; border-radius: 8px;">
-                <strong>Объекты покрытия:</strong>
-                <ul id="pdf-risks-list" style="font-size: 14px; margin-top: 10px;"></ul>
+            <div style="margin-top: 30px; padding: 15px; background: #f9f9f9; border-left: 4px solid #4caf50;">
+                <strong style="font-size: 14px;">Объекты покрытия:</strong>
+                <ul id="pdf-risks-list" style="font-size: 12px; margin-top: 10px; line-height: 1.6;"></ul>
+            </div>
+            
+            <div style="position: absolute; bottom: 20mm; left: 20mm; right: 20mm; font-size: 10px; color: #8fa3b3; text-align: center; border-top: 1px solid #eee; padding-top: 10mm;">
+                Данный документ подтверждает защиту от экзистенциальных угроз, включая Урбанистический гидро-коллапс и Бюрократическую сингулярность[cite: 4].
             </div>
         </div>
     </div>
+    
 <script>
     const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQeKQogEEDNWY626wZDamnMfGNimCIMFqwP9_spwPc-qotu_yQq7jKMzF1YeFzfBSrFAbCCO8UNvMwZ/pub?output=tsv'; 
     let translations = {};
@@ -368,37 +379,35 @@ const GAS_URL = 'https://script.google.com/macros/s/AKfycbz7Jhxo2oqUMv0ujXOXyGE7
             alert(dict['alertConsent'] || "Выберите метод списания!");
             return;
         }
-        if (!email) {
-            alert(currentLang === 'ru' ? "Цифровой след (Email) обязателен!" : "Email is required!");
-            return;
-        }
 
         const finishBtn = document.getElementById('t-finish-btn');
-        const originalBtnText = finishBtn.innerText;
-        finishBtn.innerText = currentLang === 'ru' ? "Связь с Вечным Архивом..." : "Connecting to Archive...";
+        finishBtn.innerText = currentLang === 'ru' ? "Формирование документа..." : "Generating document...";
         finishBtn.disabled = true;
 
-        // 1. Заполняем PDF (переводы берутся из словаря по выбранному языку)
+        // Заполняем PDF
         document.getElementById('pdf-title-text').innerText = dict['window-title'];
-        document.getElementById('pdf-slogan').innerText = dict['slogan'];
-        document.getElementById('pdf-name').innerText = document.getElementById('t-name-placeholder').value || "Anonymous";
+        document.getElementById('pdf-slogan').innerText = dict['slogan'] || "Гарантия стабильности в эпоху случайностей";
+        document.getElementById('pdf-name').innerText = document.getElementById('t-name-placeholder').value || "Аноним";
         document.getElementById('pdf-anxiety').innerText = document.getElementById('anxietySlider').value;
         document.getElementById('pdf-payment').innerText = selectedPayment.nextElementSibling.innerText;
 
-        // Собираем риски
-        const riskCheckboxes = document.querySelectorAll('input[name="risks"]:checked');
         const risksList = document.getElementById('pdf-risks-list');
         risksList.innerHTML = '';
-        riskCheckboxes.forEach(cb => {
+        document.querySelectorAll('input[name="risks"]:checked').forEach(cb => {
             risksList.innerHTML += `<li>${cb.nextElementSibling.innerText}</li>`;
         });
 
         const pdfElement = document.getElementById('pdf-template');
         pdfElement.style.display = 'block';
 
-        const opt = { margin: 0.5, filename: 'Plan.pdf', html2canvas: { scale: 2 }, jsPDF: { format: 'letter', orientation: 'portrait' } };
+        const opt = { 
+            margin: 0, 
+            filename: 'Form_404_Aleph.pdf', 
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 2, useCORS: true }, 
+            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } 
+        };
 
-        // 2. Генерируем Base64 и отправляем в Google Drive
         html2pdf().set(opt).from(pdfElement).outputPdf('datauristring').then(function(pdfBase64) {
             pdfElement.style.display = 'none';
             const base64Data = pdfBase64.split(',')[1];
@@ -411,46 +420,54 @@ const GAS_URL = 'https://script.google.com/macros/s/AKfycbz7Jhxo2oqUMv0ujXOXyGE7
             .then(res => res.json())
             .then(data => {
                 if (data.status === 'success') {
-                    // 3. Отправляем письмо со ссылкой (в шаблоне EmailJS добавьте переменную {{pdf_link}})
-                    emailjs.send('service_kluawpl', 'template_34kowi9', {
-                        email_to: email,
-                        subject_name: document.getElementById('t-name-placeholder').value || "Anonymous",
-                        pdf_link: data.url
-                    }).then(() => {
-                        alert(currentLang === 'ru' ? "Документ сгенерирован. Ссылка на архив отправлена на почту." : "Document generated. Link sent to email.");
-                        resetForm(finishBtn, originalBtnText);
-                    });
-                } else {
-                    throw new Error("Ошибка Drive");
+                    // Открываем сгенерированный PDF в новой вкладке браузера
+                    window.open(data.url, '_blank');
+                    
+                    if (email) {
+                        emailjs.send('service_kluawpl', 'template_34kowi9', {
+                            email_to: email,
+                            pdf_link: data.url
+                        }).then(() => {
+                            showThankYouScreen(email);
+                        });
+                    } else {
+                        showThankYouScreen(null);
+                    }
                 }
-            })
-            .catch(err => {
-                alert("Ошибка Вечного Архива. Бюрократическая сингулярность.");
-                resetForm(finishBtn, originalBtnText);
             });
         });
     }
 
-    // 4. Очистка и возврат
-    function resetForm(btn, text) {
-        btn.innerText = text;
-        btn.disabled = false;
+    function showThankYouScreen(email) {
+        document.getElementById('block3').classList.remove('active');
+        document.getElementById('block4').classList.add('active');
         
-        // Очистка данных формы
+        const msgElement = document.getElementById('thank-you-message');
+        if (email) {
+            msgElement.innerText = currentLang === 'ru' 
+                ? `Вам отправлено письмо с Планом Защиты на указанный адрес: ${email}`
+                : `An email with your Protection Plan has been sent to: ${email}`;
+        } else {
+            msgElement.innerText = ""; // Ничего не пишем, если email пустой
+        }
+    }
+
+    function resetToMain() {
+        // Очистка данных
         document.getElementById('t-name-placeholder').value = '';
         document.getElementById('anxietySlider').value = 7;
         document.getElementById('anxietyVal').innerText = 7;
         document.getElementById('userEmail').value = '';
         document.getElementById('consentCheck').checked = false;
-        
         document.querySelectorAll('input[name="risks"]:checked').forEach(cb => cb.checked = false);
         const paymentRadio = document.querySelector('input[name="payment"]:checked');
         if (paymentRadio) paymentRadio.checked = false;
+        
+        document.getElementById('t-finish-btn').innerText = currentLang === 'ru' ? "Получить План Защиты" : "Get Protection Plan";
+        document.getElementById('t-finish-btn').disabled = false;
 
-        // Перенаправление на стартовую страницу через 3 секунды
-        setTimeout(() => {
-            window.location.href = 'index.html'; 
-        }, 3000);
+        // Возврат на лендинг
+        window.location.href = 'index.html'; 
     }
 </script>
 </body>
