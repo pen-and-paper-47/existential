@@ -105,14 +105,57 @@
         .block.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
 
-        .risk-card {
-            background: #fff; padding: 18px; border-radius: 16px;
-            margin-bottom: 12px; border: 2px solid var(--border-color);
-        }
-        .risk-card:has(input:checked) { border-color: var(--growth-green); background: #f1f8e9; }
+/* Обновленные карточки рисков (Галочка слева, крупная) */
+    .risk-card {
+        background: #fff; padding: 18px; border-radius: 16px;
+        margin-bottom: 12px; border: 2px solid var(--border-color);
+        display: flex; align-items: flex-start; gap: 15px; text-align: left;
+        transition: all 0.2s;
+    }
+    .risk-card input[type="checkbox"] {
+        transform: scale(1.6);
+        margin-top: 4px;
+        flex-shrink: 0;
+        cursor: pointer;
+    }
+    .risk-card span { flex-grow: 1; }
         .risk-card strong { display: block; margin-bottom: 5px; color: var(--text-main); font-size: 16px; }
 
         .disclaimer { font-size: 12px; color: var(--text-muted); text-align: center; margin-top: 30px; }
+
+        /* Липкий заголовок рисков со скроллом */
+    #block2 {
+        max-height: 75vh;
+        overflow-y: auto;
+        overflow-x: hidden;
+        padding: 5px 15px; /* компенсируем отступы для скролла */
+    }
+    #t-risks-title {
+        position: sticky;
+        top: -5px; /* Залипание */
+        background: var(--card-bg);
+        z-index: 10;
+        display: block;
+        padding: 15px 0 10px 0;
+        border-bottom: 1px dashed var(--border-color);
+    }
+
+    /* Модальные окна (Кастомные алерты и таймер бездействия) */
+    .modal-overlay {
+        display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(43, 58, 74, 0.8); z-index: 9999;
+        justify-content: center; align-items: center;
+        backdrop-filter: blur(4px);
+    }
+    .modal-box {
+        background: var(--card-bg); padding: 30px; border-radius: 20px;
+        width: 90%; max-width: 400px; text-align: center;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    }
+    .modal-title {
+        font-weight: 700; color: var(--growth-green); font-size: 18px; margin-bottom: 15px;
+    }
+    .timer-text { font-size: 48px; font-weight: 800; color: var(--primary-red); margin: 20px 0; }
     </style>
     <!-- Библиотека для генерации PDF -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
@@ -136,34 +179,38 @@
 
     <div class="warning-banner" id="t-warning"></div>
 
+ <!-- БЛОК 1 -->
     <div id="block1" class="block active">
-        <div class="field-group">
+        <div class="field-group" id="field-name">
             <label id="t-name"></label>
             <input type="text" class="modern-input" id="t-name-placeholder" placeholder="">
         </div>
-        <div class="field-group">
+        
+        <!-- Скрытые блоки для последовательного выпадания -->
+        <div class="field-group" id="field-anxiety" style="display: none; animation: fadeIn 0.4s ease forwards;">
             <label id="t-anxiety"></label>
             <div class="slider-container">
-              <input type="range" id="anxietySlider" min="0" max="10" value="7" oninput="enforceMinAnxiety(this)">
+                <input type="range" id="anxietySlider" min="0" max="10" value="7" oninput="enforceMinAnxiety(this)">
                 <div class="slider-value" id="anxietyVal">7</div>
             </div>
         </div>
-        <div class="field-group">
+        
+        <div class="field-group" id="field-wear" style="display: none; animation: fadeIn 0.4s ease forwards;">
             <label id="t-wear"></label>
             <div class="sub-label" id="t-wear-desc"></div>
-            <select class="modern-input" id="conflictSelect">
-                <option value="1">1</option>
-                <option value="2">2</option>
-                <option value="3">3+</option>
-            </select>
+            <!-- Сюда вернется генерация из JS -->
+            <select class="modern-input" id="conflictSelect"></select>
         </div>
-        <div class="field-group">
+        
+        <div class="field-group" id="field-news" style="display: none; animation: fadeIn 0.4s ease forwards;">
             <label id="t-news"></label>
-            <div class="radio-group">
-                <label><input type="radio" name="news" value="yes" checked> <span id="t-news-1"></span></label>
-                <label><input type="radio" name="news" value="no"> <span id="t-news-2"></span></label>
+            <div class="slider-container">
+                <!-- Новый слайдер новостей (10 шагов: 0-9) -->
+                <input type="range" id="newsSlider" min="0" max="9" value="2" oninput="updateNewsSlider()">
+                <div class="slider-value" id="newsValText" style="min-width: 140px;">30 минут</div>
             </div>
         </div>
+        
         <div class="field-group">
             <label id="t-consent" style="font-weight: 400; font-size: 13px;">
                 <input type="checkbox" id="consentCheck"> 
@@ -171,6 +218,26 @@
             </label>
         </div>
         <button class="btn-primary" id="t-next-btn" onclick="goToStep2()"></button>
+    </div>
+
+    <!-- ДОПОЛНИТЕЛЬНО: Модальное окно "АЛЕФ 404 says:" -->
+    <div class="modal-overlay" id="aleph-alert-modal">
+        <div class="modal-box">
+            <div class="modal-title">АЛЕФ 404 says:</div>
+            <div id="aleph-alert-msg" style="font-size: 16px; margin-bottom: 25px; line-height: 1.5;"></div>
+            <button class="btn-primary" onclick="document.getElementById('aleph-alert-modal').style.display='none'">OK</button>
+        </div>
+    </div>
+
+    <!-- ДОПОЛНИТЕЛЬНО: Таймер бездействия -->
+    <div class="modal-overlay" id="timeout-modal">
+        <div class="modal-box">
+            <div class="modal-title">АЛЕФ 404 says:</div>
+            <div id="timeout-msg" style="font-size: 16px;">Продолжаем фиксацию или прерываемся?</div>
+            <div class="timer-text" id="countdown-timer">15</div>
+            <button class="btn-primary" onclick="continueSession()">Продолжаем</button>
+            <button class="btn-secondary" onclick="resetToMain()" style="border: 1px solid var(--border-color); border-radius: 20px; margin-top: 10px;">Прерываемся</button>
+        </div>
     </div>
 
     <div id="block2" class="block">
@@ -300,8 +367,7 @@
         document.getElementById('t-wear').innerText = dict['wear'];
         document.getElementById('t-wear-desc').innerText = dict['wear-desc'];
         document.getElementById('t-news').innerText = dict['news'];
-        document.getElementById('t-news-1').innerText = dict['news-1'] || "Менее 15 минут";
-        document.getElementById('t-news-2').innerText = dict['news-2'] || "Более 15 минут";
+        // УДАЛЕНЫ СТРОКИ С t-news-1 и t-news-2, так как теперь это слайдер
         document.getElementById('t-consent-text').innerText = dict['consent-text'];
         document.getElementById('t-next-btn').innerText = dict['next-btn'];
         
@@ -330,8 +396,31 @@
                 `;
             }
         }
+        
+        // ВЫНЕСЕНО ИЗ ЦИКЛА: Обновляем ползунки один раз после загрузки языка
+        populateConflictSelect(currentLang);
+        updateNewsSlider();
+    }
+// Та самая функция генерации конфликтов
+    function populateConflictSelect(lang) {
+        const select = document.getElementById('conflictSelect');
+        const cur = select.value || "0";
+        select.innerHTML = '';
+        for (let i = 0; i <= 47; i++) {
+            let text = i + (lang === 'ru' ? ' конфл.' : ' conf.');
+            const opt = document.createElement('option');
+            opt.value = i; opt.innerText = text;
+            if (i.toString() === cur) opt.selected = true;
+            select.appendChild(opt);
+        }
     }
 
+    // Обновление текста новостного слайдера
+    function updateNewsSlider() {
+        const val = document.getElementById('newsSlider').value;
+        const texts = currentLang === 'ru' ? newsLevelsRu : newsLevelsEn;
+        document.getElementById('newsValText').innerText = texts[val];
+    }
     function goToStep1() {
         document.getElementById('block2').classList.remove('active');
         document.getElementById('block3').classList.remove('active');
@@ -340,7 +429,7 @@
 
     function goToStep2() {
         if (!document.getElementById('consentCheck').checked) {
-            alert(translations[currentLang]['alertConsent'] || "Подтвердите согласие!");
+            alephAlert(translations[currentLang]['alertConsent'] || "Подтвердите согласие!");
             return;
         }
         document.getElementById('block1').classList.remove('active');
@@ -374,14 +463,29 @@ function enforceMinAnxiety(slider) {
 }
 const GAS_URL = 'https://script.google.com/macros/s/AKfycbz7Jhxo2oqUMv0ujXOXyGE7Uj7JwMCvKwhkAFU_AKzaudXnR9EzpN00GOG90dmjqGmfHA/exec';
 
-    function collectFinalData() {
+function collectFinalData() {
         const selectedPayment = document.querySelector('input[name="payment"]:checked');
         const email = document.getElementById('userEmail').value;
         const dict = translations[currentLang];
         
         if (!selectedPayment) {
-            alert(dict['alertConsent'] || "Выберите метод списания!");
+            alephAlert(dict['alertConsent'] || "Выберите метод списания!");
             return;
+        }
+
+        // НОВОЕ: Проверка обязательного Email
+        if (!email) {
+            alephAlert(currentLang === 'ru' ? "Цифровой след (Email) обязателен!" : "Email is required!");
+            return;
+        }
+
+        // НОВОЕ: Проверка даты рождения, если выбрана передача данных
+        if (selectedPayment.value === 'data') {
+            const dob = document.getElementById('userDob').value;
+            if (!dob) {
+                alephAlert(currentLang === 'ru' ? "Укажите дату рождения для калибровки цифрового следа." : "Date of birth is required.");
+                return;
+            }
         }
 
         const finishBtn = document.getElementById('t-finish-btn');
@@ -455,7 +559,70 @@ const GAS_URL = 'https://script.google.com/macros/s/AKfycbz7Jhxo2oqUMv0ujXOXyGE7
             msgElement.innerText = ""; // Ничего не пишем, если email пустой
         }
     }
+    const newsLevelsRu = ["5 минут", "15 минут", "30 минут", "1 час", "1.5 часа", "2 часа", "2.5 часа", "3 часа", "4 часа", "король думскроллинга"];
+    const newsLevelsEn = ["5 minutes", "15 minutes", "30 minutes", "1 hour", "1.5 hours", "2 hours", "2.5 hours", "3 hours", "4 hours", "doomscrolling king"];
 
+    // Замена стандартного alert() на окно АЛЕФ 404
+    function alephAlert(msg) {
+        document.getElementById('aleph-alert-msg').innerText = msg;
+        document.getElementById('aleph-alert-modal').style.display = 'flex';
+    }
+document.getElementById('t-name-placeholder').addEventListener('input', function() {
+        if (this.value.trim().length > 0) {
+            document.getElementById('field-anxiety').style.display = 'block';
+        }
+    });
+
+    document.getElementById('anxietySlider').addEventListener('change', function() {
+        document.getElementById('field-wear').style.display = 'block';
+    });
+
+    document.getElementById('conflictSelect').addEventListener('change', function() {
+        document.getElementById('field-news').style.display = 'block';
+    });
+let inactivityTimer;
+    let countdownInterval;
+    let timeLeft = 15;
+
+    function resetInactivity() {
+        clearTimeout(inactivityTimer);
+        clearInterval(countdownInterval);
+        document.getElementById('timeout-modal').style.display = 'none';
+        
+        // 30 секунд бездействия
+        inactivityTimer = setTimeout(showTimeoutModal, 30000); 
+    }
+
+    function showTimeoutModal() {
+        document.getElementById('timeout-modal').style.display = 'flex';
+        timeLeft = 15;
+        document.getElementById('countdown-timer').innerText = timeLeft;
+        document.getElementById('timeout-msg').innerText = currentLang === 'ru' ? "Продолжаем фиксацию или прерываемся?" : "Shall we continue or abort?";
+        
+        countdownInterval = setInterval(() => {
+            timeLeft--;
+            document.getElementById('countdown-timer').innerText = timeLeft;
+            if (timeLeft <= 0) {
+                clearInterval(countdownInterval);
+                resetToMain();
+            }
+        }, 1000);
+    }
+
+    function continueSession() {
+        resetInactivity();
+    }
+
+    // Отслеживаем активность на планшете
+    document.addEventListener('mousemove', resetInactivity);
+    document.addEventListener('keypress', resetInactivity);
+    document.addEventListener('touchstart', resetInactivity);
+    document.addEventListener('scroll', resetInactivity);
+    
+    // Запуск при старте
+    resetInactivity();
+
+    
     function resetToMain() {
         // Очистка данных
         document.getElementById('t-name-placeholder').value = '';
@@ -472,6 +639,9 @@ const GAS_URL = 'https://script.google.com/macros/s/AKfycbz7Jhxo2oqUMv0ujXOXyGE7
 
         // Возврат на лендинг
         window.location.href = 'index.html'; 
+        document.getElementById('field-anxiety').style.display = 'none';
+    document.getElementById('field-wear').style.display = 'none';
+    document.getElementById('field-news').style.display = 'none';
     }
 </script>
 </body>
