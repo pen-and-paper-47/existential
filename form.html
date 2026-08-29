@@ -144,7 +144,7 @@
         <div class="field-group">
             <label id="t-anxiety"></label>
             <div class="slider-container">
-                <input type="range" id="anxietySlider" min="0" max="10" value="7" oninput="document.getElementById('anxietyVal').innerText = this.value">
+              <input type="range" id="anxietySlider" min="0" max="10" value="7" oninput="enforceMinAnxiety(this)">
                 <div class="slider-value" id="anxietyVal">7</div>
             </div>
         </div>
@@ -366,7 +366,12 @@
             }
         }
     });
-
+function enforceMinAnxiety(slider) {
+    if (slider.value < 4) {
+        slider.value = 4;
+    }
+    document.getElementById('anxietyVal').innerText = slider.value;
+}
 const GAS_URL = 'https://script.google.com/macros/s/AKfycbz7Jhxo2oqUMv0ujXOXyGE7Uj7JwMCvKwhkAFU_AKzaudXnR9EzpN00GOG90dmjqGmfHA/exec';
 
     function collectFinalData() {
