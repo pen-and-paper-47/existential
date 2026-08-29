@@ -313,6 +313,56 @@
     }
 
     loadDataFromCloud();
+    // 1. Слушатель для переключения скрытого блока оплаты данными
+    document.addEventListener('change', function(e) {
+        if (e.target.name === 'payment') {
+            const dataBlock = document.getElementById('data-payment-fields');
+            if (e.target.value === 'data') {
+                dataBlock.style.display = 'block';
+            } else {
+                dataBlock.style.display = 'none';
+            }
+        }
+    });
+
+    // 2. Функция сбора данных (срабатывает при нажатии финальной кнопки)
+    function collectFinalData() {
+        const selectedPayment = document.querySelector('input[name="payment"]:checked');
+        
+        if (!selectedPayment) {
+            alert(translations[currentLang]?.alertConsent || "Пожалуйста, выберите метод списания премии!");
+            return;
+        }
+
+        // Базовые данные субъекта
+        const subjectData = {
+            name: document.getElementById('t-name-placeholder').value || "Аноним",
+            anxiety: document.getElementById('anxietySlider').value,
+            paymentMethod: selectedPayment.value,
+            email: "Не предоставлен",
+            dob: "Не предоставлена"
+        };
+
+        // Дополнительная проверка, если выбрана "Оплата данными"
+        if (selectedPayment.value === 'data') {
+            const email = document.getElementById('userEmail').value;
+            const dob = document.getElementById('userDob').value;
+            const consent = document.getElementById('dataConsentCheck').checked;
+
+            if (!email || !dob || !consent) {
+                alert("Для оплаты данными необходимо заполнить email, дату рождения и поставить галочку абсурдной прозрачности.");
+                return;
+            }
+            subjectData.email = email;
+            subjectData.dob = dob;
+        }
+
+        // Сохраняем данные локально для следующего этапа (PDF и EmailJS)
+        console.log("Данные субъекта готовы к обработке:", subjectData);
+        alert("Данные успешно собраны! (Позже здесь будет генерация PDF)");
+        
+        // В следующем шаге мы заменим alert на запуск генерации PDF и отправки письма
+    }
 </script>
 
 </body>
