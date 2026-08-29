@@ -151,7 +151,7 @@
 
 <script>
     // ВАЖНО: Вставьте сюда ссылку на вашу опубликованную таблицу (в формате TSV)
-    const SHEET_URL = 'ВСТАВЬТЕ_СЮДА_ССЫЛКУ_НА_ВАШ_TSV'; 
+    const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQeKQogEEDNWY626wZDamnMfGNimCIMFqwP9_spwPc-qotu_yQq7jKMzF1YeFzfBSrFAbCCO8UNvMwZ/pub?output=tsv'; 
     let translations = {};
     let currentLang = 'ru';
 
@@ -190,18 +190,20 @@
         }
     }
 
-    function setLanguage(lang) {
-        currentLang = lang;
-        
-        // Подсветка активной кнопки
-        document.getElementById('btn-ru').classList.toggle('active', lang === 'ru');
-        document.getElementById('btn-en').classList.toggle('active', lang === 'en');
-        
-        if (translations[lang]) {
-            document.getElementById('t-slogan').innerText = translations[lang]['slogan'] || "Слоган не найден";
-            document.getElementById('t-find-plan').innerText = translations[lang]['find-plan'] || "Find your plan";
-        }
+   function setLanguage(lang) {
+    currentLang = lang;
+    
+    // Подсветка активной кнопки
+    document.getElementById('btn-ru').classList.toggle('active', lang === 'ru');
+    document.getElementById('btn-en').classList.toggle('active', lang === 'en');
+    
+    // Мгновенная подмена текста на странице
+    if (translations[lang]) {
+        // Используем ключи из вашей таблицы
+        document.getElementById('t-slogan').innerText = translations[lang]['slogan'] || "Слоган не найден";
+        document.getElementById('t-find-plan').innerText = translations[lang]['find plan'] || "Find your plan";
     }
+}
 
     function goToForm() {
         // Переход на страницу с опросником, передаем язык через параметр URL
