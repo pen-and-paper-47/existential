@@ -106,11 +106,13 @@
         @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
 
 /* Обновленные карточки рисков (Галочка слева, крупная) */
+/* Улучшенная читаемость карточек рисков */
     .risk-card {
-        background: #fff; padding: 18px; border-radius: 16px;
-        margin-bottom: 12px; border: 2px solid var(--border-color);
+        background: #fff; padding: 20px; border-radius: 16px;
+        margin-bottom: 15px; border: 2px solid var(--border-color);
         display: flex; align-items: flex-start; gap: 15px; text-align: left;
         transition: all 0.2s;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.03); /* Мягкая тень */
     }
     .risk-card input[type="checkbox"] {
         transform: scale(1.6);
@@ -118,11 +120,26 @@
         flex-shrink: 0;
         cursor: pointer;
     }
-    .risk-card span { flex-grow: 1; }
-        .risk-card strong { display: block; margin-bottom: 5px; color: var(--text-main); font-size: 16px; }
-
+    .risk-card span { 
+        flex-grow: 1; 
+        line-height: 1.6; /* Увеличили межстрочный интервал */
+        font-size: 14.5px;
+        color: var(--text-main);
+    }
+    .risk-card strong { 
+        display: block; 
+        margin-bottom: 6px; 
+        color: var(--growth-green); /* Выделили заголовки зеленым для контраста */
+        font-size: 16px; 
+    }
         .disclaimer { font-size: 12px; color: var(--text-muted); text-align: center; margin-top: 30px; }
-
+        
+/* Убираем "моргание" макета PDF при генерации */
+    #pdf-template {
+        position: absolute;
+        left: -9999px;
+        top: -9999px;
+    }
         /* Липкий заголовок рисков со скроллом */
     #block2 {
         max-height: 75vh;
@@ -156,7 +173,20 @@
         font-weight: 700; color: var(--growth-green); font-size: 18px; margin-bottom: 15px;
     }
     .timer-text { font-size: 48px; font-weight: 800; color: var(--primary-red); margin: 20px 0; }
+    .calc-badge {
+        display: inline-block;
+        background: rgba(255, 152, 0, 0.1);
+        color: #e65100;
+        padding: 6px 12px;
+        border-radius: 8px;
+        font-weight: 700;
+        font-size: 14px;
+        margin-top: 10px;
+        border: 1px dashed #ff9800;
+    }
+        
     </style>
+    
     <!-- Библиотека для генерации PDF -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     
@@ -249,47 +279,81 @@
         <button class="btn-secondary" onclick="goToStep1()" id="t-back-1"></button>
     </div>
 
-   <div id="block3" class="block">
+<!-- ЭКРАН 3: ОПЛАТА И СБОР ДАННЫХ -->
+    <!-- ЭКРАН 3: ОПЛАТА И СБОР ДАННЫХ -->
+    <div id="block3" class="block">
         <label id="t-pay-title" style="font-size: 18px; margin-bottom: 20px; color: var(--growth-green); font-weight: 700;">Метод списания премии за покрытие:</label>
         
         <div class="radio-group" id="payment-options">
-            <label class="risk-card"><input type="radio" name="payment" value="nerves"> <span id="t-pay-1"><strong>Нервные клетки</strong> (списываются в момент генерации PDF)</span></label>
-            <label class="risk-card"><input type="radio" name="payment" value="sleep"> <span id="t-pay-2"><strong>Часы здорового сна</strong> (удерживаются из будущего ресурса)</span></label>
-            <label class="risk-card"><input type="radio" name="payment" value="oblivion"> <span id="t-pay-3"><strong>Право на забвение</strong> (полный отказ от исторического следа)</span></label>
-            <label class="risk-card"><input type="radio" name="payment" value="data" id="pay-data-radio"> <span><strong>Передача цифрового следа</strong> (оплата личными данными)</span></label>
+            <label class="risk-card">
+                <input type="radio" name="payment" value="nerves"> 
+                <div>
+                    <span id="t-pay-1"></span>
+                    <div id="calc-nerves" class="calc-badge"></div>
+                </div>
+            </label>
+            <label class="risk-card">
+                <input type="radio" name="payment" value="sleep"> 
+                <div>
+                    <span id="t-pay-2"></span>
+                    <div id="calc-sleep" class="calc-badge"></div>
+                </div>
+            </label>
+            <label class="risk-card">
+                <input type="radio" name="payment" value="oblivion"> 
+                <div>
+                    <span id="t-pay-3"></span>
+                    <div id="calc-oblivion" class="calc-badge"></div>
+                </div>
+            </label>
+            <label class="risk-card">
+                <input type="radio" name="payment" value="data" id="pay-data-radio"> 
+                <div>
+                    <span id="t-pay-4"></span>
+                    <div id="calc-data" class="calc-badge"></div>
+                </div>
+            </label>
         </div>
 
-        <!-- СКРЫТЫЙ БЛОК: Выпадает только при выборе оплаты данными -->
+        <!-- Выпадающий блок оплаты данными -->
         <div id="data-payment-fields" style="display: none; padding: 18px; border: 2px dashed var(--primary-red); margin-bottom: 15px; background: #fff3e0; border-radius: 12px; animation: fadeIn 0.4s ease forwards;">
             <div class="field-group" style="margin-bottom: 15px;">
-                <label style="font-size: 14px; color: #e65100;">Дата рождения (для калибровки цифрового следа):</label>
+                <label id="t-dob-label" style="font-size: 14px; color: #e65100;">Дата рождения (для калибровки цифрового следа):</label>
                 <input type="date" id="userDob" class="modern-input">
             </div>
         </div>
-<!-- Обязательный сбор email вынесен сюда -->
+
+        <!-- Поле email и дисклеймер -->
         <div class="field-group" style="margin-top: 25px; padding-top: 20px; border-top: 2px dashed var(--border-color);">
-            <label style="color: var(--primary-red); font-size: 14px;">Обязательная передача цифрового следа (Email для отправки Плана):</label>
+            <label id="t-email-label" style="color: var(--primary-red); font-size: 14px;">Обязательная передача цифрового следа (Email для отправки Плана):</label>
             <input type="email" id="userEmail" class="modern-input" placeholder="ваша@почта.com">
-             <label style="font-weight: 400; font-size: 13px; display: flex; align-items: start; gap: 8px;">
-                <input type="checkbox" id="dataConsentCheck">
-                <span style="line-height: 1.4; color: var(--text-main);">Я добровольно передаю свой цифровой след. Осознаю, что данные сохраняются в Вечном Архиве исключительно с целью приглашения на будущие выставки (на которых, как мы надеемся, можно будет бесплатно выпить).</span>
-            </label>
+            <div id="t-email-disclaimer" style="font-size: 11.5px; color: var(--text-muted); margin-top: 15px; line-height: 1.5;"></div>
         </div>
-        <button class="btn-primary" id="t-finish-btn" onclick="collectFinalData()">Получить План Защиты (PDF)</button>
+
+        <button class="btn-primary" id="t-finish-btn" onclick="collectFinalData()">Получить План Защиты</button>
         <button class="btn-secondary" onclick="goToStep2()" id="t-back-2">Вернуться назад</button>
     </div>
     <div class="disclaimer" id="t-disclaimer"></div>
 </div>
 
-    <!-- ЭКРАН 4: СПАСИБО ЗА ДОВЕРИЕ -->
-    <div id="block4" class="block" style="text-align: center; padding: 40px 20px;">
-        <h2 style="color: var(--growth-green); margin-bottom: 20px;">Спасибо за доверие</h2>
+<!-- ЭКРАН 4: СПАСИБО ЗА ДОВЕРИЕ -->
+    <!-- Вертикальная компоновка (Flex Column) -->
+    <div id="block4" class="block" style="text-align: center; padding: 40px 20px; display: flex; flex-direction: column; justify-content: center; align-items: center; min-height: 40vh;">
+        <h2 style="color: var(--growth-green); margin-bottom: 10px;" id="t-thanks-title">Спасибо за доверие</h2>
+        <h3 style="color: var(--text-muted); font-style: italic; font-size: 16px; margin-bottom: 30px; line-height: 1.4; font-weight: 400;" id="t-thanks-slogan"></h3>
+        
         <p id="thank-you-message" style="margin-bottom: 30px; font-size: 16px; line-height: 1.5;"></p>
-        <button class="btn-secondary" onclick="resetToMain()" style="border: 2px solid var(--border-color); border-radius: 12px;">Возврат на главную страницу</button>
+        
+        <!-- Кнопка возврата с таймером -->
+        <button class="btn-primary" onclick="resetToMain()" style="border-radius: 12px; padding: 16px; width: 100%; max-width: 350px;" id="t-back-main">Возврат на главную страницу (15)</button>
     </div>
-    
-<!-- МАКЕТ ДЛЯ PDF (СТРОГИЙ ФОРМАТ А4) -->
-    <div id="pdf-template" style="display: none; width: 210mm; min-height: 297mm; padding: 20mm; box-sizing: border-box; background: #fff; color: #2b3a4a; font-family: 'Roboto', sans-serif;">
+
+    <div class="disclaimer" id="t-disclaimer"></div>
+</div>
+
+
+<!-- МАКЕТ ДЛЯ PDF (Убрали display: none, так как он теперь спрятан за экраном через CSS) -->
+<div id="pdf-template" style="width: 210mm; min-height: 297mm; padding: 20mm; box-sizing: border-box; background: #fff; color: #2b3a4a; font-family: 'Roboto', sans-serif;">
         <div style="border: 2px solid #4caf50; padding: 20mm; height: 100%; position: relative; box-sizing: border-box;">
             <div style="position: absolute; top: 15mm; right: 15mm; width: 30mm; height: 30mm; border: 2px solid #ff9800; border-radius: 50%; display: flex; align-items: center; justify-content: center; transform: rotate(-15deg); color: #ff9800; font-weight: bold; text-align: center; font-size: 10px;">ВЕЧНЫЙ<br>АРХИВ</div>
             
@@ -300,6 +364,7 @@
                 <p><strong>Идентификатор субъекта:</strong> <span id="pdf-name" style="border-bottom: 1px solid #ccc; padding-bottom: 2px;"></span></p>
                 <p><strong>Уровень тревожности (0-10):</strong> <span id="pdf-anxiety"></span></p>
                 <p><strong>Метод списания премии:</strong> <span id="pdf-payment"></span></p>
+                <p><strong><span id="pdf-cost-label"></span></strong> <span id="pdf-cost-value" style="color: #e65100; font-weight: bold;"></span></p>
             </div>
 
             <div style="margin-top: 30px; padding: 15px; background: #f9f9f9; border-left: 4px solid #4caf50;">
@@ -354,7 +419,8 @@
             document.getElementById('t-window-title').innerText = "Ошибка загрузки словаря";
         }
     }
-
+let thankYouTimerInterval; // Переменная для таймера финального экрана
+    
     function applyLanguage() {
         const dict = translations[currentLang];
         if (!dict) return;
@@ -382,9 +448,26 @@
         document.getElementById('t-finish-btn').innerText = dict['finish-btn'];
         document.getElementById('t-back-2').innerText = dict['back-2'];
         document.getElementById('t-disclaimer').innerText = dict['disclaimer'];
-        document.getElementById('btn-continue').innerText = dict['timeout-continue'] || "Продолжаем";
-        document.getElementById('btn-abort').innerText = dict['timeout-abort'] || "Прерываемся";
 
+        // Новые переводы
+        document.getElementById('userEmail').placeholder = dict['email-placeholder'] || "ваша@почта.com";
+        document.getElementById('t-pay-4').innerHTML = dict['pay-4'] || "<strong>Передача цифрового следа</strong> (оплата личными данными)";
+        document.getElementById('t-email-disclaimer').innerText = dict['email-disclaimer'];
+        
+        // Переводы экрана Спасибо
+        document.getElementById('t-thanks-title').innerText = dict['thanks-title'] || "Спасибо за доверие";
+        document.getElementById('t-thanks-slogan').innerText = dict['slogan'];
+        document.getElementById('t-back-main').innerText = (dict['back-main'] || "Возврат на главную страницу") + " (15)";
+        
+        document.getElementById('t-dob-label').innerText = dict['dob-label'] || "Дата рождения (для калибровки цифрового следа):";
+        document.getElementById('pdf-cost-label').innerText = dict['pdf-cost'] || "Уплаченная премия:";
+
+        // Обновление кнопок таймера (если они у вас есть)
+        const btnContinue = document.getElementById('btn-continue');
+        if (btnContinue) btnContinue.innerText = dict['timeout-continue'] || "Продолжаем";
+        const btnAbort = document.getElementById('btn-abort');
+        if (btnAbort) btnAbort.innerText = dict['timeout-abort'] || "Прерываемся";
+        
         // Генерация рисков из таблицы (risk1 - risk9)
         const risksContainer = document.getElementById('risks-container');
         risksContainer.innerHTML = '';
@@ -400,8 +483,8 @@
         }
         
         // ВЫНЕСЕНО ИЗ ЦИКЛА: Обновляем ползунки один раз после загрузки языка
-        populateConflictSelect(currentLang);
-        updateNewsSlider();
+        if (typeof populateConflictSelect === "function") populateConflictSelect(currentLang);
+        if (typeof updateNewsSlider === "function") updateNewsSlider();
     }
 // Та самая функция генерации конфликтов
     function populateConflictSelect(lang) {
@@ -439,10 +522,34 @@
         document.getElementById('block2').classList.add('active');
     }
 
-    function goToStep3() {
+function goToStep3() {
         document.getElementById('block1').classList.remove('active');
         document.getElementById('block2').classList.remove('active');
         document.getElementById('block3').classList.add('active');
+        
+        // Запускаем расчет абсурдной премии
+        calculatePremiums();
+    }
+
+    function calculatePremiums() {
+        // Собираем все грехи и тревоги субъекта
+        const anxiety = parseInt(document.getElementById('anxietySlider').value) || 4;
+        const conflicts = parseInt(document.getElementById('conflictSelect').value) || 0;
+        const news = parseInt(document.getElementById('newsSlider').value) || 0;
+        const risks = document.querySelectorAll('input[name="risks"]:checked').length || 0;
+
+        const dict = translations[currentLang] || {};
+
+        // Формулы бюрократического расчета
+        const nervesCost = Math.floor((anxiety * 1.5 + conflicts * 0.8 + news * 2.5) * (risks * 1.2 + 1) * 1420);
+        const sleepCost = Math.floor(anxiety * 12 + conflicts * 18 + news * 9 + risks * 32);
+        const dataCost = ((anxiety * 0.7 + conflicts * 0.3 + news * 1.2 + risks * 2) * 10) / 10;
+
+        // Подстановка в интерфейс
+        document.getElementById('calc-nerves').innerText = `Итого: ${nervesCost.toLocaleString()} ${dict['unit-nerves'] || 'клеток'}`;
+        document.getElementById('calc-sleep').innerText = `Итого: ${sleepCost.toLocaleString()} ${dict['unit-sleep'] || 'часов'}`;
+        document.getElementById('calc-oblivion').innerText = `Итого: ${dict['unit-oblivion'] || '100% истории'}`;
+        document.getElementById('calc-data').innerText = `Итого: ${dataCost.toFixed(1)} ${dict['unit-data'] || 'ТБ'}`;
     }
 
     loadDataFromCloud();
@@ -470,46 +577,57 @@ function collectFinalData() {
         const email = document.getElementById('userEmail').value;
         const dict = translations[currentLang];
         
+        // 1. Проверки заполненности
         if (!selectedPayment) {
             alephAlert(dict['alertConsent'] || "Выберите метод списания!");
             return;
         }
-
-        // НОВОЕ: Проверка обязательного Email
         if (!email) {
-            alephAlert(currentLang === 'ru' ? "Цифровой след (Email) обязателен!" : "Email is required!");
+            alephAlert(dict['alert-email'] || (currentLang === 'ru' ? "Цифровой след (Email) обязателен!" : "Email is required!"));
             return;
         }
-
-        // НОВОЕ: Проверка даты рождения, если выбрана передача данных
         if (selectedPayment.value === 'data') {
             const dob = document.getElementById('userDob').value;
             if (!dob) {
-                alephAlert(currentLang === 'ru' ? "Укажите дату рождения для калибровки цифрового следа." : "Date of birth is required.");
+                alephAlert(dict['alert-dob'] || (currentLang === 'ru' ? "Укажите дату рождения для калибровки цифрового следа." : "Date of birth is required."));
                 return;
             }
         }
 
+        // Блокируем кнопку
         const finishBtn = document.getElementById('t-finish-btn');
-        finishBtn.innerText = currentLang === 'ru' ? "Формирование документа..." : "Generating document...";
+        finishBtn.innerText = dict['generating-doc'] || "Формирование документа...";
         finishBtn.disabled = true;
 
-        // Заполняем PDF
+        // 2. Заполняем базовые тексты PDF
         document.getElementById('pdf-title-text').innerText = dict['window-title'];
-        document.getElementById('pdf-slogan').innerText = dict['slogan'] || "Гарантия стабильности в эпоху случайностей";
+        document.getElementById('pdf-slogan').innerText = dict['slogan'];
         document.getElementById('pdf-name').innerText = document.getElementById('t-name-placeholder').value || "Аноним";
         document.getElementById('pdf-anxiety').innerText = document.getElementById('anxietySlider').value;
         document.getElementById('pdf-payment').innerText = selectedPayment.nextElementSibling.innerText;
 
+        // 3. Захват стоимости для PDF
+        let finalCost = "";
+        if (selectedPayment.value === 'nerves') finalCost = document.getElementById('calc-nerves').innerText;
+        else if (selectedPayment.value === 'sleep') finalCost = document.getElementById('calc-sleep').innerText;
+        else if (selectedPayment.value === 'oblivion') finalCost = document.getElementById('calc-oblivion').innerText;
+        else if (selectedPayment.value === 'data') finalCost = document.getElementById('calc-data').innerText;
+        
+        const costValueElement = document.getElementById('pdf-cost-value');
+        if (costValueElement) {
+            // Убираем слово "Итого:" чтобы в сертификате была только цифра
+            costValueElement.innerText = finalCost.replace(/Итого:\s*|Total:\s*/i, '');
+        }
+
+        // 4. Заполняем риски
         const risksList = document.getElementById('pdf-risks-list');
         risksList.innerHTML = '';
         document.querySelectorAll('input[name="risks"]:checked').forEach(cb => {
             risksList.innerHTML += `<li>${cb.nextElementSibling.innerText}</li>`;
         });
 
+        // 5. Генерация и отправка
         const pdfElement = document.getElementById('pdf-template');
-        pdfElement.style.display = 'block';
-
         const opt = { 
             margin: 0, 
             filename: 'Form_404_Aleph.pdf', 
@@ -519,7 +637,6 @@ function collectFinalData() {
         };
 
         html2pdf().set(opt).from(pdfElement).outputPdf('datauristring').then(function(pdfBase64) {
-            pdfElement.style.display = 'none';
             const base64Data = pdfBase64.split(',')[1];
             
             fetch(GAS_URL, {
@@ -530,20 +647,27 @@ function collectFinalData() {
             .then(res => res.json())
             .then(data => {
                 if (data.status === 'success') {
-                    // Открываем сгенерированный PDF в новой вкладке браузера
                     window.open(data.url, '_blank');
                     
-                    if (email) {
-                        emailjs.send('service_kluawpl', 'template_34kowi9', {
-                            email_to: email,
-                            pdf_link: data.url
-                        }).then(() => {
-                            showThankYouScreen(email);
-                        });
-                    } else {
-                        showThankYouScreen(null);
-                    }
+                    // Передаем мультиязычные тексты курьеру EmailJS
+                    emailjs.send('service_kluawpl', 'template_34kowi9', {
+                        email_to: email,
+                        pdf_link: data.url,
+                        email_subject: dict['email-sub'] || "Форма 404-Алеф: Ваш План Защиты",
+                        email_greeting: (dict['email-greet'] || "Идентификатор субъекта:") + " " + (document.getElementById('t-name-placeholder').value || "Аноним"),
+                        email_message: dict['email-msg'] || "Ваша экзистенциальная фиксация успешно завершена. Цифровой след учтен, а документ помещен в Вечный Архив.",
+                        email_btn: dict['email-btn'] || "Открыть Сертификат"
+                    }).then(() => {
+                        showThankYouScreen(email);
+                    });
+                } else {
+                    throw new Error("Ошибка Drive");
                 }
+            })
+            .catch(err => {
+                alephAlert(dict['error-archive'] || "Ошибка Вечного Архива. Бюрократическая сингулярность.");
+                finishBtn.innerText = dict['finish-btn'] || "Получить План Защиты (PDF)";
+                finishBtn.disabled = false;
             });
         });
     }
@@ -552,18 +676,37 @@ function collectFinalData() {
         document.getElementById('block3').classList.remove('active');
         document.getElementById('block4').classList.add('active');
         
+        // Прячем стандартный дисклеймер (заменяя его лозунгом в блоке 4)
+        document.getElementById('t-disclaimer').style.display = 'none';
+        
         const msgElement = document.getElementById('thank-you-message');
         if (email) {
             msgElement.innerText = currentLang === 'ru' 
                 ? `Вам отправлено письмо с Планом Защиты на указанный адрес: ${email}`
                 : `An email with your Protection Plan has been sent to: ${email}`;
         } else {
-            msgElement.innerText = ""; // Ничего не пишем, если email пустой
+            msgElement.innerText = "";
         }
-    }
-    const newsLevelsRu = ["5 минут", "15 минут", "30 минут", "1 час", "1.5 часа", "2 часа", "2.5 часа", "3 часа", "4 часа", "король думскроллинга"];
-    const newsLevelsEn = ["5 minutes", "15 minutes", "30 minutes", "1 hour", "1.5 hours", "2 hours", "2.5 hours", "3 hours", "4 hours", "doomscrolling king"];
 
+        // Логика таймера обратного отсчета для кнопки возврата
+        let timeLeft = 15;
+        const btn = document.getElementById('t-back-main');
+        const baseText = translations[currentLang]?.['back-main'] || "Возврат на главную страницу";
+        
+        btn.innerText = `${baseText} (${timeLeft})`;
+        
+        clearInterval(thankYouTimerInterval);
+        thankYouTimerInterval = setInterval(() => {
+            timeLeft--;
+            if (timeLeft > 0) {
+                btn.innerText = `${baseText} (${timeLeft})`;
+            } else {
+                clearInterval(thankYouTimerInterval);
+                resetToMain();
+            }
+        }, 1000);
+    }
+    
 // Замена стандартного alert() на окно АЛЕФ 404 с правильным заголовком
     function alephAlert(msg) {
         const dict = translations[currentLang];
@@ -650,6 +793,8 @@ function showTimeoutModal() {
         
         document.getElementById('t-finish-btn').innerText = currentLang === 'ru' ? "Получить План Защиты" : "Get Protection Plan";
         document.getElementById('t-finish-btn').disabled = false;
+        clearInterval(thankYouTimerInterval); // Останавливаем таймер, если пользователь нажал кнопку вручную
+        window.location.href = 'index.html';
 
         // Возврат на лендинг
         window.location.href = 'index.html'; 
