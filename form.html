@@ -114,6 +114,18 @@
 
         .disclaimer { font-size: 12px; color: var(--text-muted); text-align: center; margin-top: 30px; }
     </style>
+    <!-- Библиотека для генерации PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    
+    <!-- Библиотека EmailJS -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    
+    <!-- Инициализация EmailJS вашим публичным ключом -->
+    <script type="text/javascript">
+        (function() {
+            emailjs.init("y-TivV15Lqje7LYSA");
+        })();
+    </script>
 </head>
 <body>
 
@@ -325,8 +337,7 @@
         }
     });
 
-    // 2. Функция сбора данных (срабатывает при нажатии финальной кнопки)
-    function collectFinalData() {
+   function collectFinalData() {
         const selectedPayment = document.querySelector('input[name="payment"]:checked');
         
         if (!selectedPayment) {
@@ -334,16 +345,14 @@
             return;
         }
 
-        // Базовые данные субъекта
+        // 1. Собираем данные
         const subjectData = {
             name: document.getElementById('t-name-placeholder').value || "Аноним",
             anxiety: document.getElementById('anxietySlider').value,
-            paymentMethod: selectedPayment.value,
-            email: "Не предоставлен",
-            dob: "Не предоставлена"
+            paymentMethodText: selectedPayment.nextElementSibling.innerText,
+            email: "Не предоставлен"
         };
 
-        // Дополнительная проверка, если выбрана "Оплата данными"
         if (selectedPayment.value === 'data') {
             const email = document.getElementById('userEmail').value;
             const dob = document.getElementById('userDob').value;
@@ -354,14 +363,69 @@
                 return;
             }
             subjectData.email = email;
-            subjectData.dob = dob;
         }
 
-        // Сохраняем данные локально для следующего этапа (PDF и EmailJS)
-        console.log("Данные субъекта готовы к обработке:", subjectData);
-        alert("Данные успешно собраны! (Позже здесь будет генерация PDF)");
-        
-        // В следующем шаге мы заменим alert на запуск генерации PDF и отправки письма
+        // Кнопка переходит в режим загрузки
+        const finishBtn = document.getElementById('t-finish-btn');
+        const originalBtnText = finishBtn.innerText;
+        finishBtn.innerText = "Фиксация в Вечном Архиве...";
+        finishBtn.disabled = true;
+
+        // 2. Заполняем скрытый PDF-шаблон
+        document.getElementById('pdf-name').innerText = subjectData.name;
+        document.getElementById('pdf-anxiety').innerText = subjectData.anxiety;
+        document.getElementById('pdf-payment').innerText = subjectData.paymentMethodText;
+
+        const pdfElement = document.getElementById('pdf-template');
+        pdfElement.style.display = 'block'; // Показываем блок для скрипта
+
+        // 3. Настройки для PDF
+        const opt = {
+            margin:       0.5,
+            filename:     'Form_404_Aleph_Certificate.pdf',
+            image:        { type: 'jpeg', quality: 0.98 },
+            html2canvas:  { scale: 2 },
+            jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+        };
+
+        // 4. Генерируем PDF
+        html2pdf().set(opt).from(pdfElement).save().then(() => {
+            pdfElement.style.display = 'none'; // Снова прячем макет
+
+            // 5. Отправляем письмо, если указан email
+            if (subjectData.email !== "Не предоставлен") {
+                const templateParams = {
+                    email_to: subjectData.email,
+                    subject_name: subjectData.name
+                };
+
+                emailjs.send('service_kluawpl', 'template_34kowi9', templateParams)
+                    .then(function(response) {
+                        console.log('УСПЕХ!', response.status, response.text);
+                        alert("План Защиты сгенерирован. Уведомление об аннуляции экзистенции успешно отправлено на вашу почту.");
+                        resetForm(finishBtn, originalBtnText);
+                    }, function(error) {
+                        console.log('ОШИБКА...', error);
+                        alert("План Защиты сгенерирован, но курьер EmailJS столкнулся с бюрократической сингулярностью. Письмо не отправлено.");
+                        resetForm(finishBtn, originalBtnText);
+                    });
+            } else {
+                alert("План Защиты успешно скачан на ваше устройство. Цифровой след не передан.");
+                resetForm(finishBtn, originalBtnText);
+            }
+        });
+    }
+
+    function resetForm(btn, text) {
+        btn.innerText = text;
+        btn.disabled = false;
+        // Возвращаем на первый экран для следующего посетителя выставки
+        setTimeout(() => {
+            document.getElementById('block3').classList.remove('active');
+            document.getElementById('block1').classList.add('active');
+            // Очистка полей (опционально)
+            document.getElementById('t-name-placeholder').value = '';
+        }, 3000);
     }
 </script>
 <!-- СКРЫТЫЙ МАКЕТ ДЛЯ PDF -->
