@@ -95,7 +95,7 @@
             border: 1px solid var(--border-color);
             text-align: center;
             align-self: stretch; /* Растягивает плашку по ширине блока для устойчивости */
-            min-height: 42px;    /* Запас под 2 строки длинного текста */
+            min-height: 55px;    /* Запас под 2 строки длинного текста */
             display: flex;
             align-items: center;
             justify-content: center;
@@ -575,11 +575,14 @@ function applyLanguage() {
                     }
                 }
             }
+            
         } catch (e) { console.warn("Сбой генерации рисков игнорирован"); }
 
         // 5. Изолируем вызов сторонних функций! Именно они могли ломать заголовок
         try { if (typeof populateConflictSelect === "function") populateConflictSelect(currentLang); } catch (e) {}
         try { if (typeof updateNewsSlider === "function") updateNewsSlider(); } catch (e) {}
+        try { if (typeof calculatePremiums === "function") calculatePremiums(); } catch (e) {}
+    }
     }
 // Та самая функция генерации конфликтов
 function populateConflictSelect(lang) {
@@ -660,27 +663,43 @@ function goToStep3() {
     }
 
     function calculatePremiums() {
-        // Собираем все грехи и тревоги субъекта
         const anxiety = parseInt(document.getElementById('anxietySlider').value) || 4;
         const conflicts = parseInt(document.getElementById('conflictSelect').value) || 0;
         const news = parseInt(document.getElementById('newsSlider').value) || 0;
         const risks = document.querySelectorAll('input[name="risks"]:checked').length || 0;
-
         const dict = translations[currentLang] || {};
 
-        // Формулы бюрократического расчета
         const nervesCost = Math.floor((anxiety * 1.5 + conflicts * 0.8 + news * 2.5) * (risks * 1.2 + 1) * 1420);
         const sleepCost = Math.floor(anxiety * 12 + conflicts * 18 + news * 9 + risks * 32);
-        const dataCost = ((anxiety * 0.7 + conflicts * 0.3 + news * 1.2 + risks * 2) * 10) / 10;
+        let dataCost = ((anxiety * 0.7 + conflicts * 0.3 + news * 1.2 + risks * 2) * 10) / 10;
 
-        // Подстановка в интерфейс
+        const dobStr = document.getElementById('userDob').value;
+        if (dobStr) {
+            const birthYear = new Date(dobStr).getFullYear();
+            if (birthYear > 1900 && birthYear <= 2026) {
+                const age = 2026 - birthYear;
+                dataCost += (age * 0.15);
+            }
+        }
+
+        // Динамический префикс в зависимости от языка
         const totalLabel = currentLang === 'ru' ? 'Итого: ' : 'Total: ';
+
         document.getElementById('calc-nerves').innerText = `${totalLabel}${nervesCost.toLocaleString()} ${dict['unit-nerves'] || 'клеток'}`;
         document.getElementById('calc-sleep').innerText = `${totalLabel}${sleepCost.toLocaleString()} ${dict['unit-sleep'] || 'часов'}`;
         document.getElementById('calc-oblivion').innerText = `${totalLabel}${dict['unit-oblivion'] || '100% истории'}`;
-        document.getElementById('calc-data').innerText = `${totalLabel}${dataCost.toFixed(1)} ${dict['unit-data'] || 'ТБ'}`;
-    }
+        
+        const dataBadge = document.getElementById('calc-data');
+        const oldValMatch = dataBadge.innerText.match(/[\d\.]+/);
+        const oldVal = oldValMatch ? parseFloat(oldValMatch[0]) : 0;
+        const unitData = dict['unit-data'] || 'ТБ';
 
+        if (dobStr && oldVal !== dataCost && document.getElementById('block3').classList.contains('active')) {
+            animateValue(dataBadge, oldVal, dataCost, 1000, unitData, totalLabel);
+        } else {
+            dataBadge.innerText = `${totalLabel}${dataCost.toFixed(1)} ${unitData}`;
+        }
+    }
     loadDataFromCloud();
     // 1. Слушатель для переключения скрытого блока оплаты данными
     document.addEventListener('change', function(e) {
@@ -898,22 +917,22 @@ let inactivityTimer;
     let timeLeft = 15;
 
 // ИСПРАВЛЕНИЕ 4Б: Анимация и пересчет данных
-    function animateValue(obj, start, end, duration, unit) {
+   function animateValue(obj, start, end, duration, unit, prefix) {
         let startTimestamp = null;
         const step = (timestamp) => {
             if (!startTimestamp) startTimestamp = timestamp;
             const progress = Math.min((timestamp - startTimestamp) / duration, 1);
             const current = (start + (end - start) * progress).toFixed(1);
-            obj.innerText = `Итого: ${current} ${unit}`;
+            obj.innerText = `${prefix}${current} ${unit}`;
             if (progress < 1) {
                 window.requestAnimationFrame(step);
             } else {
-                obj.innerText = `Итого: ${end.toFixed(1)} ${unit}`;
+                obj.innerText = `${prefix}${end.toFixed(1)} ${unit}`;
             }
         };
         window.requestAnimationFrame(step);
     }
-
+    
     function calculatePremiums() {
         const anxiety = parseInt(document.getElementById('anxietySlider').value) || 4;
         const conflicts = parseInt(document.getElementById('conflictSelect').value) || 0;
