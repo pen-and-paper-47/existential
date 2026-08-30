@@ -432,7 +432,7 @@
     if (langParam && (langParam === 'ru' || langParam === 'en')) {
         currentLang = langParam;
     }
-
+    document.getElementById('t-window-title').innerText = currentLang === 'en' ? "Loading..." : "Загрузка...";
     async function loadDataFromCloud() {
         try {
             const response = await fetch(SHEET_URL);
@@ -458,18 +458,20 @@
             }
             applyLanguage();
         } catch (error) {
-            console.error('Ошибка загрузки:', error);
+            console.error('Loading error:', error);
             document.getElementById('t-window-title').innerText = currentLang === 'en' ? "Loading..." : "Загрузка...";
         }
     }
 let thankYouTimerInterval; // Переменная для таймера финального экрана
     
 function applyLanguage() {
-        const dict = translations[currentLang];
-        if (!dict) return;
-        const windowTitle = document.getElementById('t-window-title');
-        if (windowTitle && windowTitle.innerText.includes("Загрузка")) {
-        windowTitle.innerText = dict['loading'] || "Загрузка...";
+    const dict = translations[currentLang];
+    if (!dict) return;
+    
+    const windowTitle = document.getElementById('t-window-title');
+    if (windowTitle) {
+        windowTitle.innerText = dict['window-title'] || "Форма 404-Алеф";
+    }
         // 1. Изящный словарь соответствий: 'ID элемента в HTML' : 'Ключ в базе данных'
         const textElements = {
             't-window-title': 'window-title',
@@ -498,7 +500,7 @@ function applyLanguage() {
             'pdf-cost-label': 'pdf-cost',
             'btn-continue': 'timeout-continue',
             'btn-abort': 'timeout-abort',
-            't-email-label': 'email-label',
+            't-email-label': 'email-label'
 
         };
 
