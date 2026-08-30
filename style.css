@@ -104,6 +104,13 @@ input[type=range] {
     box-sizing: border-box; outline: none;
 }
 
+/* Сетка для вариантов оплаты: делаем карточки одинаковыми и аккуратными */
+.radio-group#payment-options {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
 .radio-group label, .check-group label { 
     display: flex; align-items: flex-start; font-weight: 400; cursor: pointer; font-size: 15px;
 }
@@ -142,31 +149,53 @@ input[type="radio"], input[type="checkbox"] {
 
 @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
 
+/* Улучшенный дизайн карточки выбора */
 .risk-card {
-    background: #fff; 
-    padding: 18px; 
+    background: #ffffff;
+    padding: 18px 20px;
     border-radius: 16px;
-    margin-bottom: 12px; 
     border: 2px solid var(--border-color);
     display: flex;
     align-items: center;
     gap: 15px;
     cursor: pointer;
     transition: all 0.2s ease;
+    box-sizing: border-box;
 }
 
-.risk-card input[type="radio"], 
-.risk-card input[type="checkbox"] {
-    transform: scale(1.5); 
-    margin: 0; 
-    flex-shrink: 0;
-    cursor: pointer;
+.risk-card input[type="radio"] {
+    transform: scale(1.4);
     accent-color: var(--primary-red);
+    cursor: pointer;
+    flex-shrink: 0;
+    margin: 0;
+}
+
+/* Контейнер содержимого карточки: текст слева, плашка Total справа или под текстом */
+.risk-card > div {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+@media (min-width: 500px) {
+    /* На широких экранах выстраиваем плашку Total и текст красиво */
+    .risk-card > div {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+    }
 }
 
 .risk-card span { flex-grow: 1; line-height: 1.6; font-size: 14.5px; color: var(--text-main); }
 .risk-card strong { display: block; margin-bottom: 6px; color: var(--growth-green); font-size: 16px; }
-.risk-card:has(input:checked) { border-color: var(--growth-green); background: #f1f8e9; box-shadow: 0 4px 12px rgba(76, 175, 80, 0.15); }
+/* Измененное состояние выбранной карточки */
+.risk-card:has(input:checked) {
+    border-color: var(--growth-green);
+    background: #f4fbf4;
+    box-shadow: 0 4px 12px rgba(76, 175, 80, 0.1);
+}
 .risk-card > div { flex-grow: 1; }
 
 .disclaimer { font-size: 12px; color: var(--text-muted); text-align: center; margin-top: 30px; }
@@ -200,25 +229,29 @@ input[type="radio"], input[type="checkbox"] {
 .modal-title { font-weight: 700; color: var(--growth-green); font-size: 18px; margin-bottom: 15px; }
 .timer-text { font-size: 48px; font-weight: 800; color: var(--primary-red); margin: 20px 0; }
 
-.calc-badge {
-    display: inline-block;
-    background: rgba(255, 152, 0, 0.1);
-    color: #e65100;
-    padding: 6px 12px;
-    border-radius: 8px;
-    font-weight: 700;
-    font-size: 14px;
-    margin-top: 10px;
-    border: 1px dashed #ff9800;
-}
-
-/* Контейнер строки с опцией */
+/* Строка с текстом и иконкой подсказки */
 .pay-option-header {
     display: flex;
     align-items: center;
     gap: 8px;
     position: relative;
-    width: 100%;
+    font-size: 14.5px;
+    font-weight: 500;
+    color: var(--text-main);
+}
+
+/* Аккуратная плашка с расчетом (Total) */
+.calc-badge {
+    display: inline-block;
+    background: rgba(255, 152, 0, 0.08);
+    color: #e65100;
+    padding: 6px 12px;
+    border-radius: 10px;
+    font-weight: 700;
+    font-size: 13px;
+    border: 1px dashed rgba(255, 152, 0, 0.4);
+    white-space: nowrap;
+    width: fit-content;
 }
 
 /* Идеально круглая иконка информации */
@@ -428,4 +461,13 @@ input[type="radio"], input[type="checkbox"] {
     background: transparent;
     cursor: default;
     border: none;
+}
+
+/* Блок ввода email: оформляем в виде премиальной панели */
+.email-section {
+    margin-top: 25px;
+    padding: 20px;
+    background: #faf8f3;
+    border-radius: 16px;
+    border: 1.5px dashed var(--border-color);
 }
