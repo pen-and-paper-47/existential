@@ -4,279 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Форма 404-Алеф</title>
-    <style>
-        /* СТИЛЬ "ИРОНИЧНЫЙ КОНТРАСТ" */
-        :root {
-            --bg-color: #fdfbf7;
-            --card-bg: #ffffff;
-            --text-main: #2b3a4a;
-            --text-muted: #8fa3b3;
-            --border-color: #d1e8e2;
-            --primary-red: #ff9800;
-            --primary-hover: #f57c00;
-            --growth-green: #4caf50;
-        }
-
-        body {
-            background-color: var(--bg-color);
-            font-family: 'Roboto', 'Heebo', sans-serif;
-            color: var(--text-main);
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            background-image: linear-gradient(120deg, #fdfbf7 0%, #e8f5e9 100%);
-        }
-
-        .card {
-            background: var(--card-bg);
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0, 150, 136, 0.08);
-            width: 100%;
-            max-width: 700px;
-            padding: 35px;
-            box-sizing: border-box;
-            position: relative;
-        }
-
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 2px dashed var(--border-color);
-            padding-bottom: 15px;
-            margin-bottom: 25px;
-        }
-
-        h1 { font-size: 22px; margin: 0; font-weight: 700; color: var(--growth-green); }
-
-        .warning-banner {
-            background-color: #fff3e0 !important;
-            color: #e65100 !important;
-            padding: 15px;
-            border-radius: 12px;
-            font-size: 13px;
-            font-weight: 700;
-            text-align: center;
-            margin-bottom: 25px;
-            border-left: 5px solid var(--primary-red) !important;
-        }
-
-        .field-group { margin-bottom: 25px; }
-        label { display: block; font-weight: 600; margin-bottom: 8px; font-size: 15px; }
-        .sub-label { font-size: 12px; color: var(--text-muted); margin-bottom: 10px; line-height: 1.5; }
-
-       .slider-container { 
-            display: flex; 
-            flex-direction: column; 
-            gap: 12px; 
-            background: #ffffff;
-            padding: 18px; 
-            border-radius: 16px; 
-            border: 1.5px solid var(--border-color);
-            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
-        }
-        
-        input[type=range] { 
-            width: 100%; /* Ползунок занимает всю ширину контейнера */
-            accent-color: var(--primary-red); 
-            cursor: pointer; 
-        }
-
-        /* Задаем фиксированную высоту и центрирование, чтобы блок не дергался */
-        .slider-value { 
-            background: var(--bg-color); 
-            padding: 8px 16px; 
-            border-radius: 12px; 
-            font-weight: 700; 
-            color: var(--primary-red); 
-            border: 1px solid var(--border-color);
-            text-align: center;
-            align-self: stretch; /* Растягивает плашку по ширине блока для устойчивости */
-            min-height: 55px;    /* Запас под 2 строки длинного текста */
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 14px;
-            line-height: 1.3;
-            box-sizing: border-box;
-            transition: opacity 0.12s ease-in-out; /* Легкое растворение при смене */
-        }
-
-        /* Класс для моментального растворения текста при смене */
-        .slider-value.updating {
-            opacity: 0.2;
-        }
-        .modern-input {
-            width: 100%; padding: 14px; border-radius: 12px; 
-            border: 2px solid var(--border-color); font-family: inherit; font-size: 15px;
-            box-sizing: border-box; outline: none;
-        }
-
-        .radio-group label, .check-group label { 
-            display: flex; align-items: flex-start; font-weight: 400; cursor: pointer; font-size: 15px;
-        }
-        input[type="radio"], input[type="checkbox"] { 
-            accent-color: var(--primary-red); margin: 3px 10px 0 0; transform: scale(1.2); 
-        }
-
-        .btn-primary {
-            background-color: var(--primary-red); color: white; border: none;
-            padding: 18px 24px; border-radius: 30px; font-size: 16px; font-weight: 700;
-            width: 100%; cursor: pointer; margin-top: 15px; font-family: inherit;
-        }
-        .btn-primary:hover { background-color: var(--primary-hover); transform: translateY(-2px); }
-
-        .btn-secondary {
-            background: none; color: var(--text-muted); border: none; padding: 12px;
-            width: 100%; cursor: pointer; font-size: 14px; text-decoration: none; font-family: inherit;
-        }
-
-        /* ИСПРАВЛЕНИЕ 2Б: Строгие правила скрытия и показа */
-        .block { display: none; animation: fadeIn 0.5s ease forwards; }
-        .block.active { display: block; }
- #block4.active { 
-            display: flex !important; 
-            flex-direction: column; 
-            justify-content: center; 
-            align-items: center; 
-            text-align: center;
-            padding: 40px 20px;
-            min-height: 50vh;
-        }
-
-        #block4 h2 {
-            font-size: 26px;
-            margin-bottom: 12px;
-            color: var(--growth-green);
-        }
-
-        #block4 h3 {
-            color: var(--text-muted);
-            font-style: italic;
-            font-size: 16px;
-            margin-bottom: 25px;
-            line-height: 1.4;
-            font-weight: 400;
-        }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
-        
-
-/* Обновленные карточки рисков (Галочка слева, крупная) */
-/* Улучшенная читаемость карточек рисков */
-        .risk-card {
-        background: #fff; 
-        padding: 18px; 
-        border-radius: 16px;
-        margin-bottom: 12px; 
-        border: 2px solid var(--border-color);
-        display: flex;
-        align-items: center; /* Центрирует радиокнопку/чекбокс и текст по вертикали */
-        gap: 15px;
-        cursor: pointer;
-         transition: all 0.2s ease;
-        }
-
-        /* Делаем радиокнопки и чекбоксы крупнее и убираем лишние отступы */
-        .risk-card input[type="radio"], 
-        .risk-card input[type="checkbox"] {
-          transform: scale(1.5); 
-          margin: 0; 
-         flex-shrink: 0;
-         cursor: pointer;
-        accent-color: var(--primary-red);
-        }
-        .risk-card span { 
-        flex-grow: 1; 
-        line-height: 1.6; /* Увеличили межстрочный интервал */
-        font-size: 14.5px;
-        color: var(--text-main);
-    }
-        .risk-card strong { 
-        display: block; 
-        margin-bottom: 6px; 
-        color: var(--growth-green); /* Выделили заголовки зеленым для контраста */
-        font-size: 16px; 
-    }
-
-        .risk-card:has(input:checked) {
-            border-color: var(--growth-green);
-            background: #f1f8e9;
-            box-shadow: 0 4px 12px rgba(76, 175, 80, 0.15);
-        }
-
-        /* Если текст внутри карточки обернут в div */
-        .risk-card > div {
-            flex-grow: 1;
-        }
-        .disclaimer { font-size: 12px; color: var(--text-muted); text-align: center; margin-top: 30px; }
-        
-/* Убираем "моргание" макета PDF при генерации */
-    #pdf-template {
-        position: absolute;
-        left: -9999px;
-        top: -9999px;
-    }
-        /* Липкий заголовок рисков со скроллом */
-    #block2 {
-        max-height: 75vh;
-        overflow-y: auto;
-        overflow-x: hidden;
-        padding: 5px 15px; /* компенсируем отступы для скролла */
-    }
-    #t-risks-title {
-        position: sticky;
-        top: -5px; /* Залипание */
-        background: var(--card-bg);
-        z-index: 10;
-        display: block;
-        padding: 15px 0 10px 0;
-        border-bottom: 1px dashed var(--border-color);
-    }
-
-    /* Модальные окна (Кастомные алерты и таймер бездействия) */
-    .modal-overlay {
-        display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-        background: rgba(43, 58, 74, 0.8); z-index: 9999;
-        justify-content: center; align-items: center;
-        backdrop-filter: blur(4px);
-    }
-    .modal-box {
-        background: var(--card-bg); padding: 30px; border-radius: 20px;
-        width: 90%; max-width: 400px; text-align: center;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-    }
-    .modal-title {
-        font-weight: 700; color: var(--growth-green); font-size: 18px; margin-bottom: 15px;
-    }
-    .timer-text { font-size: 48px; font-weight: 800; color: var(--primary-red); margin: 20px 0; }
-    .calc-badge {
-        display: inline-block;
-        background: rgba(255, 152, 0, 0.1);
-        color: #e65100;
-        padding: 6px 12px;
-        border-radius: 8px;
-        font-weight: 700;
-        font-size: 14px;
-        margin-top: 10px;
-        border: 1px dashed #ff9800;
-    }
-        
-    </style>
     
-    <!-- Библиотека для генерации PDF -->
+    <link rel="stylesheet" href="style.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-    
-    <!-- Библиотека EmailJS -->
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
-    
-    <!-- Инициализация EmailJS вашим публичным ключом -->
     <script type="text/javascript">
-        (function() {
-            emailjs.init("y-TivV15Lqje7LYSA");
-        })();
+        (function() { emailjs.init("y-TivV15Lqje7LYSA"); })();
     </script>
 </head>
 <body>
@@ -288,14 +21,13 @@
 
     <div class="warning-banner" id="t-warning"></div>
 
- <!-- БЛОК 1 -->
+    <!-- БЛОК 1 -->
     <div id="block1" class="block active">
         <div class="field-group" id="field-name">
             <label id="t-name"></label>
             <input type="text" class="modern-input" id="t-name-placeholder" placeholder="">
         </div>
         
-        <!-- Скрытые блоки для последовательного выпадания -->
         <div class="field-group" id="field-anxiety" style="display: none; animation: fadeIn 0.4s ease forwards;">
             <label id="t-anxiety"></label>
             <div class="slider-container">
@@ -307,11 +39,10 @@
         <div class="field-group" id="field-wear" style="display: none; animation: fadeIn 0.4s ease forwards;">
             <label id="t-wear"></label>
             <div class="sub-label" id="t-wear-desc"></div>
-            <!-- Сюда вернется генерация из JS -->
             <select class="modern-input" id="conflictSelect"></select>
         </div>
         
-      <div class="field-group" id="field-news" style="display: none; animation: fadeIn 0.4s ease forwards;">
+        <div class="field-group" id="field-news" style="display: none; animation: fadeIn 0.4s ease forwards;">
             <label id="t-news"></label>
             <div class="slider-container">
                 <input type="range" id="newsSlider" min="0" max="49" value="15" oninput="updateNewsSlider()">
@@ -328,7 +59,7 @@
         <button class="btn-primary" id="t-next-btn" onclick="goToStep2()"></button>
     </div>
 
-    <!-- ДОПОЛНИТЕЛЬНО: Модальное окно "АЛЕФ 404 says:" -->
+    <!-- Модальное окно алертов -->
     <div class="modal-overlay" id="aleph-alert-modal">
         <div class="modal-box">
             <div class="modal-title">АЛЕФ 404 says:</div>
@@ -337,30 +68,28 @@
         </div>
     </div>
 
-    <!-- ДОПОЛНИТЕЛЬНО: Таймер бездействия -->
+    <!-- Таймер бездействия -->
     <div class="modal-overlay" id="timeout-modal">
         <div class="modal-box">
             <div class="modal-title">АЛЕФ 404 says:</div>
-            <div id="timeout-msg" style="font-size: 16px;">Продолжаем фиксацию или прерываемся?</div>
+            <div id="timeout-msg" style="font-size: 16px;"></div>
             <div class="timer-text" id="countdown-timer">15</div>
             <button class="btn-primary" id="btn-continue" onclick="continueSession()">Продолжаем</button>
             <button class="btn-secondary" id="btn-abort" onclick="resetToMain()" style="border: 1px solid var(--border-color); border-radius: 20px; margin-top: 10px;">Прерываемся</button>
         </div>
     </div>
 
+    <!-- БЛОК 2: РИСКИ -->
     <div id="block2" class="block">
         <label id="t-risks-title" style="font-size: 18px; margin-bottom: 20px; color: var(--growth-green); font-weight: 700;"></label>
-        <div id="risks-container">
-            <!-- Риски подгрузятся из скрипта -->
-        </div>
+        <div id="risks-container"></div>
         <button class="btn-primary" id="t-pay-btn" onclick="goToStep3()"></button>
         <button class="btn-secondary" onclick="goToStep1()" id="t-back-1"></button>
     </div>
 
-<!-- ЭКРАН 3: ОПЛАТА И СБОР ДАННЫХ -->
-    <!-- ЭКРАН 3: ОПЛАТА И СБОР ДАННЫХ -->
+    <!-- БЛОК 3: ОПЛАТА И СБОР ДАННЫХ -->
     <div id="block3" class="block">
-        <label id="t-pay-title" style="font-size: 18px; margin-bottom: 20px; color: var(--growth-green); font-weight: 700;">Метод списания премии за покрытие:</label>
+        <label id="t-pay-title" style="font-size: 18px; margin-bottom: 20px; color: var(--growth-green); font-weight: 700;"></label>
         
         <div class="radio-group" id="payment-options">
             <label class="risk-card">
@@ -393,16 +122,13 @@
             </label>
         </div>
 
-        <!-- Выпадающий блок оплаты данными -->
         <div id="data-payment-fields" style="display: none; padding: 18px; border: 2px dashed var(--primary-red); margin-bottom: 15px; background: #fff3e0; border-radius: 12px; animation: fadeIn 0.4s ease forwards;">
             <div class="field-group" style="margin-bottom: 15px;">
-                <label id="t-dob-label" style="font-size: 14px; color: #e65100;">Дата рождения (для калибровки цифрового следа):</label>
-                <!-- ИСПРАВЛЕНИЕ 4А: Триггер на изменение даты -->
+                <label id="t-dob-label" style="font-size: 14px; color: #e65100;"></label>
                 <input type="date" id="userDob" value="1990-01-01" min="1900-01-01" max="2026-12-31" oninput="calculatePremiums()" style="width: 100%; padding: 22px; font-size: 20px; font-weight: 700; text-align: center; color: var(--primary-red); background-color: #fff; border: 3px solid var(--border-color); border-radius: 16px; cursor: pointer; outline: none; box-sizing: border-box; font-family: inherit;">
             </div>
         </div>
 
-        <!-- Поле email и дисклеймер -->
         <div class="field-group" style="margin-top: 25px; padding-top: 20px; border-top: 2px dashed var(--border-color);">
            <label id="t-email-label" style="color: var(--primary-red); font-size: 14px;"></label>
             <input type="email" id="userEmail" class="modern-input" placeholder="ваша@почта.com">
@@ -412,643 +138,43 @@
         <button class="btn-primary" id="t-finish-btn" onclick="collectFinalData()">Получить План Защиты</button>
         <button class="btn-secondary" onclick="goToStep2()" id="t-back-2">Вернуться назад</button>
     </div>
+    
     <div class="disclaimer" id="t-disclaimer"></div>
 </div>
 
-<!-- ЭКРАН 4: СПАСИБО ЗА ДОВЕРИЕ -->
-   <!-- ИСПРАВЛЕНИЕ 2А: Очищенный HTML Блока 4 -->
-    <div id="block4" class="block" style="text-align: center; padding: 40px 20px; min-height: 40vh;">
-        <h2 style="color: var(--growth-green); margin-bottom: 10px;" id="t-thanks-title">Спасибо за доверие</h2>
-        <h3 style="color: var(--text-muted); font-style: italic; font-size: 16px; margin-bottom: 30px; line-height: 1.4; font-weight: 400;" id="t-thanks-slogan"></h3>
-        
-        <p id="thank-you-message" style="margin-bottom: 30px; font-size: 16px; line-height: 1.5;"></p>
-        
-        <button class="btn-primary" onclick="resetToMain()" style="border-radius: 12px; padding: 16px; width: 100%; max-width: 350px;" id="t-back-main">Возврат на главную страницу (15)</button>
-    </div>
-
-    <div class="disclaimer" id="t-disclaimer"></div>
+<!-- БЛОК 4: ЭКРАН СПАСИБО -->
+<div id="block4" class="block">
+    <h2 id="t-thanks-title">Спасибо за доверие</h2>
+    <h3 id="t-thanks-slogan"></h3>
+    <p id="thank-you-message" style="margin-bottom: 30px; font-size: 16px; line-height: 1.5;"></p>
+    <button class="btn-primary" onclick="resetToMain()" style="border-radius: 12px; padding: 16px; width: 100%; max-width: 350px;" id="t-back-main"></button>
 </div>
 
-
-<!-- МАКЕТ ДЛЯ PDF (Убрали display: none, так как он теперь спрятан за экраном через CSS) -->
+<!-- МАКЕТ PDF -->
 <div id="pdf-template" style="width: 210mm; min-height: 297mm; padding: 20mm; box-sizing: border-box; background: #fff; color: #2b3a4a; font-family: 'Roboto', sans-serif;">
-        <div style="border: 2px solid #4caf50; padding: 20mm; height: 100%; position: relative; box-sizing: border-box;">
-            <div style="position: absolute; top: 15mm; right: 15mm; width: 30mm; height: 30mm; border: 2px solid #ff9800; border-radius: 50%; display: flex; align-items: center; justify-content: center; transform: rotate(-15deg); color: #ff9800; font-weight: bold; text-align: center; font-size: 10px;">ВЕЧНЫЙ<br>АРХИВ</div>
-            
-            <h1 id="pdf-title-text" style="color: #4caf50; border-bottom: 2px solid #d1e8e2; padding-bottom: 10px; font-size: 24px;">СЕРТИФИКАТ ПОКРЫТИЯ</h1>
-            <h3 style="color: #8fa3b3; font-style: italic; font-size: 16px; margin-bottom: 30px;" id="pdf-slogan"></h3>
-            
-            <div style="font-size: 14px; line-height: 1.8;">
-                <p><strong>Идентификатор субъекта:</strong> <span id="pdf-name" style="border-bottom: 1px solid #ccc; padding-bottom: 2px;"></span></p>
-                <p><strong>Уровень тревожности (0-10):</strong> <span id="pdf-anxiety"></span></p>
-                <p><strong>Метод списания премии:</strong> <span id="pdf-payment"></span></p>
-                <p><strong><span id="pdf-cost-label"></span></strong> <span id="pdf-cost-value" style="color: #e65100; font-weight: bold;"></span></p>
-            </div>
+    <div style="border: 2px solid #4caf50; padding: 20mm; height: 100%; position: relative; box-sizing: border-box;">
+        <div style="position: absolute; top: 15mm; right: 15mm; width: 30mm; height: 30mm; border: 2px solid #ff9800; border-radius: 50%; display: flex; align-items: center; justify-content: center; transform: rotate(-15deg); color: #ff9800; font-weight: bold; text-align: center; font-size: 10px;">ВЕЧНЫЙ<br>АРХИВ</div>
+        <h1 id="pdf-title-text" style="color: #4caf50; border-bottom: 2px solid #d1e8e2; padding-bottom: 10px; font-size: 24px;"></h1>
+        <h3 style="color: #8fa3b3; font-style: italic; font-size: 16px; margin-bottom: 30px;" id="pdf-slogan"></h3>
+        
+        <div style="font-size: 14px; line-height: 1.8;">
+            <p><strong>Идентификатор субъекта:</strong> <span id="pdf-name" style="border-bottom: 1px solid #ccc; padding-bottom: 2px;"></span></p>
+            <p><strong>Уровень тревожности (0-10):</strong> <span id="pdf-anxiety"></span></p>
+            <p><strong>Метод списания премии:</strong> <span id="pdf-payment"></span></p>
+            <p><strong><span id="pdf-cost-label"></span></strong> <span id="pdf-cost-value" style="color: #e65100; font-weight: bold;"></span></p>
+        </div>
 
-            <div style="margin-top: 30px; padding: 15px; background: #f9f9f9; border-left: 4px solid #4caf50;">
-                <strong style="font-size: 14px;">Объекты покрытия:</strong>
-                <ul id="pdf-risks-list" style="font-size: 12px; margin-top: 10px; line-height: 1.6;"></ul>
-            </div>
-            
-            <div style="position: absolute; bottom: 20mm; left: 20mm; right: 20mm; font-size: 10px; color: #8fa3b3; text-align: center; border-top: 1px solid #eee; padding-top: 10mm;">
-                Данный документ подтверждает защиту от экзистенциальных угроз, включая Урбанистический гидро-коллапс и Бюрократическую сингулярность[cite: 4].
-            </div>
+        <div style="margin-top: 30px; padding: 15px; background: #f9f9f9; border-left: 4px solid #4caf50;">
+            <strong style="font-size: 14px;">Объекты покрытия:</strong>
+            <ul id="pdf-risks-list" style="font-size: 12px; margin-top: 10px; line-height: 1.6;"></ul>
+        </div>
+        
+        <div style="position: absolute; bottom: 20mm; left: 20mm; right: 20mm; font-size: 10px; color: #8fa3b3; text-align: center; border-top: 1px solid #eee; padding-top: 10mm;">
+            Данный документ подтверждает защиту от экзистенциальных угроз в рамках симуляции.
         </div>
     </div>
-    
-<script>
-    const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQeKQogEEDNWY626wZDamnMfGNimCIMFqwP9_spwPc-qotu_yQq7jKMzF1YeFzfBSrFAbCCO8UNvMwZ/pub?output=tsv'; 
-    let translations = {};
-    let currentLang = 'ru'; // По умолчанию
+</div>
 
-    // Читаем параметр языка из адресной строки (например, ?lang=en)
-    const urlParams = new URLSearchParams(window.location.search);
-    const langParam = urlParams.get('lang');
-    if (langParam && (langParam === 'ru' || langParam === 'en')) {
-        currentLang = langParam;
-    }
-    document.getElementById('t-window-title').innerText = currentLang === 'en' ? "Loading..." : "Загрузка...";
-    async function loadDataFromCloud() {
-        try {
-            const response = await fetch(SHEET_URL);
-            const data = await response.text();
-            
-            const rows = data.split('\n');
-            const headers = rows[0].split('\t').map(h => h.trim());
-            
-            const ruIndex = headers.indexOf('RU');
-            const enIndex = headers.indexOf('EN');
-            
-            translations = { ru: {}, en: {} };
-
-            for (let i = 1; i < rows.length; i++) {
-                const cols = rows[i].split('\t');
-                if (cols.length > 1) {
-                    const key = cols[0].trim();
-                    if (key) {
-                        translations.ru[key] = cols[ruIndex] ? cols[ruIndex].trim() : '';
-                        translations.en[key] = cols[enIndex] ? cols[enIndex].trim() : '';
-                    }
-                }
-            }
-            applyLanguage();
-        } catch (error) {
-            console.error('Loading error:', error);
-            document.getElementById('t-window-title').innerText = currentLang === 'en' ? "Loading..." : "Загрузка...";
-        }
-    }
-let thankYouTimerInterval; // Переменная для таймера финального экрана
-    
-function applyLanguage() {
-    const dict = translations[currentLang];
-    if (!dict) return;
-    
-    const windowTitle = document.getElementById('t-window-title');
-    if (windowTitle) {
-        windowTitle.innerText = dict['window-title'] || "Форма 404-Алеф";
-    }
-    const anxietySlider = document.getElementById('anxietySlider');
-    if (anxietySlider) enforceMinAnxiety(anxietySlider);
-        // 1. Изящный словарь соответствий: 'ID элемента в HTML' : 'Ключ в базе данных'
-        const textElements = {
-            't-window-title': 'window-title',
-            't-warning': 'warning',
-            't-name': 'name',
-            't-anxiety': 'anxiety',
-            't-wear': 'wear',
-            't-wear-desc': 'wear-desc',
-            't-news': 'news',
-            't-consent-text': 'consent-text',
-            't-next-btn': 'next-btn',
-            't-risks-title': 'risks-title',
-            't-pay-btn': 'pay-btn',
-            't-back-1': 'back-1',
-            't-pay-title': 'pay-title',
-            't-pay-1': 'pay-1',
-            't-pay-2': 'pay-2',
-            't-pay-3': 'pay-3',
-            't-pay-4': 'pay-4',
-            't-finish-btn': 'finish-btn',
-            't-back-2': 'back-2',
-            't-disclaimer': 'disclaimer',
-            't-email-disclaimer': 'email-disclaimer',
-            't-thanks-title': 'thanks-title',
-            't-dob-label': 'dob-label',
-            'pdf-cost-label': 'pdf-cost',
-            'btn-continue': 'timeout-continue',
-            'btn-abort': 'timeout-abort',
-            't-email-label': 'email-label'
-
-        };
-
-        // Перебираем элементы циклом и безопасно вставляем текст
-        for (const [id, key] of Object.entries(textElements)) {
-            const el = document.getElementById(id);
-            if (el && dict[key]) el.innerHTML = dict[key];
-        }
-
-        // 2. Отдельный мини-цикл для плейсхолдеров
-        const placeholders = {
-            't-name-placeholder': 'name-placeholder',
-            'userEmail': 'email-placeholder'
-        };
-        for (const [id, key] of Object.entries(placeholders)) {
-            const el = document.getElementById(id);
-            if (el && dict[key]) el.placeholder = dict[key];
-        }
-
-        // 3. Элементы со сложной логикой (добавление текста)
-        const backMainBtn = document.getElementById('t-back-main');
-        if (backMainBtn) backMainBtn.innerText = (dict['back-main'] || "Возврат на главную страницу") + " (15)";
-        
-        const thanksSlogan = document.getElementById('t-thanks-slogan');
-        if (thanksSlogan) thanksSlogan.innerText = dict['slogan'] || "";
-
-        // 4. Динамические риски (изолируем в try-catch)
-        try {
-            const risksContainer = document.getElementById('risks-container');
-            if (risksContainer) {
-                risksContainer.innerHTML = '';
-                for (let i = 1; i <= 9; i++) {
-                    if (dict[`risk${i}`]) {
-                        risksContainer.innerHTML += `<label class="risk-card"><input type="checkbox" name="risks" value="risk${i}"><span>${dict[`risk${i}`]}</span></label>`;
-                    }
-                }
-            }
-            
-        } catch (e) { console.warn("Сбой генерации рисков игнорирован"); }
-
-        // 5. Изолируем вызов сторонних функций! Именно они могли ломать заголовок
-        try { if (typeof populateConflictSelect === "function") populateConflictSelect(currentLang); } catch (e) {}
-        try { if (typeof updateNewsSlider === "function") updateNewsSlider(); } catch (e) {}
-        try { if (typeof calculatePremiums === "function") calculatePremiums(); } catch (e) {}
-    }
-// Та самая функция генерации конфликтов
-function populateConflictSelect(lang) {
-        const select = document.getElementById('conflictSelect');
-        if (!select) return;
-        
-        const cur = select.value || "0";
-        select.innerHTML = '';
-
-        // Вспомогательная функция для корректных окончаний в русском языке
-        const getRuWord = (num) => {
-            const n = Math.abs(num) % 100;
-            const n1 = n % 10;
-            if (n > 10 && n < 20) return 'конфликтов';
-            if (n1 > 1 && n1 < 5) return 'конфликта';
-            if (n1 === 1) return 'конфликт';
-            return 'конфликтов';
-        };
-
-        for (let i = 0; i <= 47; i++) {
-            let label = "";
-            
-            if (lang === 'ru') {
-                label = `${i} ${getRuWord(i)}`;
-            } else {
-                label = `${i} ${i === 1 ? 'conflict' : 'conflicts'}`;
-            }
-
-            const opt = document.createElement('option');
-            opt.value = i;
-            opt.innerText = label;
-            if (i.toString() === cur) opt.selected = true;
-            select.appendChild(opt);
-        }
-    }
-    
-    // Обновление текста новостного слайдера
-    function updateNewsSlider() {
-        const slider = document.getElementById('newsSlider');
-        const textElement = document.getElementById('newsValText');
-        
-        if (!slider || !textElement) return;
-
-        const val = slider.value; 
-        const dict = translations[currentLang];
-        
-        if (!dict) return;
-
-        // Ищем в словаре ключ формата 'news-val-3'
-        const key = `news-val-${val}`;
-        
-        // Подставляем перевод из таблицы. Если его пока нет, ставим цифру.
-        textElement.innerText = dict[key] || val;
-    }
-    function goToStep1() {
-        document.getElementById('block2').classList.remove('active');
-        document.getElementById('block3').classList.remove('active');
-        document.getElementById('block1').classList.add('active');
-    }
-
-    function goToStep2() {
-        if (!document.getElementById('consentCheck').checked) {
-            alephAlert(translations[currentLang]['alertConsent'] || "Подтвердите согласие!");
-            return;
-        }
-        document.getElementById('block1').classList.remove('active');
-        document.getElementById('block3').classList.remove('active');
-        document.getElementById('block2').classList.add('active');
-    }
-
-function goToStep3() {
-        document.getElementById('block1').classList.remove('active');
-        document.getElementById('block2').classList.remove('active');
-        document.getElementById('block3').classList.add('active');
-        
-        // Запускаем расчет абсурдной премии
-        calculatePremiums();
-    }
-
-    function calculatePremiums() {
-        const anxiety = parseInt(document.getElementById('anxietySlider').value) || 4;
-        const conflicts = parseInt(document.getElementById('conflictSelect').value) || 0;
-        const news = parseInt(document.getElementById('newsSlider').value) || 0;
-        const risks = document.querySelectorAll('input[name="risks"]:checked').length || 0;
-        const dict = translations[currentLang] || {};
-
-        const nervesCost = Math.floor((anxiety * 1.5 + conflicts * 0.8 + news * 2.5) * (risks * 1.2 + 1) * 1420);
-        const sleepCost = Math.floor(anxiety * 12 + conflicts * 18 + news * 9 + risks * 32);
-        let dataCost = ((anxiety * 0.7 + conflicts * 0.3 + news * 1.2 + risks * 2) * 10) / 10;
-
-        const dobStr = document.getElementById('userDob').value;
-        if (dobStr) {
-            const birthYear = new Date(dobStr).getFullYear();
-            if (birthYear > 1900 && birthYear <= 2026) {
-                const age = 2026 - birthYear;
-                dataCost += (age * 0.15);
-            }
-        }
-
-        // Динамический префикс в зависимости от языка
-        const totalLabel = currentLang === 'ru' ? 'Итого: ' : 'Total: ';
-
-        document.getElementById('calc-nerves').innerText = `${totalLabel}${nervesCost.toLocaleString()} ${dict['unit-nerves'] || 'клеток'}`;
-        document.getElementById('calc-sleep').innerText = `${totalLabel}${sleepCost.toLocaleString()} ${dict['unit-sleep'] || 'часов'}`;
-        document.getElementById('calc-oblivion').innerText = `${totalLabel}${dict['unit-oblivion'] || '100% истории'}`;
-        
-        const dataBadge = document.getElementById('calc-data');
-        const oldValMatch = dataBadge.innerText.match(/[\d\.]+/);
-        const oldVal = oldValMatch ? parseFloat(oldValMatch[0]) : 0;
-        const unitData = dict['unit-data'] || 'ТБ';
-
-        if (dobStr && oldVal !== dataCost && document.getElementById('block3').classList.contains('active')) {
-            animateValue(dataBadge, oldVal, dataCost, 1000, unitData, totalLabel);
-        } else {
-            dataBadge.innerText = `${totalLabel}${dataCost.toFixed(1)} ${unitData}`;
-        }
-    }
-    loadDataFromCloud();
-    // 1. Слушатель для переключения скрытого блока оплаты данными
-    document.addEventListener('change', function(e) {
-        if (e.target.name === 'payment') {
-            const dataBlock = document.getElementById('data-payment-fields');
-            if (e.target.value === 'data') {
-                dataBlock.style.display = 'block';
-            } else {
-                dataBlock.style.display = 'none';
-            }
-        }
-    });
-function enforceMinAnxiety(slider) {
-        if (slider.value < 4) {
-            slider.value = 4;
-        }
-        
-        const dict = translations[currentLang] || {};
-        const key = `anxiety-val-${slider.value}`;
-        const labelText = dict[key] || `${slider.value}`;
-        
-        const valEl = document.getElementById('anxietyVal');
-        if (valEl) {
-            valEl.classList.add('updating');
-            setTimeout(() => {
-                valEl.innerText = labelText;
-                valEl.classList.remove('updating');
-            }, 50);
-        }
-    }
-
-    function updateNewsSlider() {
-        const slider = document.getElementById('newsSlider');
-        const textElement = document.getElementById('newsValText');
-        
-        if (!slider || !textElement) return;
-
-        const val = slider.value; 
-        const dict = translations[currentLang] || {};
-        const key = `news-val-${val}`;
-        
-        textElement.classList.add('updating');
-        setTimeout(() => {
-            textElement.innerText = dict[key] || val;
-            textElement.classList.remove('updating');
-        }, 50);
-    }
-    
-const GAS_URL = 'https://script.google.com/macros/s/AKfycbz7Jhxo2oqUMv0ujXOXyGE7Uj7JwMCvKwhkAFU_AKzaudXnR9EzpN00GOG90dmjqGmfHA/exec';
-
-function collectFinalData() {
-        const selectedPayment = document.querySelector('input[name="payment"]:checked');
-        const email = document.getElementById('userEmail').value;
-        const dict = translations[currentLang];
-        
-        // 1. Проверки заполненности
-        if (!selectedPayment) {
-            alephAlert(dict['alertConsent'] || "Выберите метод списания!");
-            return;
-        }
-        if (!email) {
-            alephAlert(dict['alert-email'] || (currentLang === 'ru' ? "Цифровой след (Email) обязателен!" : "Email is required!"));
-            return;
-        }
-        if (selectedPayment.value === 'data') {
-            const dob = document.getElementById('userDob').value;
-            if (!dob) {
-                alephAlert(dict['alert-dob'] || (currentLang === 'ru' ? "Укажите дату рождения для калибровки цифрового следа." : "Date of birth is required."));
-                return;
-            }
-        }
-
-        // Блокируем кнопку
-        const finishBtn = document.getElementById('t-finish-btn');
-        finishBtn.innerText = dict['generating-doc'] || "Формирование документа...";
-        finishBtn.disabled = true;
-
-        // 2. Заполняем базовые тексты PDF
-        document.getElementById('pdf-title-text').innerText = dict['window-title'];
-        document.getElementById('pdf-slogan').innerText = dict['slogan'];
-        document.getElementById('pdf-name').innerText = document.getElementById('t-name-placeholder').value || "Аноним";
-        document.getElementById('pdf-anxiety').innerText = document.getElementById('anxietySlider').value;
-        document.getElementById('pdf-payment').innerText = selectedPayment.nextElementSibling.innerText;
-
-        // 3. Захват стоимости для PDF
-        let finalCost = "";
-        if (selectedPayment.value === 'nerves') finalCost = document.getElementById('calc-nerves').innerText;
-        else if (selectedPayment.value === 'sleep') finalCost = document.getElementById('calc-sleep').innerText;
-        else if (selectedPayment.value === 'oblivion') finalCost = document.getElementById('calc-oblivion').innerText;
-        else if (selectedPayment.value === 'data') finalCost = document.getElementById('calc-data').innerText;
-        
-        const costValueElement = document.getElementById('pdf-cost-value');
-        if (costValueElement) {
-            // Убираем слово "Итого:" чтобы в сертификате была только цифра
-            costValueElement.innerText = finalCost.replace(/Итого:\s*|Total:\s*/i, '');
-        }
-
-        // 4. Заполняем риски
-        const risksList = document.getElementById('pdf-risks-list');
-        risksList.innerHTML = '';
-        document.querySelectorAll('input[name="risks"]:checked').forEach(cb => {
-            risksList.innerHTML += `<li>${cb.nextElementSibling.innerText}</li>`;
-        });
-
-        // 5. Генерация и отправка
-        const pdfElement = document.getElementById('pdf-template');
-        const opt = { 
-            margin: 0, 
-            filename: 'Form_404_Aleph.pdf', 
-            image: { type: 'jpeg', quality: 0.98 },
-            html2canvas: { scale: 2, useCORS: true }, 
-            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } 
-        };
-
-        html2pdf().set(opt).from(pdfElement).outputPdf('datauristring').then(function(pdfBase64) {
-            const base64Data = pdfBase64.split(',')[1];
-            
-            fetch(GAS_URL, {
-                method: 'POST',
-                body: JSON.stringify({ base64: base64Data, filename: 'Form_404_Aleph.pdf' }),
-                headers: { "Content-Type": "text/plain;charset=utf-8" }
-            })
-            .then(res => res.json())
-            .then(data => {
-                if (data.status === 'success') {
-                    window.open(data.url, '_blank');
-                    
-                    // Передаем мультиязычные тексты курьеру EmailJS
-                    emailjs.send('service_kluawpl', 'template_34kowi9', {
-                        email_to: email,
-                        pdf_link: data.url,
-                        email_subject: dict['email-sub'] || "Форма 404-Алеф: Ваш План Защиты",
-                        email_greeting: (dict['email-greet'] || "Идентификатор субъекта:") + " " + (document.getElementById('t-name-placeholder').value || "Аноним"),
-                        email_message: dict['email-msg'] || "Ваша экзистенциальная фиксация успешно завершена. Цифровой след учтен, а документ помещен в Вечный Архив.",
-                        email_btn: dict['email-btn'] || "Открыть Сертификат"
-                    }).then(() => {
-                        showThankYouScreen(email);
-                    });
-                } else {
-                    throw new Error("Ошибка Drive");
-                }
-            })
-            .catch(err => {
-                alephAlert(dict['error-archive'] || "Ошибка Вечного Архива. Бюрократическая сингулярность.");
-                finishBtn.innerText = dict['finish-btn'] || "Получить План Защиты (PDF)";
-                finishBtn.disabled = false;
-            });
-        });
-    }
-
-    function showThankYouScreen(email) {
-        document.getElementById('block3').classList.remove('active');
-        document.getElementById('block4').classList.add('active');
-        
-        // Прячем стандартный дисклеймер (заменяя его лозунгом в блоке 4)
-        document.getElementById('t-disclaimer').style.display = 'none';
-        
-        const headerEl = document.querySelector('.header');
-        if (headerEl) headerEl.style.display = 'none';
-        
-        const disclaimerEl = document.getElementById('t-disclaimer');
-        if (disclaimerEl) disclaimerEl.style.display = 'none';
-        
-        const msgElement = document.getElementById('thank-you-message');
-        if (email) {
-            msgElement.innerText = currentLang === 'ru' 
-                ? `Вам отправлено письмо с Планом Защиты на указанный адрес: ${email}`
-                : `An email with your Protection Plan has been sent to: ${email}`;
-        } else {
-            msgElement.innerText = "";
-        }
-
-        // Логика таймера обратного отсчета для кнопки возврата
-        let timeLeft = 15;
-        const btn = document.getElementById('t-back-main');
-        const baseText = translations[currentLang]?.['back-main'] || "Возврат на главную страницу";
-        
-        btn.innerText = `${baseText} (${timeLeft})`;
-        
-        clearInterval(thankYouTimerInterval);
-        thankYouTimerInterval = setInterval(() => {
-            timeLeft--;
-            if (timeLeft > 0) {
-                btn.innerText = `${baseText} (${timeLeft})`;
-            } else {
-                clearInterval(thankYouTimerInterval);
-                resetToMain();
-            }
-        }, 1000);
-    }
-    
-// Замена стандартного alert() на окно АЛЕФ 404 с правильным заголовком
-    function alephAlert(msg) {
-        const dict = translations[currentLang];
-        // Подтягиваем заголовок из словаря
-        document.querySelector('#aleph-alert-modal .modal-title').innerText = dict['modal-title'] || "АЛЕФ 404 says:";
-        document.getElementById('aleph-alert-msg').innerText = msg;
-        document.getElementById('aleph-alert-modal').style.display = 'flex';
-    }
-document.getElementById('t-name-placeholder').addEventListener('input', function() {
-        if (this.value.trim().length > 0) {
-            document.getElementById('field-anxiety').style.display = 'block';
-        }
-    });
-
-    document.getElementById('anxietySlider').addEventListener('change', function() {
-        document.getElementById('field-wear').style.display = 'block';
-    });
-
-    document.getElementById('conflictSelect').addEventListener('change', function() {
-        document.getElementById('field-news').style.display = 'block';
-    });
-let inactivityTimer;
-    let countdownInterval;
-    let timeLeft = 15;
-
-// ИСПРАВЛЕНИЕ 4Б: Анимация и пересчет данных
-   function animateValue(obj, start, end, duration, unit, prefix) {
-        let startTimestamp = null;
-        const step = (timestamp) => {
-            if (!startTimestamp) startTimestamp = timestamp;
-            const progress = Math.min((timestamp - startTimestamp) / duration, 1);
-            const current = (start + (end - start) * progress).toFixed(1);
-            obj.innerText = `${prefix}${current} ${unit}`;
-            if (progress < 1) {
-                window.requestAnimationFrame(step);
-            } else {
-                obj.innerText = `${prefix}${end.toFixed(1)} ${unit}`;
-            }
-        };
-        window.requestAnimationFrame(step);
-    }
-    
-    function calculatePremiums() {
-        const anxiety = parseInt(document.getElementById('anxietySlider').value) || 4;
-        const conflicts = parseInt(document.getElementById('conflictSelect').value) || 0;
-        const news = parseInt(document.getElementById('newsSlider').value) || 0;
-        const risks = document.querySelectorAll('input[name="risks"]:checked').length || 0;
-        const dict = translations[currentLang] || {};
-
-        const nervesCost = Math.floor((anxiety * 1.5 + conflicts * 0.8 + news * 2.5) * (risks * 1.2 + 1) * 1420);
-        const sleepCost = Math.floor(anxiety * 12 + conflicts * 18 + news * 9 + risks * 32);
-        
-        let dataCost = ((anxiety * 0.7 + conflicts * 0.3 + news * 1.2 + risks * 2) * 10) / 10;
-
-        // Влияние возраста на объем следа (калибровка даты рождения)
-        const dobStr = document.getElementById('userDob').value;
-        if (dobStr) {
-            const birthYear = new Date(dobStr).getFullYear();
-            if (birthYear > 1900 && birthYear <= 2026) {
-                const age = 2026 - birthYear;
-                dataCost += (age * 0.15); // Накидываем терабайты за прожитые годы
-            }
-        }
-
-        document.getElementById('calc-nerves').innerText = `Итого: ${nervesCost.toLocaleString()} ${dict['unit-nerves'] || 'клеток'}`;
-        document.getElementById('calc-sleep').innerText = `Итого: ${sleepCost.toLocaleString()} ${dict['unit-sleep'] || 'часов'}`;
-        document.getElementById('calc-oblivion').innerText = `Итого: ${dict['unit-oblivion'] || '100% истории'}`;
-        
-        const dataBadge = document.getElementById('calc-data');
-        // Извлекаем старое значение для старта анимации
-        const oldValMatch = dataBadge.innerText.match(/[\d\.]+/);
-        const oldVal = oldValMatch ? parseFloat(oldValMatch[0]) : 0;
-        const unitData = dict['unit-data'] || 'ТБ';
-
-        // Запускаем анимацию прокрутки цифр, если дата введена и значение изменилось
-        if (dobStr && oldVal !== dataCost && document.getElementById('block3').classList.contains('active')) {
-            animateValue(dataBadge, oldVal, dataCost, 3000, unitData); // Анимация длится 3 секунды
-        } else {
-            dataBadge.innerText = `Итого: ${dataCost.toFixed(1)} ${unitData}`;
-        }
-    }
-    
-function resetInactivity() {
-        // НОВОЕ: Если окно таймера уже открыто, игнорируем движения мыши
-        if (document.getElementById('timeout-modal').style.display === 'flex') {
-            return;
-        }
-        
-        clearTimeout(inactivityTimer);
-        clearInterval(countdownInterval);
-        document.getElementById('timeout-modal').style.display = 'none';
-        
-        // 45 секунд бездействия
-        inactivityTimer = setTimeout(showTimeoutModal, 45000); 
-    }
-
-function showTimeoutModal() {
-        const dict = translations[currentLang];
-        document.getElementById('timeout-modal').style.display = 'flex';
-        timeLeft = 15;
-        document.getElementById('countdown-timer').innerText = timeLeft;
-        
-        // Подтягиваем переводы для таймера
-        document.querySelector('#timeout-modal .modal-title').innerText = dict['modal-title'] || "АЛЕФ 404 says:";
-        document.getElementById('timeout-msg').innerText = dict['timeout-msg'] || "Продолжаем фиксацию или прерываемся?";
-        
-        countdownInterval = setInterval(() => {
-            timeLeft--;
-            document.getElementById('countdown-timer').innerText = timeLeft;
-            if (timeLeft <= 0) {
-                clearInterval(countdownInterval);
-                resetToMain();
-            }
-        }, 1000);
-    }
-
- // ИСПРАВЛЕНИЕ 3: Принудительная остановка и сброс таймера
-    window.continueSession = function() {
-        clearInterval(countdownInterval);
-        clearTimeout(inactivityTimer);
-        document.getElementById('timeout-modal').style.display = 'none';
-        // Перезапускаем отсчет 45 секунд заново
-        inactivityTimer = setTimeout(showTimeoutModal, 45000);
-    };
-
-    // Отслеживаем активность на планшете
-    document.addEventListener('mousemove', resetInactivity);
-    document.addEventListener('keypress', resetInactivity);
-    document.addEventListener('touchstart', resetInactivity);
-    document.addEventListener('scroll', resetInactivity);
-    
-    // Запуск при старте
-    resetInactivity();
-
-    
-    function resetToMain() {
-        // Очистка данных
-        document.getElementById('t-name-placeholder').value = '';
-        document.getElementById('anxietySlider').value = 7;
-        document.getElementById('anxietyVal').innerText = 7;
-        document.getElementById('userEmail').value = '';
-        document.getElementById('consentCheck').checked = false;
-        document.querySelectorAll('input[name="risks"]:checked').forEach(cb => cb.checked = false);
-        const paymentRadio = document.querySelector('input[name="payment"]:checked');
-        if (paymentRadio) paymentRadio.checked = false;
-        const headerEl = document.querySelector('.header');
-        if (headerEl) headerEl.style.display = 'flex';
-        
-        document.getElementById('t-finish-btn').innerText = currentLang === 'ru' ? "Получить План Защиты" : "Get Protection Plan";
-        document.getElementById('t-finish-btn').disabled = false;
-        clearInterval(thankYouTimerInterval); // Останавливаем таймер, если пользователь нажал кнопку вручную
-        window.location.href = 'index.html';
-
-        // Возврат на лендинг
-        window.location.href = 'index.html'; 
-        document.getElementById('field-anxiety').style.display = 'none';
-    document.getElementById('field-wear').style.display = 'none';
-    document.getElementById('field-news').style.display = 'none';
-    }
-</script>
+<script src="app.js"></script>
 </body>
 </html>

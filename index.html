@@ -4,32 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Стартовая страница - Форма 404-Алеф</title>
+    
+    <link rel="stylesheet" href="style.css">
     <style>
-        /* СТИЛЬ "ИРОНИЧНЫЙ КОНТРАСТ (ВИТАЛЬНОСТЬ И РОСТ)" */
-        :root {
-            --bg-color: #fdfbf7;
-            --text-main: #2b3a4a;
-            --border-color: #d1e8e2;
-            --primary-red: #ff9800;
-            --primary-hover: #f57c00;
-            --growth-green: #4caf50;
-        }
-
-        body {
-            background-color: var(--bg-color);
-            font-family: 'Roboto', 'Heebo', sans-serif;
-            color: var(--text-main);
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            background-image: linear-gradient(120deg, #fdfbf7 0%, #e8f5e9 100%);
-            position: relative;
-        }
-
-/* Увеличенные и заметные кнопки выбора языка */
+        /* Дополнительные стили лендинга */
         .lang-selector-top {
             position: absolute;
             top: 25px;
@@ -43,10 +21,10 @@
             background: rgba(255, 255, 255, 0.9);
             border: 2px solid var(--border-color);
             color: var(--text-main);
-            padding: 12px 24px;       /* Сделали кнопки шире и выше */
-            border-radius: 16px;      /* Более скругленные края */
-            font-size: 16px;          /* Увеличили размер текста */
-            font-weight: 700;         /* Сделали жирнее */
+            padding: 12px 24px;
+            border-radius: 16px;
+            font-size: 16px;
+            font-weight: 700;
             cursor: pointer;
             transition: all 0.2s ease;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
@@ -61,7 +39,7 @@
         .btn-lang-small.active {
             border-color: var(--growth-green);
             color: white;
-            background: var(--growth-green); /* Активная кнопка подсвечивается зеленым фирменным цветом */
+            background: var(--growth-green);
             box-shadow: 0 6px 16px rgba(76, 175, 80, 0.3);
         }
 
@@ -110,29 +88,7 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
-            display: none; /* Уберите эту строку и display: none, когда вставите ссылку на видео */
-        }
-
-        .btn-primary {
-            background-color: var(--primary-red);
-            color: white; 
-            border: none;
-            padding: 18px 40px; 
-            border-radius: 30px; 
-            font-size: 18px; 
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-            font-family: inherit;
-            box-shadow: 0 4px 15px rgba(255, 152, 0, 0.3);
-            text-decoration: none;
-            display: inline-block;
-        }
-
-        .btn-primary:hover { 
-            background-color: var(--primary-hover);
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(255, 152, 0, 0.4);
+            display: none; /* Уберите display: none при подключении реального видео */
         }
     </style>
 </head>
@@ -156,121 +112,6 @@
     <button class="btn-primary" id="t-find-plan" onclick="goToForm()">Загрузка...</button>
 </div>
 
-<script>
-    const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQeKQogEEDNWY626wZDamnMfGNimCIMFqwP9_spwPc-qotu_yQq7jKMzF1YeFzfBSrFAbCCO8UNvMwZ/pub?output=tsv'; 
-    let translations = {};
-    let currentLang = 'ru';
-
-    // Определение языка браузера или параметров URL
-    function detectBrowserLanguage() {
-        const urlParams = new URLSearchParams(window.location.search);
-        const langParam = urlParams.get('lang');
-        if (langParam && (langParam === 'ru' || langParam === 'en')) {
-            return langParam;
-        }
-
-        const browserLang = (navigator.language || navigator.userLanguage || 'ru').substring(0, 2);
-        return browserLang === 'en' ? 'en' : 'ru';
-    }
-// 2. Предварительная установка текста загрузки до ответа сервера
-    function applyInitialLoadingState(lang) {
-        currentLang = lang;
-        const loadingText = lang === 'en' ? 'Loading...' : 'Загрузка...';
-        
-        document.title = lang === 'en' ? 'Form 404-Aleph' : 'Форма 404-Алеф';
-        
-        const sloganEl = document.getElementById('t-slogan');
-        if (sloganEl) sloganEl.innerText = loadingText;
-
-        const findPlanBtn = document.getElementById('t-find-plan');
-        if (findPlanBtn) findPlanBtn.innerText = loadingText;
-
-        const btnRu = document.getElementById('btn-ru');
-        const btnEn = document.getElementById('btn-en');
-        if (btnRu) btnRu.classList.toggle('active', lang === 'ru');
-        if (btnEn) btnEn.classList.toggle('active', lang === 'en');
-    }
-    async function loadDataFromCloud() {
-        // Сразу выставляем состояние загрузки на языке браузера
-        const initialLang = detectBrowserLanguage();
-        applyInitialLoadingState(initialLang);
-        try {
-            const response = await fetch(SHEET_URL);
-            const data = await response.text();
-            
-            const rows = data.split('\n');
-            if (rows.length < 2) throw new Error("Пустая таблица");
-
-            const headers = rows[0].split('\t').map(h => h.trim().replace(/^"(.*)"$/, '$1'));
-            
-            const keyIndex = 0; // Первый столбец — всегда key
-            const ruIndex = headers.indexOf('RU');
-            const enIndex = headers.indexOf('EN');
-            
-            translations = { ru: {}, en: {} };
-
-            for (let i = 1; i < rows.length; i++) {
-                const rowText = rows[i].trim();
-                if (!rowText) continue;
-
-                const cols = rowText.split('\t');
-                const key = cols[keyIndex] ? cols[keyIndex].trim().replace(/^"(.*)"$/, '$1') : '';
-                
-                if (key) {
-                    translations.ru[key] = (cols[ruIndex] !== undefined) ? cols[ruIndex].trim().replace(/^"(.*)"$/, '$1') : '';
-                    translations.en[key] = (cols[enIndex] !== undefined) ? cols[enIndex].trim().replace(/^"(.*)"$/, '$1') : '';
-                }
-            }
-
-// Применяем словарь
-            setLanguage(initialLang);
-
-        } catch (error) {
-            console.error('Ошибка связи с облаком:', error);
-            document.getElementById('t-slogan').innerText = initialLang === 'en' ? "Peace of mind, even if tomorrow never comes." : "Спокойствие, даже если завтра не наступит.";
-            document.getElementById('t-find-plan').innerText = initialLang === 'en' ? "Find your plan" : "Выберете ваш план";
-            
-            const videoPlaceholder = document.getElementById('t-video-placeholder');
-            if (videoPlaceholder) {
-                videoPlaceholder.innerText = initialLang === 'en' ? "[ A generated video of happy Israelis will be placed here ]" : "[ Здесь будет сгенерированное видео со счастливыми израильтянами ]";
-            }
-        }
-    }
-
-// 4. Переключение языка и обновление текстов
-    function setLanguage(lang) {
-        currentLang = lang;
-        
-        const btnRu = document.getElementById('btn-ru');
-        const btnEn = document.getElementById('btn-en');
-        if (btnRu) btnRu.classList.toggle('active', lang === 'ru');
-        if (btnEn) btnEn.classList.toggle('active', lang === 'en');
-        
-        const dict = translations[lang];
-        if (dict) {
-            // Перевод заголовка вкладки браузера
-            const windowTitle = dict['window-title'] || (lang === 'en' ? "Form 404-Aleph" : "Форма 404-Алеф");
-            document.title = (lang === 'en' ? "Home - " : "Стартовая страница - ") + windowTitle;
-
-            const sloganEl = document.getElementById('t-slogan');
-            if (sloganEl) sloganEl.innerText = dict['slogan'] || (lang === 'en' ? "Peace of mind, even if tomorrow never comes." : "Спокойствие, даже если завтра не наступит.");
-
-            const findPlanEl = document.getElementById('t-find-plan');
-            if (findPlanEl) findPlanEl.innerText = dict['find plan'] || (lang === 'en' ? "Find your plan" : "Выберете ваш план");
-            
-            const videoPlaceholder = document.getElementById('t-video-placeholder');
-            if (videoPlaceholder) {
-                videoPlaceholder.innerText = dict['video-placeholder'] || (lang === 'en' ? "[ A generated video of happy Israelis will be placed here ]" : "[ Здесь будет сгенерированное видео со счастливыми израильтянами ]");
-            }
-        }
-    }
-
-    function goToForm() {
-        window.location.href = `form.html?lang=${currentLang}`;
-    }
-
-    loadDataFromCloud();
-</script>
-
+<script src="landing.js"></script>
 </body>
 </html>
