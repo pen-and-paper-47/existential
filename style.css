@@ -473,6 +473,7 @@ input[type="radio"], input[type="checkbox"] {
 }
 
 
+html, 
 body.landing-body {
     margin: 0;
     padding: 20px;
@@ -482,7 +483,12 @@ body.landing-body {
     justify-content: space-between;
     align-items: center;
     overflow: hidden;
-    background: transparent; /* Убираем фоновый цвет body, который скрывал видео */
+    
+    /* Жестко глушим любой градиент из общих стилей body */
+    background: transparent !important;
+    background-image: none !important; 
+    background-color: transparent !important;
+    
     box-sizing: border-box;
 }
 
@@ -492,9 +498,9 @@ body.landing-body {
     left: 0;
     width: 100vw;
     height: 100vh;
-    z-index: 0; /* Меняем с -1 на 0, чтобы видео стало базовым фоновым слоем */
+    z-index: -1; /* Отправляем на самый задний план */
     overflow: hidden;
-    background-color: #e8f5e9; /* Цвет-заглушка на случай, если видеофайл еще не загрузился */
+    background-color: #e8f5e9; /* Светло-зеленая заглушка */
 }
 
 .real-video {
