@@ -234,12 +234,11 @@
             <select class="modern-input" id="conflictSelect"></select>
         </div>
         
-        <div class="field-group" id="field-news" style="display: none; animation: fadeIn 0.4s ease forwards;">
+      <div class="field-group" id="field-news" style="display: none; animation: fadeIn 0.4s ease forwards;">
             <label id="t-news"></label>
             <div class="slider-container">
-                <!-- Новый слайдер новостей (10 шагов: 0-9) -->
-                <input type="range" id="newsSlider" min="0" max="9" value="2" oninput="updateNewsSlider()">
-                <div class="slider-value" id="newsValText" style="min-width: 140px;">30 минут</div>
+                <input type="range" id="newsSlider" min="0" max="49" value="15" oninput="updateNewsSlider()">
+                <div class="slider-value" id="newsValText" style="min-width: 140px;">2 часа</div>
             </div>
         </div>
         
@@ -322,7 +321,7 @@
             <div class="field-group" style="margin-bottom: 15px;">
                 <label id="t-dob-label" style="font-size: 14px; color: #e65100;">Дата рождения (для калибровки цифрового следа):</label>
                 <!-- ИСПРАВЛЕНИЕ 4А: Триггер на изменение даты -->
-                <input type="date" id="userDob" class="modern-input" oninput="calculatePremiums()">
+                <input type="date" id="userDob" value="1990-01-01" min="1900-01-01" max="2026-12-31" oninput="calculatePremiums()" style="width: 100%; padding: 22px; font-size: 20px; font-weight: 700; text-align: center; color: var(--primary-red); background-color: #fff; border: 3px solid var(--border-color); border-radius: 16px; cursor: pointer; outline: none; box-sizing: border-box; font-family: inherit;">
             </div>
         </div>
 
@@ -418,7 +417,6 @@
             applyLanguage();
         } catch (error) {
             console.error('Ошибка загрузки:', error);
-            document.getElementById('t-window-title').innerText = "Ошибка загрузки словаря";
         }
     }
 let thankYouTimerInterval; // Переменная для таймера финального экрана
@@ -513,9 +511,21 @@ function applyLanguage() {
 
     // Обновление текста новостного слайдера
     function updateNewsSlider() {
-        const val = document.getElementById('newsSlider').value;
-        const texts = currentLang === 'ru' ? newsLevelsRu : newsLevelsEn;
-        document.getElementById('newsValText').innerText = texts[val];
+        const slider = document.getElementById('newsSlider');
+        const textElement = document.getElementById('newsValText');
+        
+        if (!slider || !textElement) return;
+
+        const val = slider.value; 
+        const dict = translations[currentLang];
+        
+        if (!dict) return;
+
+        // Ищем в словаре ключ формата 'news-val-3'
+        const key = `news-val-${val}`;
+        
+        // Подставляем перевод из таблицы. Если его пока нет, ставим цифру.
+        textElement.innerText = dict[key] || val;
     }
     function goToStep1() {
         document.getElementById('block2').classList.remove('active');
