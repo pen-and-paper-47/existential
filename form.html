@@ -472,6 +472,8 @@ function applyLanguage() {
     if (windowTitle) {
         windowTitle.innerText = dict['window-title'] || "Форма 404-Алеф";
     }
+    const anxietySlider = document.getElementById('anxietySlider');
+    if (anxietySlider) enforceMinAnxiety(anxietySlider);
         // 1. Изящный словарь соответствий: 'ID элемента в HTML' : 'Ключ в базе данных'
         const textElements = {
             't-window-title': 'window-title',
@@ -636,11 +638,19 @@ function goToStep3() {
         }
     });
 function enforceMinAnxiety(slider) {
-    if (slider.value < 4) {
-        slider.value = 4;
+        if (slider.value < 4) {
+            slider.value = 4;
+        }
+        
+        const dict = translations[currentLang] || {};
+        const key = `anxiety-val-${slider.value}`;
+        const labelText = dict[key] || `${slider.value}`;
+        
+        const valEl = document.getElementById('anxietyVal');
+        if (valEl) {
+            valEl.innerText = labelText;
+        }
     }
-    document.getElementById('anxietyVal').innerText = slider.value;
-}
 const GAS_URL = 'https://script.google.com/macros/s/AKfycbz7Jhxo2oqUMv0ujXOXyGE7Uj7JwMCvKwhkAFU_AKzaudXnR9EzpN00GOG90dmjqGmfHA/exec';
 
 function collectFinalData() {
@@ -854,7 +864,7 @@ let inactivityTimer;
 
         // Запускаем анимацию прокрутки цифр, если дата введена и значение изменилось
         if (dobStr && oldVal !== dataCost && document.getElementById('block3').classList.contains('active')) {
-            animateValue(dataBadge, oldVal, dataCost, 1000, unitData); // Анимация длится 1 секунду
+            animateValue(dataBadge, oldVal, dataCost, 3000, unitData); // Анимация длится 3 секунды
         } else {
             dataBadge.innerText = `Итого: ${dataCost.toFixed(1)} ${unitData}`;
         }
