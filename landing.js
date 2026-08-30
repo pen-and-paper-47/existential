@@ -115,6 +115,62 @@ function setLanguage(lang) {
 function goToForm() {
     window.location.href = `form.html?lang=${currentLang}`;
 }
+// Открытие/закрытие мобильного дропдауна языков
+function toggleLangDropdown() {
+    const menu = document.getElementById('langMenu');
+    if (menu) {
+        menu.classList.toggle('show');
+    }
+}
 
+// Закрытие дропдауна при клике вне его
+window.addEventListener('click', function(e) {
+    if (!e.target.closest('.lang-dropdown-mobile')) {
+        const menu = document.getElementById('langMenu');
+        if (menu && menu.classList.contains('show')) {
+            menu.classList.remove('show');
+        }
+    }
+});
+
+// Обновление текстов (включая заголовок слева) при смене языка
+function applyInitialLoadingState(lang) {
+    currentLang = lang;
+    const dict = translations[lang] || {};
+    
+    // Перевод заголовка слева
+    const titleEl = document.getElementById('t-window-title');
+    if (titleEl) {
+        titleEl.innerText = dict['window-title'] || (lang === 'en' ? "Form 404-Aleph" : "Форма 404-Алеф");
+    }
+
+    document.title = (lang === 'en' ? "Home - " : "Стартовая страница - ") + (dict['window-title'] || "Форма 404-Алеф");
+    
+    const sloganEl = document.getElementById('t-slogan');
+    if (sloganEl) {
+        sloganEl.innerHTML = dict['slogan'] || (lang === 'en' ? "Peace of mind,<br>even if tomorrow never comes." : "Спокойствие,<br>даже если завтра не наступит.");
+    }
+
+    const findPlanBtn = document.getElementById('t-find-plan');
+    if (findPlanBtn) {
+        findPlanBtn.innerText = dict['find plan'] || (lang === 'en' ? "Find your plan" : "Выберите ваш план");
+    }
+
+    // Обновление активных состояний десктопных кнопок
+    const btnRuDesk = document.getElementById('btn-ru-desk');
+    const btnEnDesk = document.getElementById('btn-en-desk');
+    if (btnRuDesk) btnRuDesk.classList.toggle('active', lang === 'ru');
+    if (btnEnDesk) btnEnDesk.classList.toggle('active', lang === 'en');
+
+    // Обновление метки в мобильном дропдауне
+    const langLabel = document.getElementById('current-lang-label');
+    if (langLabel) {
+        langLabel.innerText = lang === 'en' ? 'EN' : 'RU';
+    }
+
+    // Закрываем меню при смене языка
+    const menu = document.getElementById('langMenu');
+    if (menu) menu.classList.remove('show');
+}
 // Старт загрузки при открытии страницы
 loadDataFromCloud();
