@@ -86,7 +86,10 @@ function applyLanguage() {
         'pdf-cost-label': 'pdf-cost',
         'btn-continue': 'timeout-continue',
         'btn-abort': 'timeout-abort',
-        't-email-label': 'email-label'
+        't-email-label': 'email-label',
+        't-info-nerves': 'info-nerves',
+        't-info-sleep': 'info-sleep',
+        't-info-oblivion': 'info-oblivion'
     };
 
     for (const [id, key] of Object.entries(textElements)) {
@@ -455,5 +458,16 @@ resetInactivity();
 function resetToMain() {
     window.location.href = `index.html?lang=${currentLang}`;
 }
+
+document.addEventListener('click', function(e) {
+    const icon = e.target.closest('.info-icon');
+    document.querySelectorAll('.info-icon').forEach(el => {
+        if (el !== icon) el.classList.remove('active');
+    });
+    if (icon) {
+        e.preventDefault();
+        icon.classList.toggle('active');
+    }
+});
 
 loadDataFromCloud();
