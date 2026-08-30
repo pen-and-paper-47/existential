@@ -158,97 +158,101 @@
 </div>
 
 <script>
-    // ВАЖНО: Вставьте сюда ссылку на вашу опубликованную таблицу (в формате TSV)
     const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQeKQogEEDNWY626wZDamnMfGNimCIMFqwP9_spwPc-qotu_yQq7jKMzF1YeFzfBSrFAbCCO8UNvMwZ/pub?output=tsv'; 
     let translations = {};
     let currentLang = 'ru';
-    // 1. Автоматическое определение языка браузера при первом запуске
+
+    // Определение языка браузера или параметров URL
     function detectBrowserLanguage() {
-        // Проверяем, передается ли язык через URL (например, если пользователь вернулся со страницы формы)
         const urlParams = new URLSearchParams(window.location.search);
         const langParam = urlParams.get('lang');
         if (langParam && (langParam === 'ru' || langParam === 'en')) {
             return langParam;
         }
 
-        // Берем язык из настроек браузера (например, 'en-US' превращаем в 'en')
         const browserLang = (navigator.language || navigator.userLanguage || 'ru').substring(0, 2);
-        
-        // Если язык браузера английский, ставим 'en', иначе по умолчанию 'ru'
         if (browserLang === 'en') {
             return 'en';
         }
         return 'ru';
     }
+
     async function loadDataFromCloud() {
         try {
             const response = await fetch(SHEET_URL);
             const data = await response.text();
             
-            // Парсинг TSV
             const rows = data.split('\n');
-            const headers = rows[0].split('\t').map(h => h.trim());
+            if (rows.length < 2) throw new Error("Пустая таблица");
+
+            const headers = rows[0].split('\t').map(h => h.trim().replace(/^"(.*)"$/, '$1'));
             
-            // Ищем колонки точно по названиям из вашей таблицы
+            const keyIndex = 0; // Первый столбец — всегда key
             const ruIndex = headers.indexOf('RU');
             const enIndex = headers.indexOf('EN');
             
             translations = { ru: {}, en: {} };
 
             for (let i = 1; i < rows.length; i++) {
-                const cols = rows[i].split('\t');
-                if (cols.length > 1) {
-                    const key = cols[0].trim();
-                    if (key) {
-                        translations.ru[key] = cols[ruIndex] ? cols[ruIndex].trim() : '';
-                        translations.en[key] = cols[enIndex] ? cols[enIndex].trim() : '';
-                    }
+                const rowText = rows[i].trim();
+                if (!rowText) continue;
+
+                const cols = rowText.split('\t');
+                const key = cols[keyIndex] ? cols[keyIndex].trim().replace(/^"(.*)"$/, '$1') : '';
+                
+                if (key) {
+                    translations.ru[key] = (cols[ruIndex] !== undefined) ? cols[ruIndex].trim().replace(/^"(.*)"$/, '$1') : '';
+                    translations.en[key] = (cols[enIndex] !== undefined) ? cols[enIndex].trim().replace(/^"(.*)"$/, '$1') : '';
                 }
             }
 
-            // Определяем язык браузера и сразу применяем его
+            // Устанавливаем язык
             currentLang = detectBrowserLanguage();
             setLanguage(currentLang);
-            
-            
-       } catch (error) {
+
+        } catch (error) {
             console.error('Ошибка связи с облаком:', error);
-            // Фолбэк-тексты на случай, если таблица недоступна
-            document.getElementById('t-slogan').innerText = "Гарантия стабильности в эпоху случайностей";
-            document.getElementById('t-find-plan').innerText = "Find your plan";
+            // Фолбэк-тексты, если таблица не ответила
+            document.getElementById('t-slogan').innerText = "Спокойствие, даже если завтра не наступит.";
+            document.getElementById('t-find-plan').innerText = "Выберете ваш план";
             
             const videoPlaceholder = document.getElementById('t-video-placeholder');
             if (videoPlaceholder) {
                 videoPlaceholder.innerText = "[ Здесь будет сгенерированное видео со счастливыми израильтянами ]";
             }
         }
-function setLanguage(lang) {
+    }
+
+    function setLanguage(lang) {
         currentLang = lang;
         
-        // Подсветка активной кнопки
-        document.getElementById('btn-ru').classList.toggle('active', lang === 'ru');
-        document.getElementById('btn-en').classList.toggle('active', lang === 'en');
+        // Подсветка кнопок
+        const btnRu = document.getElementById('btn-ru');
+        const btnEn = document.getElementById('btn-en');
+        if (btnRu) btnRu.classList.toggle('active', lang === 'ru');
+        if (btnEn) btnEn.classList.toggle('active', lang === 'en');
         
-        // Мгновенная подмена текста на странице
-        if (translations[lang]) {
-            // Используем ключи из вашей таблицы
-            document.getElementById('t-slogan').innerText = translations[lang]['slogan'] || "Слоган не найден";
-            document.getElementById('t-find-plan').innerText = translations[lang]['find plan'] || "Find your plan";
+        // Безопасная подстановка текстов из словаря
+        const dict = translations[lang];
+        if (dict) {
+            const sloganEl = document.getElementById('t-slogan');
+            if (sloganEl) sloganEl.innerText = dict['slogan'] || "Спокойствие, даже если завтра не наступит.";
+
+            const findPlanEl = document.getElementById('t-find-plan');
+            if (findPlanEl) findPlanEl.innerText = dict['find plan'] || "Выберете ваш план";
             
-            // НОВАЯ СТРОКА: Подтягиваем текст для плейсхолдера видео
             const videoPlaceholder = document.getElementById('t-video-placeholder');
             if (videoPlaceholder) {
-                videoPlaceholder.innerText = translations[lang]['video-placeholder'] || "[ Здесь будет сгенерированное видео ]";
+                videoPlaceholder.innerText = dict['video-placeholder'] || "[ Здесь будет сгенерированное видео со счастливыми израильтянами ]";
             }
         }
     }
 
     function goToForm() {
-        // Переход на страницу с опросником, передаем язык через параметр URL
         window.location.href = `form.html?lang=${currentLang}`;
     }
 
-    // Запуск загрузки
+    // Запуск при загрузке страницы
     loadDataFromCloud();
 </script>
 
