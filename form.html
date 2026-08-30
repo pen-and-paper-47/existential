@@ -423,78 +423,79 @@
     }
 let thankYouTimerInterval; // Переменная для таймера финального экрана
     
-    function applyLanguage() {
+function applyLanguage() {
         const dict = translations[currentLang];
         if (!dict) return;
-        
-        // "Бюрократический щит" — функция, которая игнорирует отсутствующие элементы
-        const setText = (id, text) => {
-            const el = document.getElementById(id);
-            if (el && text) el.innerHTML = text;
+
+        // 1. Изящный словарь соответствий: 'ID элемента в HTML' : 'Ключ в базе данных'
+        const textElements = {
+            't-window-title': 'window-title',
+            't-warning': 'warning',
+            't-name': 'name',
+            't-anxiety': 'anxiety',
+            't-wear': 'wear',
+            't-wear-desc': 'wear-desc',
+            't-news': 'news',
+            't-consent-text': 'consent-text',
+            't-next-btn': 'next-btn',
+            't-risks-title': 'risks-title',
+            't-pay-btn': 'pay-btn',
+            't-back-1': 'back-1',
+            't-pay-title': 'pay-title',
+            't-pay-1': 'pay-1',
+            't-pay-2': 'pay-2',
+            't-pay-3': 'pay-3',
+            't-pay-4': 'pay-4',
+            't-finish-btn': 'finish-btn',
+            't-back-2': 'back-2',
+            't-disclaimer': 'disclaimer',
+            't-email-disclaimer': 'email-disclaimer',
+            't-thanks-title': 'thanks-title',
+            't-dob-label': 'dob-label',
+            'pdf-cost-label': 'pdf-cost',
+            'btn-continue': 'timeout-continue',
+            'btn-abort': 'timeout-abort'
         };
-        
-        // Теперь мы ПРОПУСКАЕМ все тексты через щит
-        setText('t-window-title', dict['window-title']);
-        setText('t-warning', dict['warning']);
-        setText('t-name', dict['name']);
-        
-        const nameInput = document.getElementById('t-name-placeholder');
-        if (nameInput) nameInput.placeholder = dict['name-placeholder'] || "";
-        
-        setText('t-anxiety', dict['anxiety']);
-        setText('t-wear', dict['wear']);
-        setText('t-wear-desc', dict['wear-desc']);
-        setText('t-news', dict['news']);
-        setText('t-consent-text', dict['consent-text']);
-        setText('t-next-btn', dict['next-btn']);
-        
-        setText('t-risks-title', dict['risks-title']);
-        setText('t-pay-btn', dict['pay-btn']);
-        setText('t-back-1', dict['back-1']);
-        
-        setText('t-pay-title', dict['pay-title']);
-        setText('t-pay-1', dict['pay-1']);
-        setText('t-pay-2', dict['pay-2']);
-        setText('t-pay-3', dict['pay-3']);
-        setText('t-finish-btn', dict['finish-btn']);
-        setText('t-back-2', dict['back-2']);
-        setText('t-disclaimer', dict['disclaimer']);
 
-        const emailInput = document.getElementById('userEmail');
-        if (emailInput) emailInput.placeholder = dict['email-placeholder'] || "ваша@почта.com";
-        
-        setText('t-pay-4', dict['pay-4'] || "<strong>Передача цифрового следа</strong> (оплата личными данными)");
-        setText('t-email-disclaimer', dict['email-disclaimer']);
-        
-        setText('t-thanks-title', dict['thanks-title'] || "Спасибо за доверие");
-        setText('t-thanks-slogan', dict['slogan']);
-        setText('t-back-main', (dict['back-main'] || "Возврат на главную страницу") + " (15)");
-        
-        setText('t-dob-label', dict['dob-label'] || "Дата рождения (для калибровки цифрового следа):");
-        setText('pdf-cost-label', dict['pdf-cost'] || "Уплаченная премия:");
+        // Перебираем элементы циклом и безопасно вставляем текст
+        for (const [id, key] of Object.entries(textElements)) {
+            const el = document.getElementById(id);
+            if (el && dict[key]) el.innerHTML = dict[key];
+        }
 
-        setText('btn-continue', dict['timeout-continue'] || "Продолжаем");
-        setText('btn-abort', dict['timeout-abort'] || "Прерываемся");
+        // 2. Отдельный мини-цикл для плейсхолдеров
+        const placeholders = {
+            't-name-placeholder': 'name-placeholder',
+            'userEmail': 'email-placeholder'
+        };
+        for (const [id, key] of Object.entries(placeholders)) {
+            const el = document.getElementById(id);
+            if (el && dict[key]) el.placeholder = dict[key];
+        }
+
+        // 3. Элементы со сложной логикой (добавление текста)
+        const backMainBtn = document.getElementById('t-back-main');
+        if (backMainBtn) backMainBtn.innerText = (dict['back-main'] || "Возврат на главную страницу") + " (15)";
         
-        // Генерация рисков из таблицы (risk1 - risk9)
-        const risksContainer = document.getElementById('risks-container');
-        if (risksContainer) {
-            risksContainer.innerHTML = '';
-            for (let i = 1; i <= 9; i++) {
-                if (dict[`risk${i}`]) {
-                    risksContainer.innerHTML += `
-                        <label class="risk-card">
-                            <input type="checkbox" name="risks" value="risk${i}">
-                            <span>${dict[`risk${i}`]}</span>
-                        </label>
-                    `;
+        const thanksSlogan = document.getElementById('t-thanks-slogan');
+        if (thanksSlogan) thanksSlogan.innerText = dict['slogan'] || "";
+
+        // 4. Динамические риски (изолируем в try-catch)
+        try {
+            const risksContainer = document.getElementById('risks-container');
+            if (risksContainer) {
+                risksContainer.innerHTML = '';
+                for (let i = 1; i <= 9; i++) {
+                    if (dict[`risk${i}`]) {
+                        risksContainer.innerHTML += `<label class="risk-card"><input type="checkbox" name="risks" value="risk${i}"><span>${dict[`risk${i}`]}</span></label>`;
+                    }
                 }
             }
-        }
-        
-        // ВЫНЕСЕНО ИЗ ЦИКЛА: Обновляем ползунки один раз после загрузки языка
-        if (typeof populateConflictSelect === "function") populateConflictSelect(currentLang);
-        if (typeof updateNewsSlider === "function") updateNewsSlider();
+        } catch (e) { console.warn("Сбой генерации рисков игнорирован"); }
+
+        // 5. Изолируем вызов сторонних функций! Именно они могли ломать заголовок
+        try { if (typeof populateConflictSelect === "function") populateConflictSelect(currentLang); } catch (e) {}
+        try { if (typeof updateNewsSlider === "function") updateNewsSlider(); } catch (e) {}
     }
 // Та самая функция генерации конфликтов
     function populateConflictSelect(lang) {
