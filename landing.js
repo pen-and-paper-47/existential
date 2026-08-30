@@ -22,7 +22,7 @@ function applyInitialLoadingState(lang) {
     document.title = lang === 'en' ? 'Home - Form 404-Aleph' : 'Стартовая страница - Форма 404-Алеф';
     
     const sloganEl = document.getElementById('t-slogan');
-    if (sloganEl) sloganEl.innerText = loadingText;
+if (sloganEl) sloganEl.innerHTML = dict['slogan'] || (lang === 'en' ? "Peace of mind, <br> even if tomorrow never comes." : "Спокойствие, даже <br> если завтра не наступит.");
 
     const findPlanBtn = document.getElementById('t-find-plan');
     if (findPlanBtn) findPlanBtn.innerText = loadingText;
