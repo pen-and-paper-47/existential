@@ -482,7 +482,7 @@ body.landing-body {
     justify-content: space-between;
     align-items: center;
     overflow: hidden;
-    background-color: var(--bg-color);
+    background: transparent; /* Убираем фоновый цвет body, который скрывал видео */
     box-sizing: border-box;
 }
 
@@ -492,9 +492,9 @@ body.landing-body {
     left: 0;
     width: 100vw;
     height: 100vh;
-    z-index: -1;
+    z-index: 0; /* Меняем с -1 на 0, чтобы видео стало базовым фоновым слоем */
     overflow: hidden;
-    background-color: #e8f5e9;
+    background-color: #e8f5e9; /* Цвет-заглушка на случай, если видеофайл еще не загрузился */
 }
 
 .real-video {
