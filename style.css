@@ -479,8 +479,8 @@ body.landing-body {
     padding: 20px;
     min-height: 100vh;
     display: flex;
-    flex-direction: column; /* Выстраиваем элементы сверху вниз */
-    justify-content: flex-end; /* Прижимаем контент к нижней части экрана */
+    flex-direction: column;
+    justify-content: flex-end; /* Прижимаем блоки к низу экрана */
     align-items: center;
     overflow: hidden;
     background-color: var(--bg-color);
@@ -539,6 +539,7 @@ body.landing-body {
     box-shadow: 0 6px 16px rgba(76, 175, 80, 0.3);
 }
 
+/* Карточка с кнопкой: абсолютно прозрачная, внизу экрана */
 .landing-container {
     position: relative;
     z-index: 10;
@@ -548,20 +549,18 @@ body.landing-body {
     align-items: center;
     max-width: 650px;
     width: 90%;
-    padding: 40px 30px;
+    padding: 20px 30px;
     
-    /* Сдвигаем блок ниже с помощью авто-отступа сверху */
-    margin-top: auto; 
-    margin-bottom: 50px;
+    margin-top: auto;
+    margin-bottom: 40px;
 
-    /* Делаем блок полупрозрачным с эффектом размытия (стекло) */
-    background: rgba(253, 251, 247, 0.55); 
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
+    /* Полностью убираем белую подложку (делаем прозрачной со стеклянным блёром) */
+    background: rgba(253, 251, 247, 0.0) !important;
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
     
-    border-radius: 24px;
-    border: 1.5px solid rgba(209, 232, 226, 0.4);
-    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+    border: none !important;
+    box-shadow: none !important;
     box-sizing: border-box;
 }
 
