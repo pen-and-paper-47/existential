@@ -1,11 +1,15 @@
 const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQeKQogEEDNWY626wZDamnMfGNimCIMFqwP9_spwPc-qotu_yQq7jKMzF1YeFzfBSrFAbCCO8UNvMwZ/pub?output=tsv'; 
 let translations = { ru: {}, en: {} };
 let currentLang = 'ru';
-
 function applyInitialLoadingState(lang) {
     currentLang = lang;
-    const dict = translations[lang] || {}; // Объявляем dict для текущего языка
+    const dict = translations[lang] || {};
     
+    const titleEl = document.getElementById('t-window-title');
+    if (titleEl) {
+        titleEl.innerText = dict['window-title'] || (lang === 'en' ? "Form 404-Aleph" : "Форма 404-Алеф");
+    }
+
     document.title = (lang === 'en' ? "Home - " : "Стартовая страница - ") + (dict['window-title'] || "Форма 404-Алеф");
     
     const sloganEl = document.getElementById('t-slogan');
@@ -18,16 +22,19 @@ function applyInitialLoadingState(lang) {
         findPlanBtn.innerText = dict['find plan'] || (lang === 'en' ? "Find your plan" : "Выберите ваш план");
     }
 
-    // В файле landing.js в функции applyInitialLoadingState добавьте обновление заголовка:
-    const titleEl = document.getElementById('t-window-title');
-    if (titleEl) {
-        titleEl.innerText = dict['window-title'] || (lang === 'en' ? "Form 404-Aleph" : "Форма 404-Алеф");
+    // Синхронизация активных классов кнопок
+    const btnRuDesk = document.getElementById('btn-ru-desk');
+    const btnEnDesk = document.getElementById('btn-en-desk');
+    if (btnRuDesk) btnRuDesk.classList.toggle('active', lang === 'ru');
+    if (btnEnDesk) btnEnDesk.classList.toggle('active', lang === 'en');
+
+    const langLabel = document.getElementById('current-lang-label');
+    if (langLabel) {
+        langLabel.innerText = lang === 'en' ? 'EN' : 'RU';
     }
-    
-    const btnRu = document.getElementById('btn-ru');
-    const btnEn = document.getElementById('btn-en');
-    if (btnRu) btnRu.classList.toggle('active', lang === 'ru');
-    if (btnEn) btnEn.classList.toggle('active', lang === 'en');
+
+    const menu = document.getElementById('langMenu');
+    if (menu) menu.classList.remove('show');
 }
 
 // 1. Определение языка из URL или браузера
