@@ -93,22 +93,23 @@
 </head>
 <body>
 
-<div class="lang-selector-top">
-    <button class="btn-lang-small active" onclick="setLanguage('ru')" id="btn-ru">Русский</button>
-    <button class="btn-lang-small" onclick="setLanguage('en')" id="btn-en">English</button>
-</div>
-
-<div class="landing-container">
-    <div class="landing-slogan" id="t-slogan">Загрузка...</div>
-    
+    <!-- Видео на фоне -->
     <div class="video-wrapper">
-        <video class="real-video" id="happy-video" src="Landing_video_1.mp4" autoplay loop muted playsinline></video>
-
+        <video class="real-video" src="bg-video.mp4" autoplay loop muted playsinline></video>
     </div>
 
-    <button class="btn-primary" id="t-find-plan" onclick="goToForm()">Загрузка...</button>
-</div>
+    <!-- Кнопки выбора языка в правом верхнем углу (поверх всего) -->
+    <div class="lang-selector-top">
+        <button class="btn-lang-small active" onclick="setLanguage('ru')" id="btn-ru">Русский</button>
+        <button class="btn-lang-small" onclick="setLanguage('en')" id="btn-en">English</button>
+    </div>
 
-<script src="landing.js"></script>
+    <!-- Заголовок, слоган и кнопки поверх видео -->
+    <div class="landing-container">
+        <div class="landing-slogan" id="t-slogan">Загрузка...</div>
+        <button class="btn-primary" id="t-find-plan" onclick="goToForm()">Загрузка...</button>
+    </div>
+
+    <script src="landing.js"></script>
 </body>
 </html>
