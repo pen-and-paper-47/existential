@@ -101,8 +101,10 @@
             width: 100%; cursor: pointer; font-size: 14px; text-decoration: none; font-family: inherit;
         }
 
+        /* ИСПРАВЛЕНИЕ 2Б: Строгие правила скрытия и показа */
         .block { display: none; animation: fadeIn 0.5s ease forwards; }
         .block.active { display: block; }
+        #block4.active { display: flex !important; flex-direction: column; justify-content: center; align-items: center; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
 
 /* Обновленные карточки рисков (Галочка слева, крупная) */
@@ -319,7 +321,8 @@
         <div id="data-payment-fields" style="display: none; padding: 18px; border: 2px dashed var(--primary-red); margin-bottom: 15px; background: #fff3e0; border-radius: 12px; animation: fadeIn 0.4s ease forwards;">
             <div class="field-group" style="margin-bottom: 15px;">
                 <label id="t-dob-label" style="font-size: 14px; color: #e65100;">Дата рождения (для калибровки цифрового следа):</label>
-                <input type="date" id="userDob" class="modern-input">
+                <!-- ИСПРАВЛЕНИЕ 4А: Триггер на изменение даты -->
+                <input type="date" id="userDob" class="modern-input" oninput="calculatePremiums()">
             </div>
         </div>
 
@@ -337,14 +340,13 @@
 </div>
 
 <!-- ЭКРАН 4: СПАСИБО ЗА ДОВЕРИЕ -->
-    <!-- Вертикальная компоновка (Flex Column) -->
-    <div id="block4" class="block" style="text-align: center; padding: 40px 20px; display: flex; flex-direction: column; justify-content: center; align-items: center; min-height: 40vh;">
+   <!-- ИСПРАВЛЕНИЕ 2А: Очищенный HTML Блока 4 -->
+    <div id="block4" class="block" style="text-align: center; padding: 40px 20px; min-height: 40vh;">
         <h2 style="color: var(--growth-green); margin-bottom: 10px;" id="t-thanks-title">Спасибо за доверие</h2>
         <h3 style="color: var(--text-muted); font-style: italic; font-size: 16px; margin-bottom: 30px; line-height: 1.4; font-weight: 400;" id="t-thanks-slogan"></h3>
         
         <p id="thank-you-message" style="margin-bottom: 30px; font-size: 16px; line-height: 1.5;"></p>
         
-        <!-- Кнопка возврата с таймером -->
         <button class="btn-primary" onclick="resetToMain()" style="border-radius: 12px; padding: 16px; width: 100%; max-width: 350px;" id="t-back-main">Возврат на главную страницу (15)</button>
     </div>
 
@@ -424,61 +426,69 @@ let thankYouTimerInterval; // Переменная для таймера фин�
     function applyLanguage() {
         const dict = translations[currentLang];
         if (!dict) return;
+        
+        // "Бюрократический щит" — функция, которая игнорирует отсутствующие элементы
+        const setText = (id, text) => {
+            const el = document.getElementById(id);
+            if (el && text) el.innerHTML = text;
+        };
+        
+        // Теперь мы ПРОПУСКАЕМ все тексты через щит
+        setText('t-window-title', dict['window-title']);
+        setText('t-warning', dict['warning']);
+        setText('t-name', dict['name']);
+        
+        const nameInput = document.getElementById('t-name-placeholder');
+        if (nameInput) nameInput.placeholder = dict['name-placeholder'] || "";
+        
+        setText('t-anxiety', dict['anxiety']);
+        setText('t-wear', dict['wear']);
+        setText('t-wear-desc', dict['wear-desc']);
+        setText('t-news', dict['news']);
+        setText('t-consent-text', dict['consent-text']);
+        setText('t-next-btn', dict['next-btn']);
+        
+        setText('t-risks-title', dict['risks-title']);
+        setText('t-pay-btn', dict['pay-btn']);
+        setText('t-back-1', dict['back-1']);
+        
+        setText('t-pay-title', dict['pay-title']);
+        setText('t-pay-1', dict['pay-1']);
+        setText('t-pay-2', dict['pay-2']);
+        setText('t-pay-3', dict['pay-3']);
+        setText('t-finish-btn', dict['finish-btn']);
+        setText('t-back-2', dict['back-2']);
+        setText('t-disclaimer', dict['disclaimer']);
 
-        document.getElementById('t-window-title').innerText = dict['window-title'];
-        document.getElementById('t-warning').innerText = dict['warning'];
-        document.getElementById('t-name').innerText = dict['name'];
-        document.getElementById('t-name-placeholder').placeholder = dict['name-placeholder'];
-        document.getElementById('t-anxiety').innerText = dict['anxiety'];
-        document.getElementById('t-wear').innerText = dict['wear'];
-        document.getElementById('t-wear-desc').innerText = dict['wear-desc'];
-        document.getElementById('t-news').innerText = dict['news'];
-        // УДАЛЕНЫ СТРОКИ С t-news-1 и t-news-2, так как теперь это слайдер
-        document.getElementById('t-consent-text').innerText = dict['consent-text'];
-        document.getElementById('t-next-btn').innerText = dict['next-btn'];
+        const emailInput = document.getElementById('userEmail');
+        if (emailInput) emailInput.placeholder = dict['email-placeholder'] || "ваша@почта.com";
         
-        document.getElementById('t-risks-title').innerText = dict['risks-title'];
-        document.getElementById('t-pay-btn').innerText = dict['pay-btn'];
-        document.getElementById('t-back-1').innerText = dict['back-1'];
+        setText('t-pay-4', dict['pay-4'] || "<strong>Передача цифрового следа</strong> (оплата личными данными)");
+        setText('t-email-disclaimer', dict['email-disclaimer']);
         
-        document.getElementById('t-pay-title').innerText = dict['pay-title'];
-        document.getElementById('t-pay-1').innerHTML = dict['pay-1'];
-        document.getElementById('t-pay-2').innerHTML = dict['pay-2'];
-        document.getElementById('t-pay-3').innerHTML = dict['pay-3'];
-        document.getElementById('t-finish-btn').innerText = dict['finish-btn'];
-        document.getElementById('t-back-2').innerText = dict['back-2'];
-        document.getElementById('t-disclaimer').innerText = dict['disclaimer'];
+        setText('t-thanks-title', dict['thanks-title'] || "Спасибо за доверие");
+        setText('t-thanks-slogan', dict['slogan']);
+        setText('t-back-main', (dict['back-main'] || "Возврат на главную страницу") + " (15)");
+        
+        setText('t-dob-label', dict['dob-label'] || "Дата рождения (для калибровки цифрового следа):");
+        setText('pdf-cost-label', dict['pdf-cost'] || "Уплаченная премия:");
 
-        // Новые переводы
-        document.getElementById('userEmail').placeholder = dict['email-placeholder'] || "ваша@почта.com";
-        document.getElementById('t-pay-4').innerHTML = dict['pay-4'] || "<strong>Передача цифрового следа</strong> (оплата личными данными)";
-        document.getElementById('t-email-disclaimer').innerText = dict['email-disclaimer'];
-        
-        // Переводы экрана Спасибо
-        document.getElementById('t-thanks-title').innerText = dict['thanks-title'] || "Спасибо за доверие";
-        document.getElementById('t-thanks-slogan').innerText = dict['slogan'];
-        document.getElementById('t-back-main').innerText = (dict['back-main'] || "Возврат на главную страницу") + " (15)";
-        
-        document.getElementById('t-dob-label').innerText = dict['dob-label'] || "Дата рождения (для калибровки цифрового следа):";
-        document.getElementById('pdf-cost-label').innerText = dict['pdf-cost'] || "Уплаченная премия:";
-
-        // Обновление кнопок таймера (если они у вас есть)
-        const btnContinue = document.getElementById('btn-continue');
-        if (btnContinue) btnContinue.innerText = dict['timeout-continue'] || "Продолжаем";
-        const btnAbort = document.getElementById('btn-abort');
-        if (btnAbort) btnAbort.innerText = dict['timeout-abort'] || "Прерываемся";
+        setText('btn-continue', dict['timeout-continue'] || "Продолжаем");
+        setText('btn-abort', dict['timeout-abort'] || "Прерываемся");
         
         // Генерация рисков из таблицы (risk1 - risk9)
         const risksContainer = document.getElementById('risks-container');
-        risksContainer.innerHTML = '';
-        for (let i = 1; i <= 9; i++) {
-            if (dict[`risk${i}`]) {
-                risksContainer.innerHTML += `
-                    <label class="risk-card">
-                        <input type="checkbox" name="risks" value="risk${i}">
-                        <span>${dict[`risk${i}`]}</span>
-                    </label>
-                `;
+        if (risksContainer) {
+            risksContainer.innerHTML = '';
+            for (let i = 1; i <= 9; i++) {
+                if (dict[`risk${i}`]) {
+                    risksContainer.innerHTML += `
+                        <label class="risk-card">
+                            <input type="checkbox" name="risks" value="risk${i}">
+                            <span>${dict[`risk${i}`]}</span>
+                        </label>
+                    `;
+                }
             }
         }
         
@@ -732,6 +742,63 @@ let inactivityTimer;
     let countdownInterval;
     let timeLeft = 15;
 
+// ИСПРАВЛЕНИЕ 4Б: Анимация и пересчет данных
+    function animateValue(obj, start, end, duration, unit) {
+        let startTimestamp = null;
+        const step = (timestamp) => {
+            if (!startTimestamp) startTimestamp = timestamp;
+            const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+            const current = (start + (end - start) * progress).toFixed(1);
+            obj.innerText = `Итого: ${current} ${unit}`;
+            if (progress < 1) {
+                window.requestAnimationFrame(step);
+            } else {
+                obj.innerText = `Итого: ${end.toFixed(1)} ${unit}`;
+            }
+        };
+        window.requestAnimationFrame(step);
+    }
+
+    function calculatePremiums() {
+        const anxiety = parseInt(document.getElementById('anxietySlider').value) || 4;
+        const conflicts = parseInt(document.getElementById('conflictSelect').value) || 0;
+        const news = parseInt(document.getElementById('newsSlider').value) || 0;
+        const risks = document.querySelectorAll('input[name="risks"]:checked').length || 0;
+        const dict = translations[currentLang] || {};
+
+        const nervesCost = Math.floor((anxiety * 1.5 + conflicts * 0.8 + news * 2.5) * (risks * 1.2 + 1) * 1420);
+        const sleepCost = Math.floor(anxiety * 12 + conflicts * 18 + news * 9 + risks * 32);
+        
+        let dataCost = ((anxiety * 0.7 + conflicts * 0.3 + news * 1.2 + risks * 2) * 10) / 10;
+
+        // Влияние возраста на объем следа (калибровка даты рождения)
+        const dobStr = document.getElementById('userDob').value;
+        if (dobStr) {
+            const birthYear = new Date(dobStr).getFullYear();
+            if (birthYear > 1900 && birthYear <= 2026) {
+                const age = 2026 - birthYear;
+                dataCost += (age * 0.15); // Накидываем терабайты за прожитые годы
+            }
+        }
+
+        document.getElementById('calc-nerves').innerText = `Итого: ${nervesCost.toLocaleString()} ${dict['unit-nerves'] || 'клеток'}`;
+        document.getElementById('calc-sleep').innerText = `Итого: ${sleepCost.toLocaleString()} ${dict['unit-sleep'] || 'часов'}`;
+        document.getElementById('calc-oblivion').innerText = `Итого: ${dict['unit-oblivion'] || '100% истории'}`;
+        
+        const dataBadge = document.getElementById('calc-data');
+        // Извлекаем старое значение для старта анимации
+        const oldValMatch = dataBadge.innerText.match(/[\d\.]+/);
+        const oldVal = oldValMatch ? parseFloat(oldValMatch[0]) : 0;
+        const unitData = dict['unit-data'] || 'ТБ';
+
+        // Запускаем анимацию прокрутки цифр, если дата введена и значение изменилось
+        if (dobStr && oldVal !== dataCost && document.getElementById('block3').classList.contains('active')) {
+            animateValue(dataBadge, oldVal, dataCost, 1000, unitData); // Анимация длится 1 секунду
+        } else {
+            dataBadge.innerText = `Итого: ${dataCost.toFixed(1)} ${unitData}`;
+        }
+    }
+    
 function resetInactivity() {
         // НОВОЕ: Если окно таймера уже открыто, игнорируем движения мыши
         if (document.getElementById('timeout-modal').style.display === 'flex') {
@@ -766,9 +833,14 @@ function showTimeoutModal() {
         }, 1000);
     }
 
-    function continueSession() {
-        resetInactivity();
-    }
+ // ИСПРАВЛЕНИЕ 3: Принудительная остановка и сброс таймера
+    window.continueSession = function() {
+        clearInterval(countdownInterval);
+        clearTimeout(inactivityTimer);
+        document.getElementById('timeout-modal').style.display = 'none';
+        // Перезапускаем отсчет 45 секунд заново
+        inactivityTimer = setTimeout(showTimeoutModal, 45000);
+    };
 
     // Отслеживаем активность на планшете
     document.addEventListener('mousemove', resetInactivity);
