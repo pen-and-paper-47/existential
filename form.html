@@ -103,11 +103,11 @@
         <button class="btn-secondary" onclick="goToStep1()" id="t-back-1"></button>
     </div>
 
-    <!-- БЛОК 3: ОПЛАТА И СБОР ДАННЫХ -->
+   <!-- ЭКРАН 3: ОПЛАТА И СБОР ДАННЫХ -->
     <div id="block3" class="block">
         <label id="t-pay-title" style="font-size: 18px; margin-bottom: 20px; color: var(--growth-green); font-weight: 700;"></label>
         
-<div class="radio-group" id="payment-options">
+        <div class="radio-group" id="payment-options">
             <label class="risk-card">
                 <input type="radio" name="payment" value="nerves"> 
                 <div>
@@ -150,31 +150,34 @@
             <label class="risk-card">
                 <input type="radio" name="payment" value="data" id="pay-data-radio"> 
                 <div>
-                    <span id="t-pay-4"></span>
+                    <div class="pay-option-header">
+                        <span id="t-pay-4"></span>
+                    </div>
                     <div id="calc-data" class="calc-badge"></div>
                 </div>
             </label>
         </div>
 
-       <!-- Выпадающий блок оплаты данными -->
-        <div id="data-payment-fields" style="display: none; padding: 18px; border: 2px dashed var(--border-color); margin-bottom: 15px; background: #fdfbf7; border-radius: 16px; animation: fadeIn 0.4s ease forwards;">
+        <!-- Выпадающий блок оплаты данными (если используется) -->
+        <div id="data-payment-fields" style="display: none; padding: 18px; border: 2px dashed var(--primary-red); margin-top: 15px; background: #fff3e0; border-radius: 14px;">
             <div class="field-group" style="margin-bottom: 0;">
-                <label id="t-dob-label" style="font-size: 14px; font-weight: 600; margin-bottom: 8px;"></label>
+                <label id="t-dob-label" style="font-size: 14px; color: #e65100; margin-bottom: 8px;"></label>
                 <div class="dob-input-container">
-                    <input type="text" id="userDob" class="modern-input dob-input" value="1990-01-01" placeholder="ГГГГ-ММ-ДД / YYYY-MM-DD" oninput="handleDobManualInput(this.value)">
-                    <button type="button" class="dob-calendar-btn" onclick="openDobModal()" aria-label="Открыть календарь">📅</button>
+                    <input type="text" id="userDob" class="modern-input dob-input" value="1990-01-01" placeholder="YYYY-MM-DD" oninput="handleDobManualInput(this.value)">
+                    <button type="button" class="dob-calendar-btn" onclick="openDobModal()">📅</button>
                 </div>
             </div>
         </div>
 
-        <div class="field-group" style="margin-top: 25px; padding-top: 20px; border-top: 2px dashed var(--border-color);">
-           <label id="t-email-label" style="color: var(--primary-red); font-size: 14px;"></label>
-            <input type="email" id="userEmail" class="modern-input" placeholder="ваша@почта.com">
-            <div id="t-email-disclaimer" style="font-size: 11.5px; color: var(--text-muted); margin-top: 15px; line-height: 1.5;"></div>
+        <!-- Секция ввода email с красивой подложкой -->
+        <div class="email-section">
+            <label id="t-email-label" style="color: var(--primary-red); font-size: 14px; font-weight: 600; margin-bottom: 8px;"></label>
+            <input type="email" id="userEmail" class="modern-input" placeholder="ваша@почта.com" style="background: #ffffff;">
+            <div id="t-email-disclaimer" style="font-size: 11.5px; color: var(--text-muted); margin-top: 10px; line-height: 1.5;"></div>
         </div>
 
-        <button class="btn-primary" id="t-finish-btn" onclick="collectFinalData()">Получить План Защиты</button>
-        <button class="btn-secondary" onclick="goToStep2()" id="t-back-2">Вернуться назад</button>
+        <button class="btn-primary" id="t-finish-btn" onclick="collectFinalData()"></button>
+        <button class="btn-secondary" onclick="goToStep2()" id="t-back-2"></button>
     </div>
     
     <div class="disclaimer" id="t-disclaimer"></div>
