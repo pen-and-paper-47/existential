@@ -18,6 +18,12 @@ function applyInitialLoadingState(lang) {
         findPlanBtn.innerText = dict['find plan'] || (lang === 'en' ? "Find your plan" : "Выберите ваш план");
     }
 
+    // В файле landing.js в функции applyInitialLoadingState добавьте обновление заголовка:
+    const titleEl = document.getElementById('t-window-title');
+    if (titleEl) {
+        titleEl.innerText = dict['window-title'] || (lang === 'en' ? "Form 404-Aleph" : "Форма 404-Алеф");
+    }
+    
     const btnRu = document.getElementById('btn-ru');
     const btnEn = document.getElementById('btn-en');
     if (btnRu) btnRu.classList.toggle('active', lang === 'ru');
