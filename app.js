@@ -531,12 +531,18 @@ function closeDobModal() {
 
 function initDobDropdowns() {
     const lang = currentLang === 'en' ? 'en' : 'ru';
+    const dict = translations[currentLang] || {};
+    
+    // Перевод заголовка и кнопок модального окна календаря
+    document.getElementById('t-dob-modal-title').innerText = dict['dob-modal-title'] || 'Калибровка цифрового следа';
+    document.getElementById('t-dob-confirm').innerText = dict['dob-confirm'] || 'Выбрать дату';
+    document.getElementById('t-dob-cancel').innerText = dict['dob-cancel'] || 'Отмена';
     
     // Заполнение месяцев
     const monthSelect = document.getElementById('dob-select-month');
     monthSelect.innerHTML = '';
     monthNames[lang].forEach((name, idx) => {
-        const opt = document.createElement('option');
+        const opt = document.option ? document.createElement('option') : document.createElement('option');
         opt.value = idx;
         opt.innerText = name;
         if (idx === selectedDobMonth) opt.selected = true;
@@ -562,9 +568,6 @@ function initDobDropdowns() {
         span.innerText = day;
         weekdaysBox.appendChild(span);
     });
-
-    document.getElementById('t-dob-confirm').innerText = lang === 'en' ? 'Confirm Date' : 'Выбрать дату';
-    document.getElementById('t-dob-cancel').innerText = lang === 'en' ? 'Cancel' : 'Отмена';
 }
 
 function renderDobCalendar() {
