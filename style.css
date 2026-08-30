@@ -211,3 +211,78 @@ input[type="radio"], input[type="checkbox"] {
     margin-top: 10px;
     border: 1px dashed #ff9800;
 }
+
+/* Контейнер для текста опции и иконки информации */
+.pay-option-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    position: relative;
+}
+
+/* Круглая кнопка с буквой i */
+.info-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #e0f2f1;
+    color: var(--growth-green);
+    border: 1px solid var(--growth-green);
+    font-size: 11px;
+    font-weight: 800;
+    font-style: italic;
+    font-family: serif;
+    cursor: pointer;
+    flex-shrink: 0;
+    position: relative;
+    user-select: none;
+    transition: all 0.2s ease;
+}
+
+.info-icon:hover {
+    background: var(--growth-green);
+    color: #ffffff;
+}
+
+/* Всплывающий дисклеймер (тултип) */
+.info-tooltip {
+    display: none;
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: #2b3a4a;
+    color: #ffffff;
+    padding: 10px 14px;
+    border-radius: 10px;
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 1.4;
+    width: 240px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    z-index: 50;
+    text-align: left;
+    pointer-events: none;
+}
+
+/* Стрелочка тултипа */
+.info-tooltip::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border-width: 5px;
+    border-style: solid;
+    border-color: #2b3a4a transparent transparent transparent;
+}
+
+/* Показ тултипа при наведении или клике на touch-устройствах */
+.info-icon:hover .info-tooltip,
+.info-icon:focus .info-tooltip,
+.info-icon.active .info-tooltip {
+    display: block;
+}
