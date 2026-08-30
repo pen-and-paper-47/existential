@@ -126,8 +126,32 @@
         /* ИСПРАВЛЕНИЕ 2Б: Строгие правила скрытия и показа */
         .block { display: none; animation: fadeIn 0.5s ease forwards; }
         .block.active { display: block; }
-        #block4.active { display: flex !important; flex-direction: column; justify-content: center; align-items: center; }
+ #block4.active { 
+            display: flex !important; 
+            flex-direction: column; 
+            justify-content: center; 
+            align-items: center; 
+            text-align: center;
+            padding: 40px 20px;
+            min-height: 50vh;
+        }
+
+        #block4 h2 {
+            font-size: 26px;
+            margin-bottom: 12px;
+            color: var(--growth-green);
+        }
+
+        #block4 h3 {
+            color: var(--text-muted);
+            font-style: italic;
+            font-size: 16px;
+            margin-bottom: 25px;
+            line-height: 1.4;
+            font-weight: 400;
+        }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+        
 
 /* Обновленные карточки рисков (Галочка слева, крупная) */
 /* Улучшенная читаемость карточек рисков */
@@ -781,6 +805,12 @@ function collectFinalData() {
         // Прячем стандартный дисклеймер (заменяя его лозунгом в блоке 4)
         document.getElementById('t-disclaimer').style.display = 'none';
         
+        const headerEl = document.querySelector('.header');
+        if (headerEl) headerEl.style.display = 'none';
+        
+        const disclaimerEl = document.getElementById('t-disclaimer');
+        if (disclaimerEl) disclaimerEl.style.display = 'none';
+        
         const msgElement = document.getElementById('thank-you-message');
         if (email) {
             msgElement.innerText = currentLang === 'ru' 
@@ -954,6 +984,8 @@ function showTimeoutModal() {
         document.querySelectorAll('input[name="risks"]:checked').forEach(cb => cb.checked = false);
         const paymentRadio = document.querySelector('input[name="payment"]:checked');
         if (paymentRadio) paymentRadio.checked = false;
+        const headerEl = document.querySelector('.header');
+        if (headerEl) headerEl.style.display = 'flex';
         
         document.getElementById('t-finish-btn').innerText = currentLang === 'ru' ? "Получить План Защиты" : "Get Protection Plan";
         document.getElementById('t-finish-btn').disabled = false;
