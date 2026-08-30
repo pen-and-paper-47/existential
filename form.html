@@ -67,7 +67,23 @@
             <button class="btn-primary" onclick="document.getElementById('aleph-alert-modal').style.display='none'">OK</button>
         </div>
     </div>
+<!-- Модальное окно: Сенсорный календарь для iPad -->
+    <div class="modal-overlay" id="dob-modal">
+        <div class="modal-box dob-modal-card">
+            <div class="modal-title" id="t-dob-modal-title">Калибровка цифрового следа</div>
+            
+            <div class="dob-picker-controls">
+                <select id="dob-select-month" class="dob-select" onchange="renderDobCalendar()"></select>
+                <select id="dob-select-year" class="dob-select" onchange="renderDobCalendar()"></select>
+            </div>
 
+            <div class="dob-calendar-weekdays" id="dob-weekdays"></div>
+            <div class="dob-calendar-grid" id="dob-calendar-grid"></div>
+
+            <button type="button" class="btn-primary" onclick="confirmDobSelection()" id="t-dob-confirm">Выбрать дату</button>
+            <button type="button" class="btn-secondary" onclick="closeDobModal()" id="t-dob-cancel" style="margin-top: 8px;">Отмена</button>
+        </div>
+    </div>
     <!-- Таймер бездействия -->
     <div class="modal-overlay" id="timeout-modal">
         <div class="modal-box">
@@ -140,10 +156,14 @@
             </label>
         </div>
 
-        <div id="data-payment-fields" style="display: none; padding: 18px; border: 2px dashed var(--primary-red); margin-bottom: 15px; background: #fff3e0; border-radius: 12px; animation: fadeIn 0.4s ease forwards;">
-            <div class="field-group" style="margin-bottom: 15px;">
-                <label id="t-dob-label" style="font-size: 14px; color: #e65100;"></label>
-                <input type="date" id="userDob" value="1990-01-01" min="1900-01-01" max="2026-12-31" oninput="calculatePremiums()" style="width: 100%; padding: 22px; font-size: 20px; font-weight: 700; text-align: center; color: var(--primary-red); background-color: #fff; border: 3px solid var(--border-color); border-radius: 16px; cursor: pointer; outline: none; box-sizing: border-box; font-family: inherit;">
+       <!-- Выпадающий блок оплаты данными -->
+        <div id="data-payment-fields" style="display: none; padding: 18px; border: 2px dashed var(--border-color); margin-bottom: 15px; background: #fdfbf7; border-radius: 16px; animation: fadeIn 0.4s ease forwards;">
+            <div class="field-group" style="margin-bottom: 0;">
+                <label id="t-dob-label" style="font-size: 14px; font-weight: 600; margin-bottom: 8px;"></label>
+                <div class="dob-input-container">
+                    <input type="text" id="userDob" class="modern-input dob-input" value="1990-01-01" placeholder="ГГГГ-ММ-ДД / YYYY-MM-DD" oninput="handleDobManualInput(this.value)">
+                    <button type="button" class="dob-calendar-btn" onclick="openDobModal()" aria-label="Открыть календарь">📅</button>
+                </div>
             </div>
         </div>
 
