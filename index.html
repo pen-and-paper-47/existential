@@ -10,22 +10,34 @@
 
     <!-- Видео на фоне -->
     <div class="video-wrapper">
-        <video class="real-video" src="Landing_video_1.mp4" autoplay loop muted playsinline></video>
+        <video class="real-video" src="bg-video.mp4" autoplay loop muted playsinline></video>
     </div>
 
-    <!-- Заголовок слева (по размеру и стилю как кнопки языков) -->
+    <!-- Заголовок слева (переводится со сменой языка, рамка с блёром 4px) -->
     <div class="top-brand-badge" id="t-window-title">Форма 404-Алеф</div>
-    
-    <!-- Переключатель языка -->
+
+    <!-- Переключатель языка справа (адаптивный: кнопки или дропдаун) -->
     <div class="lang-selector-top">
-        <button class="btn-lang-small active" onclick="setLanguage('ru')" id="btn-ru">Русский</button>
-        <button class="btn-lang-small" onclick="setLanguage('en')" id="btn-en">English</button>
+        <!-- Версия для широких экранов -->
+        <div class="lang-buttons-desktop">
+            <button class="btn-lang-small active" onclick="setLanguage('ru')" id="btn-ru-desk">Русский</button>
+            <button class="btn-lang-small" onclick="setLanguage('en')" id="btn-en-desk">English</button>
+        </div>
+
+        <!-- Версия-дропдаун для узких экранов (активируется, если заголовок близко) -->
+        <div class="lang-dropdown-mobile">
+            <button class="btn-lang-small" onclick="toggleLangDropdown()">🌐 <span id="current-lang-label">RU</span></button>
+            <div class="lang-menu" id="langMenu">
+                <button class="lang-option" onclick="setLanguage('ru')">Русский</button>
+                <button class="lang-option" onclick="setLanguage('en')">English</button>
+            </div>
+        </div>
     </div>
 
-    <!-- Слоган размещается прямо поверх видео на нужной высоте -->
+    <!-- Слоган наверху поверх видео -->
     <div class="landing-slogan" id="t-slogan">Загрузка...</div>
 
-    <!-- Прозрачный блок с кнопкой внизу -->
+    <!-- Кнопка внизу с блёром -->
     <div class="landing-container">
         <button class="btn-primary" id="t-find-plan" onclick="goToForm()" style="max-width: 350px;">Загрузка...</button>
     </div>
