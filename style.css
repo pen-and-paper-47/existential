@@ -212,60 +212,71 @@ input[type="radio"], input[type="checkbox"] {
     border: 1px dashed #ff9800;
 }
 
-/* Контейнер для текста опции и иконки информации */
+/* Контейнер строки с опцией оплаты */
 .pay-option-header {
     display: flex;
     align-items: center;
     gap: 8px;
-    position: relative;
+    position: relative; /* Тултип позиционируется относительно всей строки */
+    width: 100%;
 }
 
-/* Круглая кнопка с буквой i */
+/* Иконка информации */
 .info-icon {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 18px;
-    height: 18px;
+    width: 20px;
+    height: 20px;
     border-radius: 50%;
     background: #e0f2f1;
     color: var(--growth-green);
-    border: 1px solid var(--growth-green);
-    font-size: 11px;
+    border: 1.5px solid var(--growth-green);
+    font-size: 12px;
     font-weight: 800;
     font-style: italic;
     font-family: serif;
     cursor: pointer;
     flex-shrink: 0;
-    position: relative;
     user-select: none;
     transition: all 0.2s ease;
 }
 
-.info-icon:hover {
+.info-icon:hover, 
+.info-icon.active {
     background: var(--growth-green);
     color: #ffffff;
 }
 
-/* Всплывающий дисклеймер (тултип) */
+/* Полупрозрачный инфобаббл с размытием (Glassmorphism) */
 .info-tooltip {
     display: none;
     position: absolute;
-    bottom: calc(100% + 8px);
-    left: 50%;
-    transform: translateX(-50%);
-    background: #2b3a4a;
-    color: #ffffff;
-    padding: 10px 14px;
-    border-radius: 10px;
-    font-size: 12px;
-    font-weight: 400;
-    line-height: 1.4;
-    width: 240px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-    z-index: 50;
+    bottom: calc(100% + 10px);
+    left: 0;
+    width: 280px;
+    max-width: calc(100vw - 70px); /* Не выходит за границы мобильного экрана */
+    
+    /* Стеклянный полупрозрачный фон с блёром */
+    background: rgba(35, 48, 62, 0.88) !important;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    
+    /* Четкий читаемый текст */
+    color: #ffffff !important;
+    font-size: 13px !important;
+    font-weight: 500 !important;
+    line-height: 1.45 !important;
     text-align: left;
+    
+    padding: 12px 14px;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+    z-index: 1000;
+    box-sizing: border-box;
     pointer-events: none;
+    animation: fadeIn 0.2s ease forwards;
 }
 
 /* Стрелочка тултипа */
@@ -273,14 +284,13 @@ input[type="radio"], input[type="checkbox"] {
     content: '';
     position: absolute;
     top: 100%;
-    left: 50%;
-    transform: translateX(-50%);
-    border-width: 5px;
+    left: 18px; /* Указывает точно на иконку */
+    border-width: 6px;
     border-style: solid;
-    border-color: #2b3a4a transparent transparent transparent;
+    border-color: rgba(35, 48, 62, 0.88) transparent transparent transparent;
 }
 
-/* Показ тултипа при наведении или клике на touch-устройствах */
+/* Показ баббла */
 .info-icon:hover .info-tooltip,
 .info-icon:focus .info-tooltip,
 .info-icon.active .info-tooltip {
