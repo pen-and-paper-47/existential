@@ -94,19 +94,15 @@ function setLanguage(lang) {
         const windowTitle = dict['window-title'] || (lang === 'en' ? "Form 404-Aleph" : "Форма 404-Алеф");
         document.title = (lang === 'en' ? "Home - " : "Стартовая страница - ") + windowTitle;
 
+        // Берем слоган из таблицы (с поддержкой переноса строки <br>)
         const sloganEl = document.getElementById('t-slogan');
-        if (sloganEl) sloganEl.innerText = dict['slogan'] || (lang === 'en' ? "Peace of mind, even if tomorrow never comes." : "Спокойствие, даже если завтра не наступит.");
+        if (sloganEl) sloganEl.innerHTML = dict['slogan'] || (lang === 'en' ? "Peace of mind,<br>even if tomorrow never comes." : "Спокойствие,<br>даже если завтра не наступит.");
 
+        // Берем текст кнопки из таблицы (ключ 'find plan')
         const findPlanEl = document.getElementById('t-find-plan');
         if (findPlanEl) findPlanEl.innerText = dict['find plan'] || (lang === 'en' ? "Find your plan" : "Выберете ваш план");
-        
-        const videoPlaceholder = document.getElementById('t-video-placeholder');
-        if (videoPlaceholder) {
-            videoPlaceholder.innerText = dict['video-placeholder'] || (lang === 'en' ? "[ A generated video of happy Israelis will be placed here ]" : "[ Здесь будет сгенерированное видео со счастливыми израильтянами ]");
-        }
     }
 }
-
 function goToForm() {
     window.location.href = `form.html?lang=${currentLang}`;
 }
