@@ -461,13 +461,16 @@ function resetToMain() {
 
 document.addEventListener('click', function(e) {
     const icon = e.target.closest('.info-icon');
-    document.querySelectorAll('.info-icon').forEach(el => {
-        if (el !== icon) el.classList.remove('active');
-    });
     if (icon) {
         e.preventDefault();
-        icon.classList.toggle('active');
+        e.stopPropagation(); // Предотвращает срабатывание выбора радиокнопки
+        const isActive = icon.classList.contains('active');
+        document.querySelectorAll('.info-icon').forEach(el => el.classList.remove('active'));
+        if (!isActive) icon.classList.add('active');
+        return;
     }
+    // Клик вне иконки закрывает открытый тултип
+    document.querySelectorAll('.info-icon').forEach(el => el.classList.remove('active'));
 });
 
 loadDataFromCloud();
