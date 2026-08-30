@@ -29,33 +29,40 @@
             position: relative;
         }
 
-        /* Кнопки языка (только RU и EN) */
+/* Увеличенные и заметные кнопки выбора языка */
         .lang-selector-top {
             position: absolute;
-            top: 20px;
-            right: 20px;
+            top: 25px;
+            right: 25px;
             display: flex;
-            gap: 10px;
+            gap: 15px;
             z-index: 100;
         }
 
         .btn-lang-small {
-            background: rgba(255, 255, 255, 0.7);
+            background: rgba(255, 255, 255, 0.9);
             border: 2px solid var(--border-color);
             color: var(--text-main);
-            padding: 8px 16px;
-            border-radius: 12px;
-            font-size: 14px;
-            font-weight: 600;
+            padding: 12px 24px;       /* Сделали кнопки шире и выше */
+            border-radius: 16px;      /* Более скругленные края */
+            font-size: 16px;          /* Увеличили размер текста */
+            font-weight: 700;         /* Сделали жирнее */
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
             backdrop-filter: blur(5px);
         }
 
-        .btn-lang-small:hover, .btn-lang-small.active {
+        .btn-lang-small:hover {
             border-color: var(--growth-green);
-            color: var(--growth-green);
-            background: #fff;
+            transform: translateY(-2px);
+        }
+
+        .btn-lang-small.active {
+            border-color: var(--growth-green);
+            color: white;
+            background: var(--growth-green); /* Активная кнопка подсвечивается зеленым фирменным цветом */
+            box-shadow: 0 6px 16px rgba(76, 175, 80, 0.3);
         }
 
         .landing-container {
@@ -141,10 +148,11 @@
     
     <div class="video-wrapper">
         <video class="real-video" id="happy-video" src="ваше_видео.mp4" autoplay loop muted playsinline></video>
-        <div class="video-placeholder-text">
-            [ Здесь будет сгенерированное видео со счастливыми израильтянами во время войны ]
+        <div class="video-placeholder-text" id="t-video-placeholder">
+            [ Здесь будет сгенерированное видео со счастливыми израильтянами ]
         </div>
     </div>
+</div>
 
     <button class="btn-primary" id="t-find-plan" onclick="goToForm()">Загрузка...</button>
 </div>
@@ -154,7 +162,24 @@
     const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQeKQogEEDNWY626wZDamnMfGNimCIMFqwP9_spwPc-qotu_yQq7jKMzF1YeFzfBSrFAbCCO8UNvMwZ/pub?output=tsv'; 
     let translations = {};
     let currentLang = 'ru';
+    // 1. Автоматическое определение языка браузера при первом запуске
+    function detectBrowserLanguage() {
+        // Проверяем, передается ли язык через URL (например, если пользователь вернулся со страницы формы)
+        const urlParams = new URLSearchParams(window.location.search);
+        const langParam = urlParams.get('lang');
+        if (langParam && (langParam === 'ru' || langParam === 'en')) {
+            return langParam;
+        }
 
+        // Берем язык из настроек браузера (например, 'en-US' превращаем в 'en')
+        const browserLang = (navigator.language || navigator.userLanguage || 'ru').substring(0, 2);
+        
+        // Если язык браузера английский, ставим 'en', иначе по умолчанию 'ru'
+        if (browserLang === 'en') {
+            return 'en';
+        }
+        return 'ru';
+    }
     async function loadDataFromCloud() {
         try {
             const response = await fetch(SHEET_URL);
@@ -180,30 +205,43 @@
                     }
                 }
             }
-            // Устанавливаем язык по умолчанию
+
+            // Определяем язык браузера и сразу применяем его
+            currentLang = detectBrowserLanguage();
             setLanguage(currentLang);
-        } catch (error) {
+            
+            
+       } catch (error) {
             console.error('Ошибка связи с облаком:', error);
             // Фолбэк-тексты на случай, если таблица недоступна
             document.getElementById('t-slogan').innerText = "Гарантия стабильности в эпоху случайностей";
             document.getElementById('t-find-plan').innerText = "Find your plan";
+            
+            const videoPlaceholder = document.getElementById('t-video-placeholder');
+            if (videoPlaceholder) {
+                videoPlaceholder.innerText = "[ Здесь будет сгенерированное видео со счастливыми израильтянами ]";
+            }
+        }
+function setLanguage(lang) {
+        currentLang = lang;
+        
+        // Подсветка активной кнопки
+        document.getElementById('btn-ru').classList.toggle('active', lang === 'ru');
+        document.getElementById('btn-en').classList.toggle('active', lang === 'en');
+        
+        // Мгновенная подмена текста на странице
+        if (translations[lang]) {
+            // Используем ключи из вашей таблицы
+            document.getElementById('t-slogan').innerText = translations[lang]['slogan'] || "Слоган не найден";
+            document.getElementById('t-find-plan').innerText = translations[lang]['find plan'] || "Find your plan";
+            
+            // НОВАЯ СТРОКА: Подтягиваем текст для плейсхолдера видео
+            const videoPlaceholder = document.getElementById('t-video-placeholder');
+            if (videoPlaceholder) {
+                videoPlaceholder.innerText = translations[lang]['video-placeholder'] || "[ Здесь будет сгенерированное видео ]";
+            }
         }
     }
-
-   function setLanguage(lang) {
-    currentLang = lang;
-    
-    // Подсветка активной кнопки
-    document.getElementById('btn-ru').classList.toggle('active', lang === 'ru');
-    document.getElementById('btn-en').classList.toggle('active', lang === 'en');
-    
-    // Мгновенная подмена текста на странице
-    if (translations[lang]) {
-        // Используем ключи из вашей таблицы
-        document.getElementById('t-slogan').innerText = translations[lang]['slogan'] || "Слоган не найден";
-        document.getElementById('t-find-plan').innerText = translations[lang]['find plan'] || "Find your plan";
-    }
-}
 
     function goToForm() {
         // Переход на страницу с опросником, передаем язык через параметр URL
