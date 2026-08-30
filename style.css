@@ -86,7 +86,7 @@ input[type=range] {
     border: 1px solid var(--border-color);
     text-align: center;
     align-self: stretch;
-    min-height: 55px;
+    min-height: 65px;
     display: flex;
     align-items: center;
     justify-content: center;
