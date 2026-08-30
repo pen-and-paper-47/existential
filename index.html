@@ -170,13 +170,30 @@
         }
 
         const browserLang = (navigator.language || navigator.userLanguage || 'ru').substring(0, 2);
-        if (browserLang === 'en') {
-            return 'en';
-        }
-        return 'ru';
+        return browserLang === 'en' ? 'en' : 'ru';
     }
+// 2. Предварительная установка текста загрузки до ответа сервера
+    function applyInitialLoadingState(lang) {
+        currentLang = lang;
+        const loadingText = lang === 'en' ? 'Loading...' : 'Загрузка...';
+        
+        document.title = lang === 'en' ? 'Form 404-Aleph' : 'Форма 404-Алеф';
+        
+        const sloganEl = document.getElementById('t-slogan');
+        if (sloganEl) sloganEl.innerText = loadingText;
 
+        const findPlanBtn = document.getElementById('t-find-plan');
+        if (findPlanBtn) findPlanBtn.innerText = loadingText;
+
+        const btnRu = document.getElementById('btn-ru');
+        const btnEn = document.getElementById('btn-en');
+        if (btnRu) btnRu.classList.toggle('active', lang === 'ru');
+        if (btnEn) btnEn.classList.toggle('active', lang === 'en');
+    }
     async function loadDataFromCloud() {
+        // Сразу выставляем состояние загрузки на языке браузера
+        const initialLang = detectBrowserLanguage();
+        applyInitialLoadingState(initialLang);
         try {
             const response = await fetch(SHEET_URL);
             const data = await response.text();
@@ -205,44 +222,45 @@
                 }
             }
 
-            // Устанавливаем язык
-            currentLang = detectBrowserLanguage();
-            setLanguage(currentLang);
+// Применяем словарь
+            setLanguage(initialLang);
 
         } catch (error) {
             console.error('Ошибка связи с облаком:', error);
-            // Фолбэк-тексты, если таблица не ответила
-            document.getElementById('t-slogan').innerText = "Спокойствие, даже если завтра не наступит.";
-            document.getElementById('t-find-plan').innerText = "Выберете ваш план";
+            document.getElementById('t-slogan').innerText = initialLang === 'en' ? "Peace of mind, even if tomorrow never comes." : "Спокойствие, даже если завтра не наступит.";
+            document.getElementById('t-find-plan').innerText = initialLang === 'en' ? "Find your plan" : "Выберете ваш план";
             
             const videoPlaceholder = document.getElementById('t-video-placeholder');
             if (videoPlaceholder) {
-                videoPlaceholder.innerText = "[ Здесь будет сгенерированное видео со счастливыми израильтянами ]";
+                videoPlaceholder.innerText = initialLang === 'en' ? "[ A generated video of happy Israelis will be placed here ]" : "[ Здесь будет сгенерированное видео со счастливыми израильтянами ]";
             }
         }
     }
 
+// 4. Переключение языка и обновление текстов
     function setLanguage(lang) {
         currentLang = lang;
         
-        // Подсветка кнопок
         const btnRu = document.getElementById('btn-ru');
         const btnEn = document.getElementById('btn-en');
         if (btnRu) btnRu.classList.toggle('active', lang === 'ru');
         if (btnEn) btnEn.classList.toggle('active', lang === 'en');
         
-        // Безопасная подстановка текстов из словаря
         const dict = translations[lang];
         if (dict) {
+            // Перевод заголовка вкладки браузера
+            const windowTitle = dict['window-title'] || (lang === 'en' ? "Form 404-Aleph" : "Форма 404-Алеф");
+            document.title = (lang === 'en' ? "Home - " : "Стартовая страница - ") + windowTitle;
+
             const sloganEl = document.getElementById('t-slogan');
-            if (sloganEl) sloganEl.innerText = dict['slogan'] || "Спокойствие, даже если завтра не наступит.";
+            if (sloganEl) sloganEl.innerText = dict['slogan'] || (lang === 'en' ? "Peace of mind, even if tomorrow never comes." : "Спокойствие, даже если завтра не наступит.");
 
             const findPlanEl = document.getElementById('t-find-plan');
-            if (findPlanEl) findPlanEl.innerText = dict['find plan'] || "Выберете ваш план";
+            if (findPlanEl) findPlanEl.innerText = dict['find plan'] || (lang === 'en' ? "Find your plan" : "Выберете ваш план");
             
             const videoPlaceholder = document.getElementById('t-video-placeholder');
             if (videoPlaceholder) {
-                videoPlaceholder.innerText = dict['video-placeholder'] || "[ Здесь будет сгенерированное видео со счастливыми израильтянами ]";
+                videoPlaceholder.innerText = dict['video-placeholder'] || (lang === 'en' ? "[ A generated video of happy Israelis will be placed here ]" : "[ Здесь будет сгенерированное видео со счастливыми израильтянами ]");
             }
         }
     }
@@ -251,7 +269,6 @@
         window.location.href = `form.html?lang=${currentLang}`;
     }
 
-    // Запуск при загрузке страницы
     loadDataFromCloud();
 </script>
 
