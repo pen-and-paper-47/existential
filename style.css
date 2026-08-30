@@ -476,13 +476,15 @@ input[type="radio"], input[type="checkbox"] {
 /* Стили фонового видео и лендинга */
 body.landing-body {
     margin: 0;
-    padding: 0;
+    padding: 20px;
     min-height: 100vh;
     display: flex;
-    justify-content: center;
+    flex-direction: column; /* Выстраиваем элементы сверху вниз */
+    justify-content: flex-end; /* Прижимаем контент к нижней части экрана */
     align-items: center;
     overflow: hidden;
     background-color: var(--bg-color);
+    box-sizing: border-box;
 }
 
 .video-wrapper {
@@ -547,12 +549,19 @@ body.landing-body {
     max-width: 650px;
     width: 90%;
     padding: 40px 30px;
-    background: rgba(253, 251, 247, 0.85);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
+    
+    /* Сдвигаем блок ниже с помощью авто-отступа сверху */
+    margin-top: auto; 
+    margin-bottom: 50px;
+
+    /* Делаем блок полупрозрачным с эффектом размытия (стекло) */
+    background: rgba(253, 251, 247, 0.55); 
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    
     border-radius: 24px;
-    border: 1.5px solid var(--border-color);
-    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.08);
+    border: 1.5px solid rgba(209, 232, 226, 0.4);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
     box-sizing: border-box;
 }
 
