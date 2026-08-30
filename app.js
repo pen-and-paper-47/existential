@@ -474,3 +474,142 @@ document.addEventListener('click', function(e) {
 });
 
 loadDataFromCloud();
+
+let selectedDobYear = 1990;
+let selectedDobMonth = 0; // 0 - Январь
+let selectedDobDay = 1;
+
+const monthNames = {
+    ru: ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'],
+    en: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+};
+
+const weekdayNames = {
+    ru: ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'],
+    en: ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su']
+};
+
+// Ручной ввод с клавиатуры
+function handleDobManualInput(val) {
+    const trimmed = val.trim();
+    const match = trimmed.match(/^(\d{4})[./-](\d{1,2})[./-](\d{1,2})$/);
+    if (match) {
+        const y = parseInt(match[1]);
+        const m = parseInt(match[2]) - 1;
+        const d = parseInt(match[3]);
+        if (y >= 1900 && y <= 2026 && m >= 0 && m <= 11 && d >= 1 && d <= 31) {
+            selectedDobYear = y;
+            selectedDobMonth = m;
+            selectedDobDay = d;
+        }
+    }
+    calculatePremiums();
+}
+
+function openDobModal() {
+    const currentVal = document.getElementById('userDob').value.trim();
+    const parts = currentVal.split(/[-/.]/);
+    if (parts.length === 3) {
+        const y = parseInt(parts[0]);
+        const m = parseInt(parts[1]) - 1;
+        const d = parseInt(parts[2]);
+        if (y >= 1900 && y <= 2026 && m >= 0 && m <= 11 && d >= 1 && d <= 31) {
+            selectedDobYear = y;
+            selectedDobMonth = m;
+            selectedDobDay = d;
+        }
+    }
+
+    initDobDropdowns();
+    renderDobCalendar();
+    document.getElementById('dob-modal').style.display = 'flex';
+}
+
+function closeDobModal() {
+    document.getElementById('dob-modal').style.display = 'none';
+}
+
+function initDobDropdowns() {
+    const lang = currentLang === 'en' ? 'en' : 'ru';
+    
+    // Заполнение месяцев
+    const monthSelect = document.getElementById('dob-select-month');
+    monthSelect.innerHTML = '';
+    monthNames[lang].forEach((name, idx) => {
+        const opt = document.createElement('option');
+        opt.value = idx;
+        opt.innerText = name;
+        if (idx === selectedDobMonth) opt.selected = true;
+        monthSelect.appendChild(opt);
+    });
+
+    // Заполнение годов (от 2026 до 1900)
+    const yearSelect = document.getElementById('dob-select-year');
+    yearSelect.innerHTML = '';
+    for (let y = 2026; y >= 1900; y--) {
+        const opt = document.createElement('option');
+        opt.value = y;
+        opt.innerText = y;
+        if (y === selectedDobYear) opt.selected = true;
+        yearSelect.appendChild(opt);
+    }
+
+    // Дни недели
+    const weekdaysBox = document.getElementById('dob-weekdays');
+    weekdaysBox.innerHTML = '';
+    weekdayNames[lang].forEach(day => {
+        const span = document.createElement('span');
+        span.innerText = day;
+        weekdaysBox.appendChild(span);
+    });
+
+    document.getElementById('t-dob-confirm').innerText = lang === 'en' ? 'Confirm Date' : 'Выбрать дату';
+    document.getElementById('t-dob-cancel').innerText = lang === 'en' ? 'Cancel' : 'Отмена';
+}
+
+function renderDobCalendar() {
+    const yearSelect = document.getElementById('dob-select-year');
+    const monthSelect = document.getElementById('dob-select-month');
+    if (yearSelect) selectedDobYear = parseInt(yearSelect.value);
+    if (monthSelect) selectedDobMonth = parseInt(monthSelect.value);
+
+    const grid = document.getElementById('dob-calendar-grid');
+    grid.innerHTML = '';
+
+    const firstDayIndex = (new Date(selectedDobYear, selectedDobMonth, 1).getDay() + 6) % 7;
+    const daysInMonth = new Date(selectedDobYear, selectedDobMonth + 1, 0).getDate();
+
+    if (selectedDobDay > daysInMonth) selectedDobDay = daysInMonth;
+
+    for (let i = 0; i < firstDayIndex; i++) {
+        const emptyCell = document.createElement('div');
+        emptyCell.className = 'dob-day-btn empty';
+        grid.appendChild(emptyCell);
+    }
+
+    for (let day = 1; day <= daysInMonth; day++) {
+        const dayBtn = document.createElement('button');
+        dayBtn.type = 'button';
+        dayBtn.className = 'dob-day-btn';
+        dayBtn.innerText = day;
+        if (day === selectedDobDay) {
+            dayBtn.classList.add('selected');
+        }
+        dayBtn.onclick = function() {
+            document.querySelectorAll('.dob-day-btn').forEach(btn => btn.classList.remove('selected'));
+            dayBtn.classList.add('selected');
+            selectedDobDay = day;
+        };
+        grid.appendChild(dayBtn);
+    }
+}
+
+function confirmDobSelection() {
+    const formattedMonth = String(selectedDobMonth + 1).padStart(2, '0');
+    const formattedDay = String(selectedDobDay).padStart(2, '0');
+    const dateStr = `${selectedDobYear}-${formattedMonth}-${formattedDay}`;
+
+    document.getElementById('userDob').value = dateStr;
+    calculatePremiums();
+    closeDobModal();
+}
