@@ -2,6 +2,28 @@ const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQeKQogEEDNWY
 let translations = { ru: {}, en: {} };
 let currentLang = 'ru';
 
+function applyInitialLoadingState(lang) {
+    currentLang = lang;
+    const dict = translations[lang] || {}; // Объявляем dict для текущего языка
+    
+    document.title = (lang === 'en' ? "Home - " : "Стартовая страница - ") + (dict['window-title'] || "Форма 404-Алеф");
+    
+    const sloganEl = document.getElementById('t-slogan');
+    if (sloganEl) {
+        sloganEl.innerHTML = dict['slogan'] || (lang === 'en' ? "Peace of mind,<br>even if tomorrow never comes." : "Спокойствие,<br>даже если завтра не наступит.");
+    }
+
+    const findPlanBtn = document.getElementById('t-find-plan');
+    if (findPlanBtn) {
+        findPlanBtn.innerText = dict['find plan'] || (lang === 'en' ? "Find your plan" : "Выберите ваш план");
+    }
+
+    const btnRu = document.getElementById('btn-ru');
+    const btnEn = document.getElementById('btn-en');
+    if (btnRu) btnRu.classList.toggle('active', lang === 'ru');
+    if (btnEn) btnEn.classList.toggle('active', lang === 'en');
+}
+
 // 1. Определение языка из URL или браузера
 function detectBrowserLanguage() {
     const urlParams = new URLSearchParams(window.location.search);
