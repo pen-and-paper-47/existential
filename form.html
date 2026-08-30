@@ -547,19 +547,40 @@ function applyLanguage() {
         try { if (typeof updateNewsSlider === "function") updateNewsSlider(); } catch (e) {}
     }
 // Та самая функция генерации конфликтов
-    function populateConflictSelect(lang) {
+function populateConflictSelect(lang) {
         const select = document.getElementById('conflictSelect');
+        if (!select) return;
+        
         const cur = select.value || "0";
         select.innerHTML = '';
+
+        // Вспомогательная функция для корректных окончаний в русском языке
+        const getRuWord = (num) => {
+            const n = Math.abs(num) % 100;
+            const n1 = n % 10;
+            if (n > 10 && n < 20) return 'конфликтов';
+            if (n1 > 1 && n1 < 5) return 'конфликта';
+            if (n1 === 1) return 'конфликт';
+            return 'конфликтов';
+        };
+
         for (let i = 0; i <= 47; i++) {
-            let text = i + (lang === 'ru' ? ' конфл.' : ' conf.');
+            let label = "";
+            
+            if (lang === 'ru') {
+                label = `${i} ${getRuWord(i)}`;
+            } else {
+                label = `${i} ${i === 1 ? 'conflict' : 'conflicts'}`;
+            }
+
             const opt = document.createElement('option');
-            opt.value = i; opt.innerText = text;
+            opt.value = i;
+            opt.innerText = label;
             if (i.toString() === cur) opt.selected = true;
             select.appendChild(opt);
         }
     }
-
+    
     // Обновление текста новостного слайдера
     function updateNewsSlider() {
         const slider = document.getElementById('newsSlider');
