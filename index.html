@@ -4,27 +4,25 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Стартовая страница - Форма 404-Алеф</title>
-    
     <link rel="stylesheet" href="style.css">
-    
 </head>
-<body>
 <body class="landing-body">
+
     <!-- Видео на фоне -->
     <div class="video-wrapper">
         <video class="real-video" src="bg-video.mp4" autoplay loop muted playsinline></video>
     </div>
 
-    <!-- Кнопки выбора языка в правом верхнем углу (поверх всего) -->
+    <!-- Переключатель языка -->
     <div class="lang-selector-top">
         <button class="btn-lang-small active" onclick="setLanguage('ru')" id="btn-ru">Русский</button>
         <button class="btn-lang-small" onclick="setLanguage('en')" id="btn-en">English</button>
     </div>
 
-    <!-- Заголовок, слоган и кнопки поверх видео -->
+    <!-- Основной блок по центру -->
     <div class="landing-container">
         <div class="landing-slogan" id="t-slogan">Загрузка...</div>
-        <button class="btn-primary" id="t-find-plan" onclick="goToForm()">Загрузка...</button>
+        <button class="btn-primary" id="t-find-plan" onclick="goToForm()" style="max-width: 350px;">Загрузка...</button>
     </div>
 
     <script src="landing.js"></script>
