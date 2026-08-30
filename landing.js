@@ -5,6 +5,7 @@ function applyInitialLoadingState(lang) {
     currentLang = lang;
     const dict = translations[lang] || {};
     
+    // 1. Перевод заголовка слева (404-Алеф)
     const titleEl = document.getElementById('t-window-title');
     if (titleEl) {
         titleEl.innerText = dict['window-title'] || (lang === 'en' ? "Form 404-Aleph" : "Форма 404-Алеф");
@@ -12,6 +13,7 @@ function applyInitialLoadingState(lang) {
 
     document.title = (lang === 'en' ? "Home - " : "Стартовая страница - ") + (dict['window-title'] || "Форма 404-Алеф");
     
+    // 2. Перевод слогана и кнопки по центру
     const sloganEl = document.getElementById('t-slogan');
     if (sloganEl) {
         sloganEl.innerHTML = dict['slogan'] || (lang === 'en' ? "Peace of mind,<br>even if tomorrow never comes." : "Спокойствие,<br>даже если завтра не наступит.");
@@ -22,12 +24,21 @@ function applyInitialLoadingState(lang) {
         findPlanBtn.innerText = dict['find plan'] || (lang === 'en' ? "Find your plan" : "Выберите ваш план");
     }
 
-    // Синхронизация активных классов кнопок
+    // 3. Визуальный отклик кнопок языка (подсветка зеленым)
     const btnRuDesk = document.getElementById('btn-ru-desk');
     const btnEnDesk = document.getElementById('btn-en-desk');
-    if (btnRuDesk) btnRuDesk.classList.toggle('active', lang === 'ru');
-    if (btnEnDesk) btnEnDesk.classList.toggle('active', lang === 'en');
+    
+    if (btnRuDesk) {
+        if (lang === 'ru') btnRuDesk.classList.add('active');
+        else btnRuDesk.classList.remove('active');
+    }
+    
+    if (btnEnDesk) {
+        if (lang === 'en') btnEnDesk.classList.add('active');
+        else btnEnDesk.classList.remove('active');
+    }
 
+    // 4. Обновление мобильного дропдауна
     const langLabel = document.getElementById('current-lang-label');
     if (langLabel) {
         langLabel.innerText = lang === 'en' ? 'EN' : 'RU';
