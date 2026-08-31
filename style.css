@@ -212,20 +212,19 @@ input[type="radio"], input[type="checkbox"] {
 }
 
 #t-risks-title {
-    /* Делаем заголовок "липким" при скролле вниз */
     position: sticky;
-    top: -35px; /* Компенсируем внутренний отступ padding самой карточки */
-    
-    /* Добавляем фон, чтобы текст карточек не просвечивал под заголовком */
+    top: 0; /* Теперь заголовок останавливается ровно у верхнего края экрана */
     background: var(--card-bg);
     z-index: 10;
     display: block;
     
-    /* Аккуратные отступы и разделительная линия */
-    padding: 25px 0 15px 0;
-    margin-top: -20px;
-    margin-bottom: 20px !important; /* Перебиваем inline-стиль из HTML */
+    padding: 15px 0 15px 0;
+    margin-top: 0; /* Убрали отрицательный отступ */
+    margin-bottom: 20px !important;
     border-bottom: 2px dashed var(--border-color);
+    
+    /* Тень снизу, чтобы отделить заголовок от прокручивающегося списка */
+    box-shadow: 0 10px 10px -10px rgba(0, 0, 0, 0.1); 
 }
 .modal-overlay {
     display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
