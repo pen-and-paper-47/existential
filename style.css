@@ -706,3 +706,11 @@ body.landing-body {
     0% { transform: rotate(0deg); } 
     100% { transform: rotate(360deg); } 
 }
+
+#pdf-template {
+    position: absolute;
+    left: -9999px;
+    top: -9999px;
+    opacity: 0;
+    pointer-events: none;
+}
