@@ -288,27 +288,132 @@ document.getElementById('conflictSelect').addEventListener('change', function() 
     document.getElementById('field-news').style.display = 'block';
 });
 
+let loaderInterval; // Переменная для хранения таймера смены текста
+
+let loaderInterval;
+
 function collectFinalData() {
     const selectedPayment = document.querySelector('input[name="payment"]:checked');
     const email = document.getElementById('userEmail').value;
     const dict = translations[currentLang] || {};
     
     if (!selectedPayment) {
-        alephAlert(dict['alertConsent'] || "Выберите метод списания!");
+        alert(dict['alertConsent'] || "Выберите метод списания!");
         return;
     }
     if (!email) {
-        alephAlert(dict['alert-email'] || (currentLang === 'ru' ? "Цифровой след (Email) обязателен!" : "Email is required!"));
+        alert(currentLang === 'ru' ? "Цифровой след (Email) обязателен!" : "Email is required!");
         return;
     }
-    if (selectedPayment.value === 'data') {
-        const dob = document.getElementById('userDob').value;
-        if (!dob) {
-            alephAlert(dict['alert-dob'] || (currentLang === 'ru' ? "Укажите дату рождения для калибровки цифрового следа." : "Date of birth is required."));
-            return;
-        }
-    }
 
+    // 1. ПОКАЗЫВАЕМ ЭКРАН СИНХРОНИЗАЦИИ С ПЕРЕВОДАМИ
+    const loader = document.getElementById('generation-loader');
+    const loaderSubtext = document.getElementById('loader-subtext');
+    const loaderTitle = document.getElementById('loader-title');
+    
+    // Переводим заголовок лоадера
+    if (loaderTitle) loaderTitle.innerText = currentLang === 'ru' ? "АЛЕФ-404" : "ALEPH-404";
+    loader.style.display = 'flex';
+    
+    const phrasesRu = [
+        "Инициализация ядра...",
+        "Шифрование цифрового следа...", 
+        "Оценка экзистенциальных рисков...", 
+        "Синхронизация с Вечным Архивом...", 
+        "Выдача Сертификата покрытия..."
+    ];
+    const phrasesEn = [
+        "Initializing core...",
+        "Encrypting digital footprint...", 
+        "Evaluating existential risks...", 
+        "Syncing with Eternal Archive...", 
+        "Issuing Certificate of Coverage..."
+    ];
+    
+    const phrases = currentLang === 'ru' ? phrasesRu : phrasesEn;
+    let pIdx = 0;
+    loaderSubtext.innerText = phrases[pIdx];
+    
+    // Меняем текст каждые 1.5 секунды
+    loaderInterval = setInterval(() => {
+        pIdx = (pIdx + 1) % phrases.length;
+        loaderSubtext.innerText = phrases[pIdx];
+    }, 1500);
+
+    const finishBtn = document.getElementById('t-finish-btn');
+    finishBtn.innerText = currentLang === 'ru' ? "Формирование документа..." : "Generating document...";
+    finishBtn.disabled = true;
+
+    // 2. СЛОГАН ВСЕГДА В ДВЕ СТРОЧКИ
+    // Берем слоган из таблицы как есть (вместе с <br>)
+    const rawSlogan = dict['slogan'] || (currentLang === 'en' ? "Peace of mind,<br>even if tomorrow never comes." : "Спокойствие,<br>даже если завтра не наступит.");
+
+    // Используем innerHTML, чтобы тег <br> сработал и разорвал строку
+    document.getElementById('pdf-title-text').innerText = dict['window-title'] || (currentLang === 'ru' ? "СЕРТИФИКАТ ПОКРЫТИЯ" : "CERTIFICATE OF COVERAGE");
+    document.getElementById('pdf-slogan').innerHTML = rawSlogan; 
+    
+    const thanksSloganEl = document.getElementById('t-thanks-slogan');
+    if (thanksSloganEl) thanksSloganEl.innerHTML = rawSlogan;
+
+    document.getElementById('pdf-name').innerText = document.getElementById('t-name-placeholder').value || (currentLang === 'ru' ? "Аноним" : "Anonymous");
+    document.getElementById('pdf-anxiety').innerText = document.getElementById('anxietySlider').value;
+    document.getElementById('pdf-payment').innerText = selectedPayment.nextElementSibling.innerText;
+
+    const risksList = document.getElementById('pdf-risks-list');
+    risksList.innerHTML = '';
+    document.querySelectorAll('input[name="risks"]:checked').forEach(cb => {
+        risksList.innerHTML += `<li>${cb.nextElementSibling.innerText}</li>`;
+    });
+
+    const pdfElement = document.getElementById('pdf-template');
+    pdfElement.style.display = 'block';
+
+    const opt = { 
+        margin: 0, 
+        filename: 'Form_404_Aleph.pdf', 
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true }, 
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } 
+    };
+
+    html2pdf().set(opt).from(pdfElement).outputPdf('datauristring').then(function(pdfBase64) {
+        pdfElement.style.display = 'none';
+        const base64Data = pdfBase64.split(',')[1];
+        
+        fetch(GAS_URL, {
+            method: 'POST',
+            body: JSON.stringify({ base64: base64Data, filename: 'Form_404_Aleph.pdf' }),
+            headers: { "Content-Type": "text/plain;charset=utf-8" }
+        })
+        .then(res => res.json())
+        .then(data => {
+            // ОТКЛЮЧАЕМ ЛОАДЕР
+            loader.style.display = 'none';
+            clearInterval(loaderInterval);
+
+            if (data.status === 'success') {
+                window.open(data.url, '_blank');
+                
+                emailjs.send('service_kluawpl', 'template_34kowi9', {
+                    email_to: email,
+                    pdf_link: data.url
+                }).then(() => {
+                    showThankYouScreen(email);
+                });
+            } else {
+                throw new Error("Ошибка Drive");
+            }
+        })
+        .catch(err => {
+            loader.style.display = 'none';
+            clearInterval(loaderInterval);
+            
+            alert(currentLang === 'ru' ? "Ошибка Вечного Архива. Бюрократическая сингулярность." : "Eternal Archive Error. Bureaucratic singularity.");
+            finishBtn.innerText = dict['finish-btn'] || "Получить План Защиты";
+            finishBtn.disabled = false;
+        });
+    });
+}
     const finishBtn = document.getElementById('t-finish-btn');
     finishBtn.innerText = dict['generating-doc'] || "Формирование документа...";
     finishBtn.disabled = true;
@@ -384,33 +489,31 @@ function showThankYouScreen(email) {
     document.getElementById('block3').classList.remove('active');
     document.getElementById('block4').classList.add('active');
     
-    const headerEl = document.querySelector('.header');
-    if (headerEl) headerEl.style.display = 'none';
-    const disclaimerEl = document.getElementById('t-disclaimer');
-    if (disclaimerEl) disclaimerEl.style.display = 'none';
+    // Прячем баннер с предупреждением
+    const warningBanner = document.getElementById('t-warning');
+    if (warningBanner) {
+        warningBanner.style.display = 'none';
+    }
     
+    // 3. ВЫДЕЛЯЕМ ПОЧТУ КРУПНОЙ ПЛАШКОЙ С ТЕНЬЮ И ИКОНКОЙ
     const msgElement = document.getElementById('thank-you-message');
     if (email) {
-        msgElement.innerText = currentLang === 'ru' 
-            ? `Вам отправлено письмо с Планом Защиты на указанный адрес: ${email}`
-            : `An email with your Protection Plan has been sent to: ${email}`;
+        msgElement.innerHTML = currentLang === 'ru' 
+            ? `<div style="background: #f1f8e9; border: 2px solid var(--growth-green); padding: 25px 20px; border-radius: 16px; box-shadow: 0 12px 30px rgba(76, 175, 80, 0.15); margin: 30px auto; max-width: 450px;">
+                 <div style="font-size: 32px; margin-bottom: 12px;">📩</div>
+                 <span style="font-size: 15px; color: var(--text-main); display: block; margin-bottom: 12px; font-weight: 500;">План защиты успешно сгенерирован и отправлен на ваш адрес:</span>
+                 <strong style="font-size: 18px; color: var(--growth-green); word-break: break-all;">${email}</strong>
+               </div>`
+            : `<div style="background: #f1f8e9; border: 2px solid var(--growth-green); padding: 25px 20px; border-radius: 16px; box-shadow: 0 12px 30px rgba(76, 175, 80, 0.15); margin: 30px auto; max-width: 450px;">
+                 <div style="font-size: 32px; margin-bottom: 12px;">📩</div>
+                 <span style="font-size: 15px; color: var(--text-main); display: block; margin-bottom: 12px; font-weight: 500;">Protection Plan successfully generated and sent to:</span>
+                 <strong style="font-size: 18px; color: var(--growth-green); word-break: break-all;">${email}</strong>
+               </div>`;
+    } else {
+        msgElement.innerHTML = "";
     }
-
-    let timeLeft = 15;
-    const btn = document.getElementById('t-back-main');
-    const baseText = translations[currentLang]?.['back-main'] || "Возврат на главную страницу";
-    btn.innerText = `${baseText} (${timeLeft})`;
     
-    clearInterval(thankYouTimerInterval);
-    thankYouTimerInterval = setInterval(() => {
-        timeLeft--;
-        if (timeLeft > 0) {
-            btn.innerText = `${baseText} (${timeLeft})`;
-        } else {
-            clearInterval(thankYouTimerInterval);
-            resetToMain();
-        }
-    }, 1000);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 function alephAlert(msg) {
