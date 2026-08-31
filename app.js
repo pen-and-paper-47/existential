@@ -337,7 +337,7 @@ function collectFinalData() {
     document.getElementById('pdf-slogan').innerText = cleanSlogan; 
     
     const thanksSloganEl = document.getElementById('t-thanks-slogan');
-    if (thanksSloganEl) thanksSloganEl.innerHTML = rawSlogan; // Тут с брейком строк!
+    if (thanksSloganEl) thanksSloganEl.innerHTML = rawSlogan;
 
     document.getElementById('pdf-name').innerText = document.getElementById('t-name-placeholder').value || (currentLang === 'ru' ? "Аноним" : "Anonymous");
     document.getElementById('pdf-anxiety').innerText = document.getElementById('anxietySlider').value;
@@ -361,15 +361,16 @@ function collectFinalData() {
     });
 
     const pdfElement = document.getElementById('pdf-template');
-
+    
     const opt = { 
         margin: 0, 
         filename: 'Form_404_Aleph.pdf', 
         image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2, useCORS: true }, 
+        html2canvas: { scale: 2, useCORS: true, logging: false }, 
         jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } 
     };
 
+    // Конвертируем в PDF и отправляем в облако без скачивания на устройство
     html2pdf().set(opt).from(pdfElement).outputPdf('datauristring').then(function(pdfBase64) {
         const base64Data = pdfBase64.split(',')[1];
         
@@ -384,20 +385,18 @@ function collectFinalData() {
             clearInterval(loaderInterval);
 
             if (data.status === 'success') {
-                window.open(data.url, '_blank');
+                // УБРАНО: window.open(data.url, '_blank') — файл больше не скачивается принудительно!
                 
-               emailjs.send('service_kluawpl', 'template_34kowi9', {
+                emailjs.send('service_kluawpl', 'template_34kowi9', {
                     email_to: email,
                     pdf_link: data.url,
-                    email_subject: dict['email-sub'] || (currentLang === 'ru' ? "Форма 404-Алеф: Ваш План Защиты" : "Form 404-Aleph: Your Protection Plan"),
-                    email_greeting: (dict['email-greet'] || (currentLang === 'ru' ? "Идентификатор субъекта:" : "Subject Identifier:")) + " " + (document.getElementById('t-name-placeholder').value || "Аноним"),
-                    email_message: dict['email-msg'] || (currentLang === 'ru' ? "Ваша экзистенциальная фиксация успешно завершена." : "Your existential fixation is completed."),
-                    email_btn: dict['email-btn'] || (currentLang === 'ru' ? "Открыть Сертификат" : "Open Certificate"),
-                    
-                    // НОВЫЕ ПЕРЕМЕННЫЕ ДЛЯ ПЕРЕВОДА ШАБЛОНА EMAILJS:
-                    email_header: dict['window-title'] || (currentLang === 'ru' ? "ФОРМА 404-АЛЕФ" : "FORM 404-ALEPH"),
-                    email_direct_link_text: dict['email-direct-link'] || (currentLang === 'ru' ? "Если кнопка не открывается, перейдите по прямой ссылке:" : "If the button doesn't work, use this direct link:"),
-                    email_footer: dict['email-footer'] || (currentLang === 'ru' ? "Данное уведомление сформировано в рамках симуляции художественного бюрократического процесса. Настоящий документ не гарантирует устойчивость к энтропии мироздания." : "This notification is generated within the simulation of an artistic bureaucratic process. This document does not guarantee resistance to the entropy of the universe.")
+                    email_subject: dict['email-sub'] || "Форма 404-Алеф: Ваш План Защиты",
+                    email_greeting: (dict['email-greet'] || "Идентификатор субъекта:") + " " + (document.getElementById('t-name-placeholder').value || "Аноним"),
+                    email_message: dict['email-msg'] || "Ваша экзистенциальная фиксация успешно завершена. Цифровой след учтен, а документ помещен в Вечный Архив.",
+                    email_btn: dict['email-btn'] || "Открыть Сертификат",
+                    email_header: dict['window-title'] || "ФОРМА 404-АЛЕФ",
+                    email_direct_link_text: dict['email-direct-link'] || "Если кнопка не открывается, перейдите по прямой ссылке:",
+                    email_footer: dict['email-footer'] || "Данное уведомление сформировано в рамках симуляции художественного бюрократического процесса."
                 }).then(() => {
                     showThankYouScreen(email);
                 });
