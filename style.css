@@ -15,14 +15,13 @@ body {
     color: var(--text-main);
     margin: 0;
     
-    /* Добавляем адаптивные отступы сверху и снизу */
+    /* Переключаем на блочную модель для идеального скролла на Android/iOS */
+    display: block; 
     padding: 5vh 20px; 
+    
     min-height: 100vh;
     background-image: linear-gradient(120deg, #fdfbf7 0%, #e8f5e9 100%);
     box-sizing: border-box;
-
-    /* ПОЛНОСТЬЮ ОТКЛЮЧАЕМ FLEXBOX ДЛЯ BODY */
-    display: block; 
 }
 
 .card {
@@ -35,7 +34,7 @@ body {
     box-sizing: border-box;
     position: relative;
     
-    /* Центрируем карточку строго по горизонтали */
+    /* Центрируем карточку по горизонтали на широких экранах */
     margin: 0 auto; 
 }
 
@@ -207,18 +206,27 @@ input[type="radio"], input[type="checkbox"] {
 .disclaimer { font-size: 12px; color: var(--text-muted); text-align: center; margin-top: 30px; }
 
 #pdf-template { position: absolute; left: -9999px; top: -9999px; }
-#block2 { max-height: 75vh; overflow-y: auto; overflow-x: hidden; padding: 5px 15px; }
+#block2 { 
+    /* Убрали max-height и overflow, теперь кнопки внизу будут видны всегда */
+    padding: 5px 0; 
+}
 
 #t-risks-title {
+    /* Делаем заголовок "липким" при скролле вниз */
     position: sticky;
-    top: -5px;
+    top: -35px; /* Компенсируем внутренний отступ padding самой карточки */
+    
+    /* Добавляем фон, чтобы текст карточек не просвечивал под заголовком */
     background: var(--card-bg);
     z-index: 10;
     display: block;
-    padding: 15px 0 10px 0;
-    border-bottom: 1px dashed var(--border-color);
+    
+    /* Аккуратные отступы и разделительная линия */
+    padding: 25px 0 15px 0;
+    margin-top: -20px;
+    margin-bottom: 20px !important; /* Перебиваем inline-стиль из HTML */
+    border-bottom: 2px dashed var(--border-color);
 }
-
 .modal-overlay {
     display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
     background: rgba(43, 58, 74, 0.8); z-index: 9999;
@@ -616,6 +624,8 @@ body.landing-body {
     }
 }
 
+
+
 /* Карточка с кнопкой: абсолютно прозрачная, внизу экрана */
 .landing-container {
     position: relative;
@@ -639,6 +649,13 @@ body.landing-body {
     border: none !important;
     box-shadow: none !important;
     box-sizing: border-box;
+}
+
+/* Поднимаем блок с кнопкой выше ТОЛЬКО на мобильных экранах */
+@media (max-width: 768px) {
+    .landing-container {
+        margin-bottom: 12vh; 
+    }
 }
 
 .landing-slogan {
