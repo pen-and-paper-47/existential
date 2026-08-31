@@ -388,13 +388,18 @@ function collectFinalData() {
             if (data.status === 'success') {
                 window.open(data.url, '_blank');
                 
-                emailjs.send('service_kluawpl', 'template_34kowi9', {
+               emailjs.send('service_kluawpl', 'template_34kowi9', {
                     email_to: email,
                     pdf_link: data.url,
-                    email_subject: dict['email-sub'] || "Форма 404-Алеф: Ваш План Защиты",
-                    email_greeting: (dict['email-greet'] || "Идентификатор субъекта:") + " " + (document.getElementById('t-name-placeholder').value || "Аноним"),
-                    email_message: dict['email-msg'] || "Ваша экзистенциальная фиксация успешно завершена. Цифровой след учтен, а документ помещен в Вечный Архив.",
-                    email_btn: dict['email-btn'] || "Открыть Сертификат"
+                    email_subject: dict['email-sub'] || (currentLang === 'ru' ? "Форма 404-Алеф: Ваш План Защиты" : "Form 404-Aleph: Your Protection Plan"),
+                    email_greeting: (dict['email-greet'] || (currentLang === 'ru' ? "Идентификатор субъекта:" : "Subject Identifier:")) + " " + (document.getElementById('t-name-placeholder').value || "Аноним"),
+                    email_message: dict['email-msg'] || (currentLang === 'ru' ? "Ваша экзистенциальная фиксация успешно завершена." : "Your existential fixation is completed."),
+                    email_btn: dict['email-btn'] || (currentLang === 'ru' ? "Открыть Сертификат" : "Open Certificate"),
+                    
+                    // НОВЫЕ ПЕРЕМЕННЫЕ ДЛЯ ПЕРЕВОДА ШАБЛОНА EMAILJS:
+                    email_header: dict['window-title'] || (currentLang === 'ru' ? "ФОРМА 404-АЛЕФ" : "FORM 404-ALEPH"),
+                    email_direct_link_text: dict['email-direct-link'] || (currentLang === 'ru' ? "Если кнопка не открывается, перейдите по прямой ссылке:" : "If the button doesn't work, use this direct link:"),
+                    email_footer: dict['email-footer'] || (currentLang === 'ru' ? "Данное уведомление сформировано в рамках симуляции художественного бюрократического процесса. Настоящий документ не гарантирует устойчивость к энтропии мироздания." : "This notification is generated within the simulation of an artistic bureaucratic process. This document does not guarantee resistance to the entropy of the universe.")
                 }).then(() => {
                     showThankYouScreen(email);
                 });
