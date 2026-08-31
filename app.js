@@ -52,46 +52,92 @@ async function loadDataFromCloud() {
     }
 }
 
+// ==========================================
+// 1. ФУНКЦИИ-ПРЕДОХРАНИТЕЛИ (БЕЗОПАСНАЯ ВСТАВКА)
+// ==========================================
+function setElText(id, text) {
+    const el = document.getElementById(id);
+    if (el && text) el.innerHTML = text; // Используем innerHTML для поддержки тегов <br> и жирного шрифта
+}
+
+function setElPlaceholder(id, text) {
+    const el = document.getElementById(id);
+    if (el && text) el.placeholder = text;
+}
+
 function applyLanguage() {
-    const dict = translations[currentLang];
-    if (!dict) return;
+    const dict = translations[currentLang] || {};
     
-    const windowTitle = document.getElementById('t-window-title');
-    if (windowTitle) windowTitle.innerText = dict['window-title'] || "Форма 404-Алеф";
+    // --- ГЛОБАЛЬНЫЕ ЭЛЕМЕНТЫ ---
+    setElText('t-window-title', dict['window-title']);
+    setElText('t-warning', dict['warning']);
 
-    const textElements = {
-        't-window-title': 'window-title',
-        't-warning': 'warning',
-        't-name': 'name',
-        't-anxiety': 'anxiety',
-        't-wear': 'wear',
-        't-wear-desc': 'wear-desc',
-        't-news': 'news',
-        't-consent-text': 'consent-text',
-        't-next-btn': 'next-btn',
-        't-risks-title': 'risks-title',
-        't-pay-btn': 'pay-btn',
-        't-back-1': 'back-1',
-        't-pay-title': 'pay-title',
-        't-pay-1': 'pay-1',
-        't-pay-2': 'pay-2',
-        't-pay-3': 'pay-3',
-        't-pay-4': 'pay-4',
-        't-finish-btn': 'finish-btn',
-        't-back-2': 'back-2',
-        't-disclaimer': 'disclaimer',
-        't-email-disclaimer': 'email-disclaimer',
-        't-thanks-title': 'thanks-title',
-        't-dob-label': 'dob-label',
-        'pdf-cost-label': 'pdf-cost',
-        'btn-continue': 'timeout-continue',
-        'btn-abort': 'timeout-abort',
-        't-email-label': 'email-label',
-        't-info-nerves': 'info-nerves',
-        't-info-sleep': 'info-sleep',
-        't-info-oblivion': 'info-oblivion'
-    };
+    // --- БЛОК 1: АНКЕТА ---
+    setElText('t-name', dict['name']);
+    setElPlaceholder('t-name-placeholder', dict['name-placeholder']);
+    setElText('t-anxiety', dict['anxiety']);
+    setElText('t-wear', dict['wear']);
+    setElText('t-wear-desc', dict['wear-desc']);
+    setElText('t-news', dict['news']);
+    setElText('t-news-1', dict['news-1'] || (currentLang === 'ru' ? "Менее 15 минут" : "Less than 15 min"));
+    setElText('t-news-2', dict['news-2'] || (currentLang === 'ru' ? "Более 15 минут" : "More than 15 min"));
+    setElText('t-consent-text', dict['consent-text']);
+    setElText('t-next-btn', dict['next-btn']);
+    
+    // --- БЛОК 2: РИСКИ ---
+    setElText('t-risks-title', dict['risks-title']);
+    setElText('t-pay-btn', dict['pay-btn']);
+    setElText('t-back-1', dict['back-1']);
+    
+    // Загрузка списка рисков
+    const risksContainer = document.getElementById('risks-container');
+    if (risksContainer) {
+        risksContainer.innerHTML = '';
+        for (let i = 1; i <= 9; i++) {
+            if (dict[`risk${i}`]) {
+                risksContainer.innerHTML += `
+                    <label class="risk-card">
+                        <input type="checkbox" name="risks" value="risk${i}">
+                        <span>${dict[`risk${i}`]}</span>
+                    </label>
+                `;
+            }
+        }
+    }
 
+    // --- БЛОК 3: ОПЛАТА И СБОР ДАННЫХ ---
+    setElText('t-pay-title', dict['pay-title']);
+    setElText('t-pay-1', dict['pay-1']);
+    setElText('t-pay-2', dict['pay-2']);
+    setElText('t-pay-3', dict['pay-3']);
+    setElText('t-pay-4', dict['pay-4']); 
+    
+    // Новое: Тултипы с подсказками
+    setElText('t-info-nerves', dict['info-nerves']);
+    setElText('t-info-sleep', dict['info-sleep']);
+    setElText('t-info-oblivion', dict['info-oblivion']);
+
+    // Новое: Тексты для сбора Email и Даты
+    setElText('t-email-label', dict['email-label']);
+    setElText('t-email-disclaimer', dict['email-disclaimer']);
+    setElText('t-dob-label', dict['dob-label']);
+
+    setElText('t-finish-btn', dict['finish-btn']);
+    setElText('t-back-2', dict['back-2']);
+    setElText('t-disclaimer', dict['disclaimer']);
+    
+    // --- МОДАЛЬНЫЕ ОКНА (КАЛЕНДАРЬ И ТАЙМЕР) ---
+    setElText('t-dob-modal-title', dict['dob-modal-title']);
+    setElText('t-dob-confirm', dict['dob-confirm']);
+    setElText('t-dob-cancel', dict['dob-cancel']);
+    
+    // --- БЛОК 4: ЭКРАН БЛАГОДАРНОСТИ ---
+    setElText('t-thanks-title', dict['thanks-title'] || (currentLang === 'ru' ? "Спасибо за доверие" : "Thank you for your trust"));
+    setElText('t-back-main', dict['back-main'] || (currentLang === 'ru' ? "Возврат на главную страницу" : "Return to main page"));
+    
+    // --- МАКЕТ PDF ---
+    setElText('pdf-signature-label', dict['pdf-signature-label'] || (currentLang === 'ru' ? "Подпись художника" : "Artist's signature"));
+}
     for (const [id, key] of Object.entries(textElements)) {
         const el = document.getElementById(id);
         if (el && dict[key]) el.innerHTML = dict[key];
