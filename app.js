@@ -196,19 +196,24 @@ function goToStep1() {
 
 function goToStep2() {
     if (!document.getElementById('consentCheck').checked) {
-        alephAlert(translations[currentLang]?.['alertConsent'] || "Подтвердите согласие!");
+        alert(translations[currentLang]?.alertConsent || "Подтвердите согласие!");
         return;
     }
     document.getElementById('block1').classList.remove('active');
     document.getElementById('block3').classList.remove('active');
     document.getElementById('block2').classList.add('active');
+    
+    // Плавная прокрутка в самый верх экрана
+    window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 function goToStep3() {
     document.getElementById('block1').classList.remove('active');
     document.getElementById('block2').classList.remove('active');
     document.getElementById('block3').classList.add('active');
-    calculatePremiums();
+    
+    // Плавная прокрутка в самый верх экрана
+    window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 function calculatePremiums() {
@@ -471,6 +476,13 @@ document.addEventListener('click', function(e) {
     }
     // Клик вне иконки закрывает открытый тултип
     document.querySelectorAll('.info-icon').forEach(el => el.classList.remove('active'));
+});
+
+// Скрытие клавиатуры/барабана выбора на iOS и Android после взаимодействия
+document.querySelectorAll('select, input[type="range"]').forEach(el => {
+    el.addEventListener('change', function() {
+        this.blur(); // Снимаем фокус, убирая клавиатуру с экрана
+    });
 });
 
 loadDataFromCloud();
