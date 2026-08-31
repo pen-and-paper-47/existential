@@ -199,35 +199,46 @@
 </div>
 
 <!-- МАКЕТ PDF -->
-<div id="pdf-template" style="width: 210mm; min-height: 297mm; padding: 20mm; box-sizing: border-box; background: #fff; color: #2b3a4a; font-family: 'Roboto', sans-serif;">
-    <div style="border: 2px solid #4caf50; padding: 20mm; height: 100%; position: relative; box-sizing: border-box;">
-        <div style="position: absolute; top: 15mm; right: 15mm; width: 30mm; height: 30mm; border: 2px solid #ff9800; border-radius: 50%; display: flex; align-items: center; justify-content: center; transform: rotate(-15deg); color: #ff9800; font-weight: bold; text-align: center; font-size: 10px;">ВЕЧНЫЙ<br>АРХИВ</div>
-        <h1 id="pdf-title-text" style="color: #4caf50; border-bottom: 2px solid #d1e8e2; padding-bottom: 10px; font-size: 24px;"></h1>
-        <h3 style="color: #8fa3b3; font-style: italic; font-size: 16px; margin-bottom: 30px;" id="pdf-slogan"></h3>
+<div id="pdf-template" style="position: absolute; left: -9999px; top: -9999px; width: 210mm; min-height: 297mm; padding: 15mm; box-sizing: border-box; background-color: #fdfbf7; color: #2b3a4a; font-family: 'Roboto', sans-serif;">
+    
+    <!-- Внутренняя двойная рамка -->
+    <div style="border: 4px double #4caf50; padding: 20mm; height: 100%; position: relative; box-sizing: border-box; background: #ffffff; box-shadow: inset 0 0 40px rgba(76, 175, 80, 0.05);">
         
-        <div style="font-size: 14px; line-height: 1.8;">
-            <p><strong>Идентификатор субъекта:</strong> <span id="pdf-name" style="border-bottom: 1px solid #ccc; padding-bottom: 2px;"></span></p>
-            <p><strong>Уровень тревожности (0-10):</strong> <span id="pdf-anxiety"></span></p>
-            <p><strong>Метод списания премии:</strong> <span id="pdf-payment"></span></p>
-            <p><strong><span id="pdf-cost-label"></span></strong> <span id="pdf-cost-value" style="color: #e65100; font-weight: bold;"></span></p>
+        <!-- Печать/Штамп -->
+        <div style="position: absolute; top: 15mm; right: 15mm; width: 35mm; height: 35mm; border: 2px solid #ff9800; border-radius: 50%; display: flex; align-items: center; justify-content: center; transform: rotate(-15deg); color: #ff9800; font-weight: bold; text-align: center; font-size: 11px; background: rgba(255, 152, 0, 0.05);">
+            ВЕЧНЫЙ<br>АРХИВ
+        </div>
+        
+        <h1 id="pdf-title-text" style="color: #4caf50; border-bottom: 2px solid #d1e8e2; padding-bottom: 10px; font-size: 26px; text-transform: uppercase; letter-spacing: 2px;"></h1>
+        <h3 style="color: #8fa3b3; font-style: italic; font-size: 16px; margin-bottom: 30px; font-weight: 400;" id="pdf-slogan"></h3>
+        
+        <div style="font-size: 15px; line-height: 2;">
+            <p style="margin-bottom: 15px;"><strong>Идентификатор субъекта:</strong> <span id="pdf-name" style="border-bottom: 1px dashed #ccc; padding-bottom: 2px; font-weight: 600;"></span></p>
+            <p style="margin-bottom: 15px;"><strong>Уровень тревожности (0-10):</strong> <span id="pdf-anxiety" style="font-weight: 600;"></span></p>
+            <p style="margin-bottom: 15px;"><strong>Метод списания премии:</strong> <span id="pdf-payment" style="font-weight: 600;"></span></p>
+            <p style="background: #f1f8e9; padding: 10px 15px; border-radius: 8px; display: inline-block;">
+                <strong><span id="pdf-cost-label"></span></strong> 
+                <span id="pdf-cost-value" style="color: #e65100; font-weight: bold; font-size: 18px;"></span>
+            </p>
         </div>
 
-        <div style="margin-top: 30px; padding: 15px; background: #f9f9f9; border-left: 4px solid #4caf50;">
-            <strong style="font-size: 14px;">Объекты покрытия:</strong>
-            <ul id="pdf-risks-list" style="font-size: 12px; margin-top: 10px; line-height: 1.6;"></ul>
+        <div style="margin-top: 35px; padding: 20px; background: #faf8f3; border-left: 4px solid #4caf50; border-radius: 0 12px 12px 0;">
+            <strong style="font-size: 15px; text-transform: uppercase; letter-spacing: 1px;">Объекты покрытия:</strong>
+            <ul id="pdf-risks-list" style="font-size: 13px; margin-top: 15px; line-height: 1.8; color: #2b3a4a;"></ul>
         </div>
         
-        <div style="position: absolute; bottom: 20mm; left: 20mm; right: 20mm; font-size: 10px; color: #8fa3b3; text-align: center; border-top: 1px solid #eee; padding-top: 10mm;">
-           <!-- Блок подписи художника -->
-            <div style="position: absolute; bottom: 25mm; right: 20mm; text-align: center; width: 45mm;">
-                <div style="border-bottom: 1px solid #2b3a4a; height: 20px; margin-bottom: 5px;"></div>
-                <div id="pdf-signature-label" style="font-size: 10px; color: #8fa3b3; font-weight: 500; text-transform: uppercase;">Загрузка...</div>
-            </div>
-            Данный документ подтверждает защиту от экзистенциальных угроз в рамках симуляции.
+        <!-- Блок подписи художника -->
+        <div style="position: absolute; bottom: 25mm; right: 20mm; text-align: center; width: 50mm;">
+            <div style="border-bottom: 1px solid #2b3a4a; height: 20px; margin-bottom: 8px;"></div>
+            <div id="pdf-signature-label" style="font-size: 11px; color: #8fa3b3; font-weight: 500; text-transform: uppercase; letter-spacing: 1px;">Загрузка...</div>
+        </div>
+
+        <div style="position: absolute; bottom: 20mm; left: 20mm; right: 80mm; font-size: 10px; color: #8fa3b3; text-align: left; border-top: 1px solid #eee; padding-top: 5mm; line-height: 1.4;">
+            Данный документ подтверждает защиту от экзистенциальных угроз в рамках симуляции. Сгенерировано системой Алеф-404.
         </div>
     </div>
 </div>
-
+    
 <script src="app.js"></script>
 
 <!-- Тематический лоадер генерации -->
