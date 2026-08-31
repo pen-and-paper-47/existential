@@ -3,12 +3,12 @@ const GAS_URL = 'https://script.google.com/macros/s/AKfycbz7Jhxo2oqUMv0ujXOXyGE7
 
 let translations = {};
 let currentLang = 'ru';
-let thankYouTimerInterval;
 let inactivityTimer;
 let countdownInterval;
 let timeLeft = 15;
+let loaderInterval; // Объявляем таймер только один раз!
 
-// Читаем язык из URL или браузера
+// 1. Читаем язык из URL или браузера
 const urlParams = new URLSearchParams(window.location.search);
 const langParam = urlParams.get('lang');
 if (langParam && (langParam === 'ru' || langParam === 'en')) {
@@ -18,7 +18,7 @@ if (langParam && (langParam === 'ru' || langParam === 'en')) {
     currentLang = browserLang === 'en' ? 'en' : 'ru';
 }
 
-// 1. Моментальный перевод слова "Загрузка..." до скачивания таблицы
+// Моментальный перевод слова "Загрузка..." до скачивания таблицы
 document.getElementById('t-window-title').innerText = currentLang === 'en' ? "Loading..." : "Загрузка...";
 
 async function loadDataFromCloud() {
@@ -53,11 +53,11 @@ async function loadDataFromCloud() {
 }
 
 // ==========================================
-// 1. ФУНКЦИИ-ПРЕДОХРАНИТЕЛИ (БЕЗОПАСНАЯ ВСТАВКА)
+// ФУНКЦИИ-ПРЕДОХРАНИТЕЛИ И СЛОВАРЬ
 // ==========================================
 function setElText(id, text) {
     const el = document.getElementById(id);
-    if (el && text) el.innerHTML = text; // Используем innerHTML для поддержки тегов <br> и жирного шрифта
+    if (el && text) el.innerHTML = text; 
 }
 
 function setElPlaceholder(id, text) {
@@ -72,7 +72,7 @@ function applyLanguage() {
     setElText('t-window-title', dict['window-title']);
     setElText('t-warning', dict['warning']);
 
-    // --- БЛОК 1: АНКЕТА ---
+    // --- БЛОК 1 ---
     setElText('t-name', dict['name']);
     setElPlaceholder('t-name-placeholder', dict['name-placeholder']);
     setElText('t-anxiety', dict['anxiety']);
@@ -84,12 +84,11 @@ function applyLanguage() {
     setElText('t-consent-text', dict['consent-text']);
     setElText('t-next-btn', dict['next-btn']);
     
-    // --- БЛОК 2: РИСКИ ---
+    // --- БЛОК 2 ---
     setElText('t-risks-title', dict['risks-title']);
     setElText('t-pay-btn', dict['pay-btn']);
     setElText('t-back-1', dict['back-1']);
     
-    // Загрузка списка рисков
     const risksContainer = document.getElementById('risks-container');
     if (risksContainer) {
         risksContainer.innerHTML = '';
@@ -105,19 +104,17 @@ function applyLanguage() {
         }
     }
 
-    // --- БЛОК 3: ОПЛАТА И СБОР ДАННЫХ ---
+    // --- БЛОК 3 ---
     setElText('t-pay-title', dict['pay-title']);
     setElText('t-pay-1', dict['pay-1']);
     setElText('t-pay-2', dict['pay-2']);
     setElText('t-pay-3', dict['pay-3']);
     setElText('t-pay-4', dict['pay-4']); 
     
-    // Новое: Тултипы с подсказками
     setElText('t-info-nerves', dict['info-nerves']);
     setElText('t-info-sleep', dict['info-sleep']);
     setElText('t-info-oblivion', dict['info-oblivion']);
 
-    // Новое: Тексты для сбора Email и Даты
     setElText('t-email-label', dict['email-label']);
     setElText('t-email-disclaimer', dict['email-disclaimer']);
     setElText('t-dob-label', dict['dob-label']);
@@ -126,48 +123,17 @@ function applyLanguage() {
     setElText('t-back-2', dict['back-2']);
     setElText('t-disclaimer', dict['disclaimer']);
     
-    // --- МОДАЛЬНЫЕ ОКНА (КАЛЕНДАРЬ И ТАЙМЕР) ---
+    // --- МОДАЛЬНЫЕ ОКНА ---
     setElText('t-dob-modal-title', dict['dob-modal-title']);
     setElText('t-dob-confirm', dict['dob-confirm']);
     setElText('t-dob-cancel', dict['dob-cancel']);
     
-    // --- БЛОК 4: ЭКРАН БЛАГОДАРНОСТИ ---
+    // --- БЛОК 4 И PDF ---
     setElText('t-thanks-title', dict['thanks-title'] || (currentLang === 'ru' ? "Спасибо за доверие" : "Thank you for your trust"));
     setElText('t-back-main', dict['back-main'] || (currentLang === 'ru' ? "Возврат на главную страницу" : "Return to main page"));
-    
-    // --- МАКЕТ PDF ---
     setElText('pdf-signature-label', dict['pdf-signature-label'] || (currentLang === 'ru' ? "Подпись художника" : "Artist's signature"));
-}
-    for (const [id, key] of Object.entries(textElements)) {
-        const el = document.getElementById(id);
-        if (el && dict[key]) el.innerHTML = dict[key];
-    }
 
-    const placeholders = {
-        't-name-placeholder': 'name-placeholder',
-        'userEmail': 'email-placeholder'
-    };
-    for (const [id, key] of Object.entries(placeholders)) {
-        const el = document.getElementById(id);
-        if (el && dict[key]) el.placeholder = dict[key];
-    }
-
-    const backMainBtn = document.getElementById('t-back-main');
-    if (backMainBtn) backMainBtn.innerText = (dict['back-main'] || "Возврат на главную страницу") + " (15)";
-    
-    const thanksSlogan = document.getElementById('t-thanks-slogan');
-    if (thanksSlogan) thanksSlogan.innerText = dict['slogan'] || "";
-
-    const risksContainer = document.getElementById('risks-container');
-    if (risksContainer) {
-        risksContainer.innerHTML = '';
-        for (let i = 1; i <= 9; i++) {
-            if (dict[`risk${i}`]) {
-                risksContainer.innerHTML += `<label class="risk-card"><input type="checkbox" name="risks" value="risk${i}"><span>${dict[`risk${i}`]}</span></label>`;
-            }
-        }
-    }
-
+    // Обновление логических блоков
     const anxietySlider = document.getElementById('anxietySlider');
     if (anxietySlider) enforceMinAnxiety(anxietySlider);
     
@@ -176,13 +142,14 @@ function applyLanguage() {
     calculatePremiums();
 }
 
+// ==========================================
+// ЛОГИКА ФОРМЫ (ПОЛЗУНКИ И РАСЧЕТЫ)
+// ==========================================
 function populateConflictSelect(lang) {
     const select = document.getElementById('conflictSelect');
     if (!select) return;
-    
     const cur = select.value || "0";
     select.innerHTML = '';
-
     const getRuWord = (num) => {
         const n = Math.abs(num) % 100;
         const n1 = n % 10;
@@ -191,7 +158,6 @@ function populateConflictSelect(lang) {
         if (n1 === 1) return 'конфликт';
         return 'конфликтов';
     };
-
     for (let i = 0; i <= 47; i++) {
         const label = lang === 'ru' ? `${i} ${getRuWord(i)}` : `${i} ${i === 1 ? 'conflict' : 'conflicts'}`;
         const opt = document.createElement('option');
@@ -206,11 +172,9 @@ function updateNewsSlider() {
     const slider = document.getElementById('newsSlider');
     const textElement = document.getElementById('newsValText');
     if (!slider || !textElement) return;
-
     const val = slider.value; 
     const dict = translations[currentLang] || {};
     const key = `news-val-${val}`;
-    
     textElement.classList.add('updating');
     setTimeout(() => {
         textElement.innerText = dict[key] || val;
@@ -223,7 +187,6 @@ function enforceMinAnxiety(slider) {
     const dict = translations[currentLang] || {};
     const key = `anxiety-val-${slider.value}`;
     const labelText = dict[key] || `${slider.value}`;
-    
     const valEl = document.getElementById('anxietyVal');
     if (valEl) {
         valEl.classList.add('updating');
@@ -232,34 +195,6 @@ function enforceMinAnxiety(slider) {
             valEl.classList.remove('updating');
         }, 50);
     }
-}
-
-function goToStep1() {
-    document.getElementById('block2').classList.remove('active');
-    document.getElementById('block3').classList.remove('active');
-    document.getElementById('block1').classList.add('active');
-}
-
-function goToStep2() {
-    if (!document.getElementById('consentCheck').checked) {
-        alert(translations[currentLang]?.alertConsent || "Подтвердите согласие!");
-        return;
-    }
-    document.getElementById('block1').classList.remove('active');
-    document.getElementById('block3').classList.remove('active');
-    document.getElementById('block2').classList.add('active');
-    
-    // Плавная прокрутка в самый верх экрана
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-}
-
-function goToStep3() {
-    document.getElementById('block1').classList.remove('active');
-    document.getElementById('block2').classList.remove('active');
-    document.getElementById('block3').classList.add('active');
-    
-    // Плавная прокрутка в самый верх экрана
-    window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 function calculatePremiums() {
@@ -306,37 +241,42 @@ function animateValue(obj, start, end, duration, unit, prefix) {
         const progress = Math.min((timestamp - startTimestamp) / duration, 1);
         const current = (start + (end - start) * progress).toFixed(1);
         obj.innerText = `${prefix}${current} ${unit}`;
-        if (progress < 1) {
-            window.requestAnimationFrame(step);
-        } else {
-            obj.innerText = `${prefix}${end.toFixed(1)} ${unit}`;
-        }
+        if (progress < 1) window.requestAnimationFrame(step);
+        else obj.innerText = `${prefix}${end.toFixed(1)} ${unit}`;
     };
     window.requestAnimationFrame(step);
 }
 
-document.addEventListener('change', function(e) {
-    if (e.target.name === 'payment') {
-        const dataBlock = document.getElementById('data-payment-fields');
-        dataBlock.style.display = e.target.value === 'data' ? 'block' : 'none';
+// ==========================================
+// НАВИГАЦИЯ И ГЕНЕРАЦИЯ
+// ==========================================
+function goToStep1() {
+    document.getElementById('block2')?.classList.remove('active');
+    document.getElementById('block3')?.classList.remove('active');
+    document.getElementById('block1')?.classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function goToStep2() {
+    const consentCheck = document.getElementById('consentCheck');
+    const dict = translations[currentLang] || {};
+    
+    if (consentCheck && !consentCheck.checked) {
+        alert(dict['alertConsent'] || (currentLang === 'ru' ? "Подтвердите согласие!" : "Please confirm your consent!"));
+        return;
     }
-});
+    document.getElementById('block1')?.classList.remove('active');
+    document.getElementById('block3')?.classList.remove('active');
+    document.getElementById('block2')?.classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
 
-document.getElementById('t-name-placeholder').addEventListener('input', function() {
-    if (this.value.trim().length > 0) {
-        document.getElementById('field-anxiety').style.display = 'block';
-    }
-});
-document.getElementById('anxietySlider').addEventListener('change', function() {
-    document.getElementById('field-wear').style.display = 'block';
-});
-document.getElementById('conflictSelect').addEventListener('change', function() {
-    document.getElementById('field-news').style.display = 'block';
-});
-
-let loaderInterval; // Переменная для хранения таймера смены текста
-
-let loaderInterval;
+function goToStep3() {
+    document.getElementById('block1')?.classList.remove('active');
+    document.getElementById('block2')?.classList.remove('active');
+    document.getElementById('block3')?.classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
 
 function collectFinalData() {
     const selectedPayment = document.querySelector('input[name="payment"]:checked');
@@ -344,20 +284,18 @@ function collectFinalData() {
     const dict = translations[currentLang] || {};
     
     if (!selectedPayment) {
-        alert(dict['alertConsent'] || "Выберите метод списания!");
+        alert(dict['alertConsent'] || (currentLang === 'ru' ? "Выберите метод списания!" : "Select payment method!"));
         return;
     }
     if (!email) {
-        alert(currentLang === 'ru' ? "Цифровой след (Email) обязателен!" : "Email is required!");
+        alert(dict['alert-email'] || (currentLang === 'ru' ? "Цифровой след (Email) обязателен!" : "Email is required!"));
         return;
     }
 
-    // 1. ПОКАЗЫВАЕМ ЭКРАН СИНХРОНИЗАЦИИ С ПЕРЕВОДАМИ
     const loader = document.getElementById('generation-loader');
     const loaderSubtext = document.getElementById('loader-subtext');
     const loaderTitle = document.getElementById('loader-title');
     
-    // Переводим заголовок лоадера
     if (loaderTitle) loaderTitle.innerText = currentLang === 'ru' ? "АЛЕФ-404" : "ALEPH-404";
     loader.style.display = 'flex';
     
@@ -380,7 +318,6 @@ function collectFinalData() {
     let pIdx = 0;
     loaderSubtext.innerText = phrases[pIdx];
     
-    // Меняем текст каждые 1.5 секунды
     loaderInterval = setInterval(() => {
         pIdx = (pIdx + 1) % phrases.length;
         loaderSubtext.innerText = phrases[pIdx];
@@ -390,20 +327,29 @@ function collectFinalData() {
     finishBtn.innerText = currentLang === 'ru' ? "Формирование документа..." : "Generating document...";
     finishBtn.disabled = true;
 
-    // 2. СЛОГАН ВСЕГДА В ДВЕ СТРОЧКИ
-    // Берем слоган из таблицы как есть (вместе с <br>)
     const rawSlogan = dict['slogan'] || (currentLang === 'en' ? "Peace of mind,<br>even if tomorrow never comes." : "Спокойствие,<br>даже если завтра не наступит.");
+    const cleanSlogan = rawSlogan.replace(/<br\s*\/?>/gi, ' ');
 
-    // Используем innerHTML, чтобы тег <br> сработал и разорвал строку
     document.getElementById('pdf-title-text').innerText = dict['window-title'] || (currentLang === 'ru' ? "СЕРТИФИКАТ ПОКРЫТИЯ" : "CERTIFICATE OF COVERAGE");
-    document.getElementById('pdf-slogan').innerHTML = rawSlogan; 
+    document.getElementById('pdf-slogan').innerText = cleanSlogan; 
     
     const thanksSloganEl = document.getElementById('t-thanks-slogan');
-    if (thanksSloganEl) thanksSloganEl.innerHTML = rawSlogan;
+    if (thanksSloganEl) thanksSloganEl.innerHTML = rawSlogan; // Тут с брейком строк!
 
     document.getElementById('pdf-name').innerText = document.getElementById('t-name-placeholder').value || (currentLang === 'ru' ? "Аноним" : "Anonymous");
     document.getElementById('pdf-anxiety').innerText = document.getElementById('anxietySlider').value;
     document.getElementById('pdf-payment').innerText = selectedPayment.nextElementSibling.innerText;
+
+    let finalCost = "";
+    if (selectedPayment.value === 'nerves') finalCost = document.getElementById('calc-nerves').innerText;
+    else if (selectedPayment.value === 'sleep') finalCost = document.getElementById('calc-sleep').innerText;
+    else if (selectedPayment.value === 'oblivion') finalCost = document.getElementById('calc-oblivion').innerText;
+    else if (selectedPayment.value === 'data') finalCost = document.getElementById('calc-data').innerText;
+    
+    const costValueElement = document.getElementById('pdf-cost-value');
+    if (costValueElement) {
+        costValueElement.innerText = finalCost.replace(/Итого:\s*|Total:\s*/i, '');
+    }
 
     const risksList = document.getElementById('pdf-risks-list');
     risksList.innerHTML = '';
@@ -433,79 +379,9 @@ function collectFinalData() {
         })
         .then(res => res.json())
         .then(data => {
-            // ОТКЛЮЧАЕМ ЛОАДЕР
             loader.style.display = 'none';
             clearInterval(loaderInterval);
 
-            if (data.status === 'success') {
-                window.open(data.url, '_blank');
-                
-                emailjs.send('service_kluawpl', 'template_34kowi9', {
-                    email_to: email,
-                    pdf_link: data.url
-                }).then(() => {
-                    showThankYouScreen(email);
-                });
-            } else {
-                throw new Error("Ошибка Drive");
-            }
-        })
-        .catch(err => {
-            loader.style.display = 'none';
-            clearInterval(loaderInterval);
-            
-            alert(currentLang === 'ru' ? "Ошибка Вечного Архива. Бюрократическая сингулярность." : "Eternal Archive Error. Bureaucratic singularity.");
-            finishBtn.innerText = dict['finish-btn'] || "Получить План Защиты";
-            finishBtn.disabled = false;
-        });
-    });
-}
-    const finishBtn = document.getElementById('t-finish-btn');
-    finishBtn.innerText = dict['generating-doc'] || "Формирование документа...";
-    finishBtn.disabled = true;
-
-    document.getElementById('pdf-title-text').innerText = dict['window-title'];
-    document.getElementById('pdf-slogan').innerText = dict['slogan'];
-    document.getElementById('pdf-name').innerText = document.getElementById('t-name-placeholder').value || "Аноним";
-    document.getElementById('pdf-anxiety').innerText = document.getElementById('anxietySlider').value;
-    document.getElementById('pdf-payment').innerText = selectedPayment.nextElementSibling.innerText;
-
-    let finalCost = "";
-    if (selectedPayment.value === 'nerves') finalCost = document.getElementById('calc-nerves').innerText;
-    else if (selectedPayment.value === 'sleep') finalCost = document.getElementById('calc-sleep').innerText;
-    else if (selectedPayment.value === 'oblivion') finalCost = document.getElementById('calc-oblivion').innerText;
-    else if (selectedPayment.value === 'data') finalCost = document.getElementById('calc-data').innerText;
-    
-    const costValueElement = document.getElementById('pdf-cost-value');
-    if (costValueElement) {
-        costValueElement.innerText = finalCost.replace(/Итого:\s*|Total:\s*/i, '');
-    }
-
-    const risksList = document.getElementById('pdf-risks-list');
-    risksList.innerHTML = '';
-    document.querySelectorAll('input[name="risks"]:checked').forEach(cb => {
-        risksList.innerHTML += `<li>${cb.nextElementSibling.innerText}</li>`;
-    });
-
-    const pdfElement = document.getElementById('pdf-template');
-    const opt = { 
-        margin: 0, 
-        filename: 'Form_404_Aleph.pdf', 
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2, useCORS: true }, 
-        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } 
-    };
-
-    html2pdf().set(opt).from(pdfElement).outputPdf('datauristring').then(function(pdfBase64) {
-        const base64Data = pdfBase64.split(',')[1];
-        
-        fetch(GAS_URL, {
-            method: 'POST',
-            body: JSON.stringify({ base64: base64Data, filename: 'Form_404_Aleph.pdf' }),
-            headers: { "Content-Type": "text/plain;charset=utf-8" }
-        })
-        .then(res => res.json())
-        .then(data => {
             if (data.status === 'success') {
                 window.open(data.url, '_blank');
                 
@@ -524,44 +400,44 @@ function collectFinalData() {
             }
         })
         .catch(err => {
+            loader.style.display = 'none';
+            clearInterval(loaderInterval);
+            
             alephAlert(dict['error-archive'] || "Ошибка Вечного Архива. Бюрократическая сингулярность.");
-            finishBtn.innerText = dict['finish-btn'] || "Получить План Защиты (PDF)";
+            finishBtn.innerText = dict['finish-btn'] || "Получить План Защиты";
             finishBtn.disabled = false;
         });
     });
 }
 
 function showThankYouScreen(email) {
-    document.getElementById('block3').classList.remove('active');
-    document.getElementById('block4').classList.add('active');
+    document.getElementById('block3')?.classList.remove('active');
+    document.getElementById('block4')?.classList.add('active');
     
-    // Прячем баннер с предупреждением
     const warningBanner = document.getElementById('t-warning');
-    if (warningBanner) {
-        warningBanner.style.display = 'none';
-    }
+    if (warningBanner) warningBanner.style.display = 'none';
     
-    // 3. ВЫДЕЛЯЕМ ПОЧТУ КРУПНОЙ ПЛАШКОЙ С ТЕНЬЮ И ИКОНКОЙ
     const msgElement = document.getElementById('thank-you-message');
-    if (email) {
-        msgElement.innerHTML = currentLang === 'ru' 
-            ? `<div style="background: #f1f8e9; border: 2px solid var(--growth-green); padding: 25px 20px; border-radius: 16px; box-shadow: 0 12px 30px rgba(76, 175, 80, 0.15); margin: 30px auto; max-width: 450px;">
-                 <div style="font-size: 32px; margin-bottom: 12px;">📩</div>
-                 <span style="font-size: 15px; color: var(--text-main); display: block; margin-bottom: 12px; font-weight: 500;">План защиты успешно сгенерирован и отправлен на ваш адрес:</span>
-                 <strong style="font-size: 18px; color: var(--growth-green); word-break: break-all;">${email}</strong>
-               </div>`
-            : `<div style="background: #f1f8e9; border: 2px solid var(--growth-green); padding: 25px 20px; border-radius: 16px; box-shadow: 0 12px 30px rgba(76, 175, 80, 0.15); margin: 30px auto; max-width: 450px;">
-                 <div style="font-size: 32px; margin-bottom: 12px;">📩</div>
-                 <span style="font-size: 15px; color: var(--text-main); display: block; margin-bottom: 12px; font-weight: 500;">Protection Plan successfully generated and sent to:</span>
-                 <strong style="font-size: 18px; color: var(--growth-green); word-break: break-all;">${email}</strong>
-               </div>`;
-    } else {
-        msgElement.innerHTML = "";
+    const dict = translations[currentLang] || {};
+    const sentText = dict['thanks-msg-sent'] || (currentLang === 'ru' 
+        ? "План защиты успешно сгенерирован и отправлен на ваш адрес:" 
+        : "Protection Plan successfully generated and sent to:");
+
+    if (email && msgElement) {
+        msgElement.innerHTML = `
+            <div style="background: #f1f8e9; border: 2px solid var(--growth-green); padding: 25px 20px; border-radius: 16px; box-shadow: 0 12px 30px rgba(76, 175, 80, 0.15); margin: 30px auto; max-width: 450px;">
+                <div style="font-size: 32px; margin-bottom: 12px;">📩</div>
+                <span style="font-size: 15px; color: var(--text-main); display: block; margin-bottom: 12px; font-weight: 500;">${sentText}</span>
+                <strong style="font-size: 18px; color: var(--growth-green); word-break: break-all;">${email}</strong>
+            </div>`;
     }
     
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
+// ==========================================
+// СИСТЕМНЫЕ ФУНКЦИИ И СЛУШАТЕЛИ
+// ==========================================
 function alephAlert(msg) {
     const dict = translations[currentLang] || {};
     document.querySelector('#aleph-alert-modal .modal-title').innerText = dict['modal-title'] || "АЛЕФ 404 says:";
@@ -570,10 +446,11 @@ function alephAlert(msg) {
 }
 
 function resetInactivity() {
-    if (document.getElementById('timeout-modal').style.display === 'flex') return;
+    const timeoutModal = document.getElementById('timeout-modal');
+    if (timeoutModal && timeoutModal.style.display === 'flex') return;
     clearTimeout(inactivityTimer);
     clearInterval(countdownInterval);
-    document.getElementById('timeout-modal').style.display = 'none';
+    if (timeoutModal) timeoutModal.style.display = 'none';
     inactivityTimer = setTimeout(showTimeoutModal, 45000); 
 }
 
@@ -603,121 +480,125 @@ window.continueSession = function() {
     inactivityTimer = setTimeout(showTimeoutModal, 45000);
 };
 
+function resetToMain() { window.location.href = `index.html?lang=${currentLang}`; }
+
 document.addEventListener('mousemove', resetInactivity);
 document.addEventListener('keypress', resetInactivity);
 document.addEventListener('touchstart', resetInactivity);
 document.addEventListener('scroll', resetInactivity);
-resetInactivity();
 
-function resetToMain() {
-    window.location.href = `index.html?lang=${currentLang}`;
-}
+// Показ поля с датой при выборе Data
+document.addEventListener('change', function(e) {
+    if (e.target.name === 'payment') {
+        const dataBlock = document.getElementById('data-payment-fields');
+        if (dataBlock) dataBlock.style.display = e.target.value === 'data' ? 'block' : 'none';
+    }
+});
 
+// Открытие следующих шагов
+document.getElementById('t-name-placeholder')?.addEventListener('input', function() {
+    if (this.value.trim().length > 0) document.getElementById('field-anxiety').style.display = 'block';
+});
+document.getElementById('anxietySlider')?.addEventListener('change', function() {
+    document.getElementById('field-wear').style.display = 'block';
+});
+document.getElementById('conflictSelect')?.addEventListener('change', function() {
+    document.getElementById('field-news').style.display = 'block';
+});
+
+// Управление тултипами (инфо-иконки)
 document.addEventListener('click', function(e) {
     const icon = e.target.closest('.info-icon');
     if (icon) {
         e.preventDefault();
-        e.stopPropagation(); // Предотвращает срабатывание выбора радиокнопки
+        e.stopPropagation();
         const isActive = icon.classList.contains('active');
         document.querySelectorAll('.info-icon').forEach(el => el.classList.remove('active'));
         if (!isActive) icon.classList.add('active');
         return;
     }
-    // Клик вне иконки закрывает открытый тултип
     document.querySelectorAll('.info-icon').forEach(el => el.classList.remove('active'));
 });
 
-let selectedDobYear = 1990;
-let selectedDobMonth = 0; // 0 - Январь
-let selectedDobDay = 1;
+// Скрытие клавиатуры по нажатию "Enter"
+document.addEventListener('keydown', function(event) {
+    if (event.key === 'Enter' && document.activeElement instanceof HTMLElement) {
+        document.activeElement.blur();
+    }
+});
 
+// Жесткое снятие фокуса со слайдеров и дропдаунов после взаимодействия
+document.querySelectorAll('input[type="range"], select').forEach(el => {
+    const removeFocus = function() { this.blur(); };
+    el.addEventListener('pointerup', removeFocus);
+    el.addEventListener('touchend', removeFocus);
+    el.addEventListener('change', removeFocus);
+});
+
+// ==========================================
+// КАЛЕНДАРЬ И ДАТА РОЖДЕНИЯ
+// ==========================================
+let selectedDobYear = 1990, selectedDobMonth = 0, selectedDobDay = 1;
 const monthNames = {
     ru: ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'],
     en: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
 };
-
 const weekdayNames = {
     ru: ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'],
     en: ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su']
 };
 
-// Ручной ввод с клавиатуры
 function handleDobManualInput(val) {
-    const trimmed = val.trim();
-    const match = trimmed.match(/^(\d{4})[./-](\d{1,2})[./-](\d{1,2})$/);
+    const match = val.trim().match(/^(\d{4})[./-](\d{1,2})[./-](\d{1,2})$/);
     if (match) {
-        const y = parseInt(match[1]);
-        const m = parseInt(match[2]) - 1;
-        const d = parseInt(match[3]);
+        const y = parseInt(match[1]), m = parseInt(match[2]) - 1, d = parseInt(match[3]);
         if (y >= 1900 && y <= 2026 && m >= 0 && m <= 11 && d >= 1 && d <= 31) {
-            selectedDobYear = y;
-            selectedDobMonth = m;
-            selectedDobDay = d;
+            selectedDobYear = y; selectedDobMonth = m; selectedDobDay = d;
         }
     }
     calculatePremiums();
 }
 
 function openDobModal() {
-    const currentVal = document.getElementById('userDob').value.trim();
-    const parts = currentVal.split(/[-/.]/);
+    const parts = document.getElementById('userDob').value.trim().split(/[-/.]/);
     if (parts.length === 3) {
-        const y = parseInt(parts[0]);
-        const m = parseInt(parts[1]) - 1;
-        const d = parseInt(parts[2]);
+        const y = parseInt(parts[0]), m = parseInt(parts[1]) - 1, d = parseInt(parts[2]);
         if (y >= 1900 && y <= 2026 && m >= 0 && m <= 11 && d >= 1 && d <= 31) {
-            selectedDobYear = y;
-            selectedDobMonth = m;
-            selectedDobDay = d;
+            selectedDobYear = y; selectedDobMonth = m; selectedDobDay = d;
         }
     }
-
     initDobDropdowns();
     renderDobCalendar();
     document.getElementById('dob-modal').style.display = 'flex';
 }
 
-function closeDobModal() {
-    document.getElementById('dob-modal').style.display = 'none';
-}
+function closeDobModal() { document.getElementById('dob-modal').style.display = 'none'; }
 
 function initDobDropdowns() {
     const lang = currentLang === 'en' ? 'en' : 'ru';
-    const dict = translations[currentLang] || {};
     
-    // Перевод заголовка и кнопок модального окна календаря
-    document.getElementById('t-dob-modal-title').innerText = dict['dob-modal-title'] || 'Калибровка цифрового следа';
-    document.getElementById('t-dob-confirm').innerText = dict['dob-confirm'] || 'Выбрать дату';
-    document.getElementById('t-dob-cancel').innerText = dict['dob-cancel'] || 'Отмена';
-    
-    // Заполнение месяцев
     const monthSelect = document.getElementById('dob-select-month');
     monthSelect.innerHTML = '';
     monthNames[lang].forEach((name, idx) => {
-        const opt = document.option ? document.createElement('option') : document.createElement('option');
-        opt.value = idx;
-        opt.innerText = name;
+        const opt = document.createElement('option');
+        opt.value = idx; opt.innerText = name;
         if (idx === selectedDobMonth) opt.selected = true;
         monthSelect.appendChild(opt);
     });
 
-    // Заполнение годов (от 2026 до 1900)
     const yearSelect = document.getElementById('dob-select-year');
     yearSelect.innerHTML = '';
     for (let y = 2026; y >= 1900; y--) {
         const opt = document.createElement('option');
-        opt.value = y;
-        opt.innerText = y;
+        opt.value = y; opt.innerText = y;
         if (y === selectedDobYear) opt.selected = true;
         yearSelect.appendChild(opt);
     }
 
-    // Дни недели
     const weekdaysBox = document.getElementById('dob-weekdays');
     weekdaysBox.innerHTML = '';
     weekdayNames[lang].forEach(day => {
-        const span = document.createElement('span');
-        span.innerText = day;
+        const span = document.createElement('span'); span.innerText = day;
         weekdaysBox.appendChild(span);
     });
 }
@@ -744,12 +625,8 @@ function renderDobCalendar() {
 
     for (let day = 1; day <= daysInMonth; day++) {
         const dayBtn = document.createElement('button');
-        dayBtn.type = 'button';
-        dayBtn.className = 'dob-day-btn';
-        dayBtn.innerText = day;
-        if (day === selectedDobDay) {
-            dayBtn.classList.add('selected');
-        }
+        dayBtn.type = 'button'; dayBtn.className = 'dob-day-btn'; dayBtn.innerText = day;
+        if (day === selectedDobDay) dayBtn.classList.add('selected');
         dayBtn.onclick = function() {
             document.querySelectorAll('.dob-day-btn').forEach(btn => btn.classList.remove('selected'));
             dayBtn.classList.add('selected');
@@ -760,33 +637,13 @@ function renderDobCalendar() {
 }
 
 function confirmDobSelection() {
-    const formattedMonth = String(selectedDobMonth + 1).padStart(2, '0');
-    const formattedDay = String(selectedDobDay).padStart(2, '0');
-    const dateStr = `${selectedDobYear}-${formattedMonth}-${formattedDay}`;
-
-    document.getElementById('userDob').value = dateStr;
+    const m = String(selectedDobMonth + 1).padStart(2, '0');
+    const d = String(selectedDobDay).padStart(2, '0');
+    document.getElementById('userDob').value = `${selectedDobYear}-${m}-${d}`;
     calculatePremiums();
     closeDobModal();
 }
 
-// 1. Скрытие клавиатуры по нажатию "Enter" (Return) на любом поле
-document.addEventListener('keydown', function(event) {
-    if (event.key === 'Enter') {
-        if (document.activeElement instanceof HTMLElement) {
-            document.activeElement.blur(); // Сбрасываем фокус, и клавиатура уезжает вниз
-        }
-    }
-});
-
-// 2. Жесткое снятие фокуса со слайдеров и дропдаунов после касания
-document.querySelectorAll('input[type="range"], select').forEach(el => {
-    // Используем 'pointerup' и 'touchend', чтобы отловить момент отпускания пальца
-    const removeFocus = function() {
-        this.blur();
-    };
-    el.addEventListener('pointerup', removeFocus);
-    el.addEventListener('touchend', removeFocus);
-    el.addEventListener('change', removeFocus);
-});
-
+// Запуск при старте
+resetInactivity();
 loadDataFromCloud();
