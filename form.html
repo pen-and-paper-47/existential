@@ -199,7 +199,7 @@
 </div>
 
 <!-- МАКЕТ PDF -->
-<div id="pdf-template" style="position: fixed; top: 0; left: 0; width: 210mm; background-color: #fdfbf7; color: #2b3a4a; font-family: 'Roboto', sans-serif; z-index: -9999; visibility: hidden; pointer-events: none;">
+<div id="pdf-template" style="position: absolute; left: -9999px; top: 0; width: 210mm; background-color: #fdfbf7; color: #2b3a4a; font-family: 'Roboto', sans-serif; opacity: 0; pointer-events: none;">
     <div style="border: 4px double #4caf50; padding: 20mm; margin: 0; background: #ffffff; box-sizing: border-box; position: relative;">
         
         <!-- Печать/Штамп -->
@@ -211,17 +211,17 @@
         <h3 style="color: #8fa3b3; font-style: italic; font-size: 16px; margin: 0 0 30px 0; font-weight: 400;" id="pdf-slogan"></h3>
         
         <div style="font-size: 15px; line-height: 2;">
-            <p style="margin: 0 0 15px 0;"><strong>Идентификатор субъекта:</strong> <span id="pdf-name" style="border-bottom: 1px dashed #ccc; padding-bottom: 2px; font-weight: 600;"></span></p>
-            <p style="margin: 0 0 15px 0;"><strong>Уровень тревожности (0-10):</strong> <span id="pdf-anxiety" style="font-weight: 600;"></span></p>
-            <p style="margin: 0 0 15px 0;"><strong>Метод списания премии:</strong> <span id="pdf-payment" style="font-weight: 600;"></span></p>
+            <p style="margin: 0 0 15px 0;"><strong><span id="pdf-name-label">Идентификатор субъекта:</span></strong> <span id="pdf-name" style="border-bottom: 1px dashed #ccc; padding-bottom: 2px; font-weight: 600;"></span></p>
+            <p style="margin: 0 0 15px 0;"><strong><span id="pdf-anxiety-label">Уровень тревожности (0-10):</span></strong> <span id="pdf-anxiety" style="font-weight: 600;"></span></p>
+            <p style="margin: 0 0 15px 0;"><strong><span id="pdf-payment-label">Метод списания премии:</span></strong> <span id="pdf-payment" style="font-weight: 600;"></span></p>
             <p style="background: #f1f8e9; padding: 10px 15px; border-radius: 8px; margin: 0;">
-                <strong><span id="pdf-cost-label"></span></strong> 
+                <span id="pdf-cost-label" style="font-weight: bold;">Итого:</span> 
                 <span id="pdf-cost-value" style="color: #e65100; font-weight: bold; font-size: 18px;"></span>
             </p>
         </div>
 
         <div style="margin-top: 35px; padding: 20px; background: #faf8f3; border-left: 4px solid #4caf50; border-radius: 0 12px 12px 0;">
-            <strong style="font-size: 15px; text-transform: uppercase; letter-spacing: 1px;">Объекты покрытия:</strong>
+            <strong id="pdf-risks-header" style="font-size: 15px; text-transform: uppercase; letter-spacing: 1px;">Объекты покрытия:</strong>
             <ul id="pdf-risks-list" style="font-size: 13px; margin: 15px 0 0 0; padding-left: 20px; line-height: 1.8; color: #2b3a4a;"></ul>
         </div>
         
@@ -229,11 +229,11 @@
         <div style="margin-top: 50px; text-align: right; padding-right: 10mm;">
             <div style="display: inline-block; text-align: center; width: 50mm;">
                 <div style="border-bottom: 1px solid #2b3a4a; height: 25px; margin-bottom: 8px;"></div>
-                <div id="pdf-signature-label" style="font-size: 11px; color: #8fa3b3; font-weight: 500; text-transform: uppercase; letter-spacing: 1px;">Загрузка...</div>
+                <div id="pdf-signature-label" style="font-size: 11px; color: #8fa3b3; font-weight: 500; text-transform: uppercase; letter-spacing: 1px;">Подпись художника</div>
             </div>
         </div>
 
-        <div style="margin-top: 40px; font-size: 10px; color: #8fa3b3; text-align: left; border-top: 1px solid #eee; padding-top: 5mm; line-height: 1.4;">
+        <div id="pdf-footer-text" style="margin-top: 40px; font-size: 10px; color: #8fa3b3; text-align: left; border-top: 1px solid #eee; padding-top: 5mm; line-height: 1.4;">
             Данный документ подтверждает защиту от экзистенциальных угроз в рамках симуляции. Сгенерировано системой Алеф-404.
         </div>
     </div>
