@@ -14,14 +14,15 @@ body {
     font-family: 'Roboto', 'Heebo', sans-serif;
     color: var(--text-main);
     margin: 0;
-    padding: 20px;
+    
+    /* Добавляем адаптивные отступы сверху и снизу */
+    padding: 5vh 20px; 
     min-height: 100vh;
     background-image: linear-gradient(120deg, #fdfbf7 0%, #e8f5e9 100%);
-    
-    display: flex;
-    justify-content: center;
-    /* МЕНЯЕМ center НА flex-start, чтобы контент начинался сверху на узких экранах */
-    align-items: flex-start; 
+    box-sizing: border-box;
+
+    /* ПОЛНОСТЬЮ ОТКЛЮЧАЕМ FLEXBOX ДЛЯ BODY */
+    display: block; 
 }
 
 .card {
@@ -34,8 +35,8 @@ body {
     box-sizing: border-box;
     position: relative;
     
-    /* ДОБАВЛЯЕМ ЭТО: авто-отступы будут центрировать карточку, когда есть место, и отключаться, когда его нет */
-    margin: auto; 
+    /* Центрируем карточку строго по горизонтали */
+    margin: 0 auto; 
 }
 
 .header {
