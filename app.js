@@ -361,7 +361,6 @@ function collectFinalData() {
     });
 
     const pdfElement = document.getElementById('pdf-template');
-    pdfElement.style.display = 'block';
 
     const opt = { 
         margin: 0, 
@@ -372,7 +371,6 @@ function collectFinalData() {
     };
 
     html2pdf().set(opt).from(pdfElement).outputPdf('datauristring').then(function(pdfBase64) {
-        pdfElement.style.display = 'none';
         const base64Data = pdfBase64.split(',')[1];
         
         fetch(GAS_URL, {
