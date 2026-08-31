@@ -7,6 +7,7 @@ let inactivityTimer;
 let countdownInterval;
 let timeLeft = 15;
 let loaderInterval; // Объявляем таймер только один раз!
+let finalCountdownInterval;
 
 // 1. Читаем язык из URL или браузера
 const urlParams = new URLSearchParams(window.location.search);
@@ -122,6 +123,7 @@ function applyLanguage() {
     setElText('t-finish-btn', dict['finish-btn']);
     setElText('t-back-2', dict['back-2']);
     setElText('t-disclaimer', dict['disclaimer']);
+    setElPlaceholder('userEmail', dict['email-placeholder'] || (currentLang === 'ru' ? "ваша@почта.com" : "your@email.com"));
     
     // --- МОДАЛЬНЫЕ ОКНА ---
     setElText('t-dob-modal-title', dict['dob-modal-title']);
@@ -132,6 +134,7 @@ function applyLanguage() {
     setElText('t-thanks-title', dict['thanks-title'] || (currentLang === 'ru' ? "Спасибо за доверие" : "Thank you for your trust"));
     setElText('t-back-main', dict['back-main'] || (currentLang === 'ru' ? "Возврат на главную страницу" : "Return to main page"));
     setElText('pdf-signature-label', dict['pdf-signature-label'] || (currentLang === 'ru' ? "Подпись художника" : "Artist's signature"));
+    setElText('t-thanks-disclaimer', dict['disclaimer']);
 
     // Обновление логических блоков
     const anxietySlider = document.getElementById('anxietySlider');
@@ -425,14 +428,37 @@ function showThankYouScreen(email) {
 
     if (email && msgElement) {
         msgElement.innerHTML = `
-            <div style="background: #f1f8e9; border: 2px solid var(--growth-green); padding: 25px 20px; border-radius: 16px; box-shadow: 0 12px 30px rgba(76, 175, 80, 0.15); margin: 30px auto; max-width: 450px;">
+            <div style="background: #f1f8e9; border: 2px solid var(--growth-green); padding: 25px 20px; border-radius: 16px; box-shadow: 0 12px 30px rgba(76, 175, 80, 0.15); margin: 0 auto 30px; max-width: 450px;">
                 <div style="font-size: 32px; margin-bottom: 12px;">📩</div>
                 <span style="font-size: 15px; color: var(--text-main); display: block; margin-bottom: 12px; font-weight: 500;">${sentText}</span>
                 <strong style="font-size: 18px; color: var(--growth-green); word-break: break-all;">${email}</strong>
             </div>`;
     }
     
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    // --- Логика таймера на кнопке возврата ---
+    const backBtn = document.getElementById('t-back-main');
+    const backBtnText = dict['back-main'] || (currentLang === 'ru' ? "Возврат на главную страницу" : "Return to main page");
+    let secondsLeft = 15;
+    
+    if (backBtn) {
+        backBtn.innerText = `${backBtnText} (${secondsLeft})`;
+        clearInterval(finalCountdownInterval);
+        
+        finalCountdownInterval = setInterval(() => {
+            secondsLeft--;
+            if (secondsLeft <= 0) {
+                clearInterval(finalCountdownInterval);
+                resetToMain();
+            } else {
+                backBtn.innerText = `${backBtnText} (${secondsLeft})`;
+            }
+        }, 1000);
+    }
+    
+    // Прокрутка экрана ровно к кнопке возврата
+    setTimeout(() => {
+        backBtn?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 150);
 }
 
 // ==========================================
