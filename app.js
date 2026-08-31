@@ -478,15 +478,6 @@ document.addEventListener('click', function(e) {
     document.querySelectorAll('.info-icon').forEach(el => el.classList.remove('active'));
 });
 
-// Скрытие клавиатуры/барабана выбора на iOS и Android после взаимодействия
-document.querySelectorAll('select, input[type="range"]').forEach(el => {
-    el.addEventListener('change', function() {
-        this.blur(); // Снимаем фокус, убирая клавиатуру с экрана
-    });
-});
-
-loadDataFromCloud();
-
 let selectedDobYear = 1990;
 let selectedDobMonth = 0; // 0 - Январь
 let selectedDobDay = 1;
@@ -628,3 +619,25 @@ function confirmDobSelection() {
     calculatePremiums();
     closeDobModal();
 }
+
+// 1. Скрытие клавиатуры по нажатию "Enter" (Return) на любом поле
+document.addEventListener('keydown', function(event) {
+    if (event.key === 'Enter') {
+        if (document.activeElement instanceof HTMLElement) {
+            document.activeElement.blur(); // Сбрасываем фокус, и клавиатура уезжает вниз
+        }
+    }
+});
+
+// 2. Жесткое снятие фокуса со слайдеров и дропдаунов после касания
+document.querySelectorAll('input[type="range"], select').forEach(el => {
+    // Используем 'pointerup' и 'touchend', чтобы отловить момент отпускания пальца
+    const removeFocus = function() {
+        this.blur();
+    };
+    el.addEventListener('pointerup', removeFocus);
+    el.addEventListener('touchend', removeFocus);
+    el.addEventListener('change', removeFocus);
+});
+
+loadDataFromCloud();
