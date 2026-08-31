@@ -316,7 +316,8 @@ input[type="radio"], input[type="checkbox"] {
     width: 280px;
     max-width: calc(100vw - 80px);
     
-    background: rgba(43, 58, 74, 0.92) !important;
+    /* Делаем фон более прозрачным (было 0.92, стало 0.65) */
+    background: rgba(43, 58, 74, 0.65) !important;
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     
@@ -338,7 +339,7 @@ input[type="radio"], input[type="checkbox"] {
     animation: fadeIn 0.2s ease forwards;
 }
 
-/* Стрелочка тултипа */
+/* Стрелочка тултипа (тоже делаем полупрозрачной под цвет фона) */
 .info-tooltip::after {
     content: '';
     position: absolute;
@@ -346,7 +347,7 @@ input[type="radio"], input[type="checkbox"] {
     left: 18px;
     border-width: 6px;
     border-style: solid;
-    border-color: rgba(43, 58, 74, 0.92) transparent transparent transparent;
+    border-color: rgba(43, 58, 74, 0.65) transparent transparent transparent;
 }
 
 /* Показ тултипа */
