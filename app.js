@@ -402,25 +402,7 @@ function collectFinalData() {
         pdfElement.style.removeProperty('z-index');
     }
 
-    const opt = {
-        margin: 0,
-        filename: 'Form_404_Aleph.pdf',
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: {
-            scale: 2,
-            useCORS: true,
-            logging: false,
-            backgroundColor: '#ffffff',
-            scrollX: 0,
-            scrollY: 0
-        },
-        jsPDF: {
-            unit: 'mm',
-            format: 'a4',
-            orientation: 'portrait',
-            compress: true
-        }
-    };
+
     console.log('РАЗМЕР ШАБЛОНА:', pdfElement.offsetWidth, 'x', pdfElement.offsetHeight);
     console.log('ТЕКСТ В ШАБЛОНЕ:', pdfElement.innerText.slice(0, 120));
     
