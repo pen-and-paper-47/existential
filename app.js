@@ -376,216 +376,178 @@ function collectFinalData() {
         risksList.innerHTML += `<li>${cb.nextElementSibling.innerText}</li>`;
     });
 
-   const pdfElement = document.getElementById('pdf-template');
+    const pdfElement = document.getElementById('pdf-template');
 
-  // Временно ставим шаблон на реальный экран, НО под лоадером (z-index лоадера = 10000).
-  // Пользователь его не видит, а html2canvas корректно отрисовывает.
+    // Временно помещаем PDF-шаблон в область экрана, но под полноэкранным лоадером.
+    // Лоадер имеет z-index 10000, а шаблон — 9998, поэтому пользователь его не увидит.
     pdfElement.style.setProperty('position', 'fixed', 'important');
     pdfElement.style.setProperty('left', '0', 'important');
     pdfElement.style.setProperty('top', '0', 'important');
+    pdfElement.style.setProperty('width', '210mm', 'important');
     pdfElement.style.setProperty('opacity', '1', 'important');
-    pdfElement.style.setProperty('z-index', '9998', 'important'); // ниже лоадера (10000)
+    pdfElement.style.setProperty('visibility', 'visible', 'important');
+    pdfElement.style.setProperty('display', 'block', 'important');
+    pdfElement.style.setProperty('z-index', '9998', 'important');
     pdfElement.style.setProperty('pointer-events', 'none', 'important');
     pdfElement.style.setProperty('background-color', '#ffffff', 'important');
 
-// Функция возврата шаблона в скрытое состояние
-function hidePdfTemplate() {
-    pdfElement.style.setProperty('position', 'absolute', 'important');
-    pdfElement.style.setProperty('left', '-9999px', 'important');
-    pdfElement.style.setProperty('top', '0', 'important');
-    pdfElement.style.setProperty('opacity', '0', 'important');
-    pdfElement.style.removeProperty('z-index');
-}
-
-const opt = {
-    margin: 0,
-    filename: 'Form_404_Aleph.pdf',
-    image: { type: 'jpeg', quality: 0.98 },
-    html2canvas: {
-        scale: 2,
-        useCORS: true,
-        logging: false,
-        backgroundColor: '#ffffff',
-        scrollX: 0,
-        scrollY: 0
-    },
-    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait', compress: true }
-};
-
-html2pdf()
-    .set(opt)
-    .from(pdfElement)
-    .outputPdf('datauristring')
-
-    .then(function(pdfBase64) {
-    hidePdfTemplate(); // ← прячем сразу после рендера
-    if (!pdfBase64 || !pdfBase64.includes(',')) {
-        throw new Error('Не удалось сформировать PDF');
+    // Возвращает PDF-шаблон в исходное скрытое состояние.
+    function hidePdfTemplate() {
+        pdfElement.style.setProperty('position', 'absolute', 'important');
+        pdfElement.style.setProperty('left', '-9999px', 'important');
+        pdfElement.style.setProperty('top', '0', 'important');
+        pdfElement.style.setProperty('opacity', '0', 'important');
+        pdfElement.style.removeProperty('visibility');
+        pdfElement.style.removeProperty('display');
+        pdfElement.style.removeProperty('z-index');
     }
-    const base64Data = pdfBase64.substring(pdfBase64.indexOf(',') + 1);
-    console.log('Размер PDF перед отправкой:', Math.floor(base64Data.length * 0.75), 'байт');
 
-    return fetch(GAS_URL, {
-        method: 'POST',
-        body: JSON.stringify({ base64: base64Data, filename: 'Form_404_Aleph.pdf' }),
-        headers: { 'Content-Type': 'text/plain;charset=utf-8' }
-    });
-        if (
-            !pdfBase64 ||
-            typeof pdfBase64 !== 'string' ||
-            !pdfBase64.includes(',')
-        ) {
-            throw new Error('Не удалось сформировать PDF');
+    const opt = {
+        margin: 0,
+        filename: 'Form_404_Aleph.pdf',
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: {
+            scale: 2,
+            useCORS: true,
+            logging: false,
+            backgroundColor: '#ffffff',
+            scrollX: 0,
+            scrollY: 0
+        },
+        jsPDF: {
+            unit: 'mm',
+            format: 'a4',
+            orientation: 'portrait',
+            compress: true
         }
+    };
 
-        const base64Data = pdfBase64.substring(
-            pdfBase64.indexOf(',') + 1
-        );
+    html2pdf()
+        .set(opt)
+        .from(pdfElement)
+        .outputPdf('datauristring')
+        .then(function(pdfBase64) {
+            // Снимок уже сделан — снова прячем шаблон.
+            hidePdfTemplate();
 
-        // Приблизительный размер сгенерированного PDF
-        const approximateSize =
-            Math.floor(base64Data.length * 0.75);
-
-        console.log(
-            'Размер PDF перед отправкой:',
-            approximateSize,
-            'байт'
-        );
-
-        /*
-         * Пустой PDF сейчас весит около 3 КБ.
-         * Документ с изображением страницы обычно будет
-         * весить намного больше.
-         */
-        console.log('Размер PDF перед отправкой:', Math.floor(base64Data.length * 0.75), 'байт');
-
-        return fetch(GAS_URL, {
-            method: 'POST',
-
-            body: JSON.stringify({
-                base64: base64Data,
-                filename: 'Form_404_Aleph.pdf'
-            }),
-
-            headers: {
-                'Content-Type': 'text/plain;charset=utf-8'
+            if (
+                !pdfBase64 ||
+                typeof pdfBase64 !== 'string' ||
+                !pdfBase64.includes(',')
+            ) {
+                throw new Error('Не удалось сформировать PDF');
             }
+
+            const base64Data = pdfBase64.substring(
+                pdfBase64.indexOf(',') + 1
+            );
+
+            const approximateSize = Math.floor(base64Data.length * 0.75);
+            console.log('Размер PDF перед отправкой:', approximateSize, 'байт');
+
+            // На время проверки не блокируем отправку маленького PDF,
+            // а только выводим предупреждение в консоль.
+            if (approximateSize < 10000) {
+                console.warn(
+                    'PDF получился подозрительно маленьким:',
+                    approximateSize,
+                    'байт'
+                );
+            }
+
+            return fetch(GAS_URL, {
+                method: 'POST',
+                body: JSON.stringify({
+                    base64: base64Data,
+                    filename: 'Form_404_Aleph.pdf'
+                }),
+                headers: {
+                    'Content-Type': 'text/plain;charset=utf-8'
+                }
+            });
+        })
+        .then(function(response) {
+            if (!response.ok) {
+                throw new Error(
+                    'Ошибка Google Apps Script: HTTP ' + response.status
+                );
+            }
+
+            return response.text();
+        })
+        .then(function(responseText) {
+            let data;
+
+            try {
+                data = JSON.parse(responseText);
+            } catch (error) {
+                throw new Error(
+                    'Google Apps Script вернул некорректный ответ: ' +
+                    responseText
+                );
+            }
+
+            if (data.status !== 'success' || !data.url) {
+                throw new Error(
+                    data.message ||
+                    'Не удалось сохранить PDF на Google Drive'
+                );
+            }
+
+            return emailjs.send(
+                'service_kluawpl',
+                'template_34kowi9',
+                {
+                    email_to: email,
+                    pdf_link: data.url,
+                    email_subject:
+                        dict['email-sub'] ||
+                        'Форма 404-Алеф: Ваш План Защиты',
+                    email_greeting:
+                        (dict['email-greet'] || 'Идентификатор субъекта:') +
+                        ' ' +
+                        (document.getElementById('t-name-placeholder').value || 'Аноним'),
+                    email_message:
+                        dict['email-msg'] ||
+                        'Ваша экзистенциальная фиксация успешно завершена. Цифровой след учтен, а документ помещен в Вечный Архив.',
+                    email_btn:
+                        dict['email-btn'] ||
+                        'Открыть Сертификат',
+                    email_header:
+                        dict['window-title'] ||
+                        'ФОРМА 404-АЛЕФ',
+                    email_direct_link_text:
+                        dict['email-direct-link'] ||
+                        'Если кнопка не открывается, перейдите по прямой ссылке:',
+                    email_footer:
+                        dict['email-footer'] ||
+                        'Данное уведомление сформировано в рамках симуляции художественного бюрократического процесса.'
+                }
+            );
+        })
+        .then(function() {
+            loader.style.display = 'none';
+            clearInterval(loaderInterval);
+            showThankYouScreen(email);
+        })
+        .catch(function(err) {
+            // Прячем шаблон и при любой ошибке.
+            hidePdfTemplate();
+
+            console.error('Ошибка генерации или отправки PDF:', err);
+            loader.style.display = 'none';
+            clearInterval(loaderInterval);
+
+            alephAlert(
+                dict['error-archive'] ||
+                'Ошибка Вечного Архива. Бюрократическая сингулярность.'
+            );
+
+            finishBtn.innerText =
+                dict['finish-btn'] ||
+                'Получить План Защиты';
+            finishBtn.disabled = false;
         });
-    })
-
-    .then(function(response) {
-        if (!response.ok) {
-            throw new Error(
-                'Ошибка Google Apps Script: HTTP ' +
-                response.status
-            );
-        }
-
-        return response.text();
-    })
-
-    .then(function(responseText) {
-        let data;
-
-        try {
-            data = JSON.parse(responseText);
-        } catch (error) {
-            throw new Error(
-                'Google Apps Script вернул некорректный ответ: ' +
-                responseText
-            );
-        }
-
-        if (data.status !== 'success' || !data.url) {
-            throw new Error(
-                data.message ||
-                'Не удалось сохранить PDF на Google Drive'
-            );
-        }
-
-        return emailjs.send(
-            'service_kluawpl',
-            'template_34kowi9',
-            {
-                email_to: email,
-
-                // Ссылка на созданный файл Google Drive
-                pdf_link: data.url,
-
-                email_subject:
-                    dict['email-sub'] ||
-                    'Форма 404-Алеф: Ваш План Защиты',
-
-                email_greeting:
-                    (
-                        dict['email-greet'] ||
-                        'Идентификатор субъекта:'
-                    ) +
-                    ' ' +
-                    (
-                        document.getElementById(
-                            't-name-placeholder'
-                        ).value ||
-                        'Аноним'
-                    ),
-
-                email_message:
-                    dict['email-msg'] ||
-                    'Ваша экзистенциальная фиксация успешно завершена. Цифровой след учтен, а документ помещен в Вечный Архив.',
-
-                email_btn:
-                    dict['email-btn'] ||
-                    'Открыть Сертификат',
-
-                email_header:
-                    dict['window-title'] ||
-                    'ФОРМА 404-АЛЕФ',
-
-                email_direct_link_text:
-                    dict['email-direct-link'] ||
-                    'Если кнопка не открывается, перейдите по прямой ссылке:',
-
-                email_footer:
-                    dict['email-footer'] ||
-                    'Данное уведомление сформировано в рамках симуляции художественного бюрократического процесса.'
-            }
-        );
-    })
-
-    .then(function() {
-        loader.style.display = 'none';
-        clearInterval(loaderInterval);
-
-        showThankYouScreen(email);
-    })
-
-    .catch(function(err) {
-    hidePdfTemplate(); // ← на случай ошибки тоже прячем
-    console.error('Ошибка генерации или отправки PDF:', err);
-    loader.style.display = 'none';
-    clearInterval(loaderInterval);
-    alephAlert(dict['error-archive'] || "Ошибка Вечного Архива. Бюрократическая сингулярность.");
-    finishBtn.innerText = dict['finish-btn'] || "Получить План Защиты";
-    finishBtn.disabled = false;
-        console.error(
-            'Ошибка генерации или отправки PDF:',
-            err
-        );
-
-        loader.style.display = 'none';
-        clearInterval(loaderInterval);
-
-        alephAlert(
-            dict['error-archive'] ||
-            'Ошибка Вечного Архива. Бюрократическая сингулярность.'
-        );
-
-        finishBtn.innerText =
-            dict['finish-btn'] ||
-            'Получить План Защиты';
-
-        finishBtn.disabled = false;
-    });
 }
 
 function showThankYouScreen(email) {
