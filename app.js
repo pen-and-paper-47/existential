@@ -376,119 +376,40 @@ function collectFinalData() {
         risksList.innerHTML += `<li>${cb.nextElementSibling.innerText}</li>`;
     });
 
-    const pdfElement = document.getElementById('pdf-template');
+   const pdfElement = document.getElementById('pdf-template');
+
+  // Временно ставим шаблон на реальный экран, НО под лоадером (z-index лоадера = 10000).
+  // Пользователь его не видит, а html2canvas корректно отрисовывает.
+    pdfElement.style.setProperty('position', 'fixed', 'important');
+    pdfElement.style.setProperty('left', '0', 'important');
+    pdfElement.style.setProperty('top', '0', 'important');
+    pdfElement.style.setProperty('opacity', '1', 'important');
+    pdfElement.style.setProperty('z-index', '9998', 'important'); // ниже лоадера (10000)
+    pdfElement.style.setProperty('pointer-events', 'none', 'important');
+    pdfElement.style.setProperty('background-color', '#ffffff', 'important');
+
+// Функция возврата шаблона в скрытое состояние
+function hidePdfTemplate() {
+    pdfElement.style.setProperty('position', 'absolute', 'important');
+    pdfElement.style.setProperty('left', '-9999px', 'important');
+    pdfElement.style.setProperty('top', '0', 'important');
+    pdfElement.style.setProperty('opacity', '0', 'important');
+    pdfElement.style.removeProperty('z-index');
+}
 
 const opt = {
     margin: 0,
-
     filename: 'Form_404_Aleph.pdf',
-
-    image: {
-        type: 'jpeg',
-        quality: 0.98
-    },
-
+    image: { type: 'jpeg', quality: 0.98 },
     html2canvas: {
         scale: 2,
         useCORS: true,
         logging: false,
         backgroundColor: '#ffffff',
         scrollX: 0,
-        scrollY: 0,
-        windowWidth: 794,
-        windowHeight: 1123,
-
-        /*
-         * html2canvas создаёт техническую копию страницы.
-         * Показываем шаблон только внутри этой копии.
-         * На настоящей странице он остаётся скрытым.
-         */
-        onclone: function(clonedDocument) {
-            const clonedTemplates =
-                clonedDocument.querySelectorAll('#pdf-template');
-
-            clonedTemplates.forEach(function(clonedTemplate) {
-                clonedTemplate.style.setProperty(
-                    'position',
-                    'relative',
-                    'important'
-                );
-
-                clonedTemplate.style.setProperty(
-                    'left',
-                    '0',
-                    'important'
-                );
-
-                clonedTemplate.style.setProperty(
-                    'top',
-                    '0',
-                    'important'
-                );
-
-                clonedTemplate.style.setProperty(
-                    'display',
-                    'block',
-                    'important'
-                );
-
-                clonedTemplate.style.setProperty(
-                    'visibility',
-                    'visible',
-                    'important'
-                );
-
-                clonedTemplate.style.setProperty(
-                    'opacity',
-                    '1',
-                    'important'
-                );
-
-                clonedTemplate.style.setProperty(
-                    'transform',
-                    'none',
-                    'important'
-                );
-
-                clonedTemplate.style.setProperty(
-                    'animation',
-                    'none',
-                    'important'
-                );
-
-                clonedTemplate.style.setProperty(
-                    'width',
-                    '210mm',
-                    'important'
-                );
-
-                clonedTemplate.style.setProperty(
-                    'min-height',
-                    '297mm',
-                    'important'
-                );
-
-                clonedTemplate.style.setProperty(
-                    'overflow',
-                    'visible',
-                    'important'
-                );
-
-                clonedTemplate.style.setProperty(
-                    'background-color',
-                    '#ffffff',
-                    'important'
-                );
-            });
-        }
+        scrollY: 0
     },
-
-    jsPDF: {
-        unit: 'mm',
-        format: 'a4',
-        orientation: 'portrait',
-        compress: true
-    }
+    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait', compress: true }
 };
 
 html2pdf()
@@ -497,6 +418,18 @@ html2pdf()
     .outputPdf('datauristring')
 
     .then(function(pdfBase64) {
+    hidePdfTemplate(); // ← прячем сразу после рендера
+    if (!pdfBase64 || !pdfBase64.includes(',')) {
+        throw new Error('Не удалось сформировать PDF');
+    }
+    const base64Data = pdfBase64.substring(pdfBase64.indexOf(',') + 1);
+    console.log('Размер PDF перед отправкой:', Math.floor(base64Data.length * 0.75), 'байт');
+
+    return fetch(GAS_URL, {
+        method: 'POST',
+        body: JSON.stringify({ base64: base64Data, filename: 'Form_404_Aleph.pdf' }),
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' }
+    });
         if (
             !pdfBase64 ||
             typeof pdfBase64 !== 'string' ||
@@ -524,13 +457,7 @@ html2pdf()
          * Документ с изображением страницы обычно будет
          * весить намного больше.
          */
-        if (approximateSize < 10000) {
-            throw new Error(
-                'PDF получился подозрительно маленьким: ' +
-                approximateSize +
-                ' байт'
-            );
-        }
+        console.log('Размер PDF перед отправкой:', Math.floor(base64Data.length * 0.75), 'байт');
 
         return fetch(GAS_URL, {
             method: 'POST',
@@ -633,6 +560,13 @@ html2pdf()
     })
 
     .catch(function(err) {
+    hidePdfTemplate(); // ← на случай ошибки тоже прячем
+    console.error('Ошибка генерации или отправки PDF:', err);
+    loader.style.display = 'none';
+    clearInterval(loaderInterval);
+    alephAlert(dict['error-archive'] || "Ошибка Вечного Архива. Бюрократическая сингулярность.");
+    finishBtn.innerText = dict['finish-btn'] || "Получить План Защиты";
+    finishBtn.disabled = false;
         console.error(
             'Ошибка генерации или отправки PDF:',
             err
