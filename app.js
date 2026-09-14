@@ -421,7 +421,9 @@ function collectFinalData() {
             compress: true
         }
     };
-
+    console.log('РАЗМЕР ШАБЛОНА:', pdfElement.offsetWidth, 'x', pdfElement.offsetHeight);
+    console.log('ТЕКСТ В ШАБЛОНЕ:', pdfElement.innerText.slice(0, 120));
+    
     html2pdf()
         .set(opt)
         .from(pdfElement)
