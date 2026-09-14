@@ -7,6 +7,8 @@
     --primary-red: #ff9800;
     --primary-hover: #f57c00;
     --growth-green: #4caf50;
+    --sea-blue: #1f7d96;
+    --sea-blue-deep: #155a6e;
 }
 
 body {
@@ -710,8 +712,266 @@ body.landing-body {
 #pdf-template {
     position: absolute;
     left: -9999px;
-    top: 0;
-    width: 210mm;
+    top: -9999px;
     opacity: 0;
     pointer-events: none;
+}
+
+/* ============================================
+   PDF-ФОРМА: СРЕДИЗЕМНОМОРСКАЯ ПАЛИТРА САЙТА
+   (использует те же переменные, что и весь сайт)
+   ============================================ */
+.pdf-sheet {
+    width: 210mm;
+    box-sizing: border-box;
+    background: var(--bg-color);
+    color: var(--text-main);
+    font-family: 'Inter', 'Roboto', sans-serif;
+    border: 1px solid var(--border-color);
+    overflow: hidden;
+}
+
+.pdf-band {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--sea-blue);
+    color: #ffffff;
+    padding: 14mm 16mm 10mm 16mm;
+    box-sizing: border-box;
+}
+
+.pdf-band-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.pdf-band-mark {
+    font-family: 'PT Serif', serif;
+    font-size: 20px;
+    font-weight: 700;
+    border: 1.5px solid var(--primary-red);
+    color: #ffffff;
+    background: var(--primary-red);
+    width: 36px;
+    height: 36px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    box-sizing: border-box;
+}
+
+.pdf-band-name {
+    font-family: 'PT Serif', serif;
+    font-size: 22px;
+    letter-spacing: 0.03em;
+    font-weight: 700;
+}
+
+.pdf-band-meta {
+    text-align: right;
+    font-size: 11.5px;
+    line-height: 1.8;
+}
+
+.pdf-band-meta-row span:first-child {
+    color: rgba(255, 255, 255, 0.65);
+    margin-right: 10px;
+}
+
+.pdf-band-meta-row span:last-child {
+    color: #ffffff;
+    font-weight: 600;
+}
+
+.pdf-rule-gold {
+    height: 3px;
+    background: linear-gradient(90deg, var(--primary-hover) 0%, var(--primary-red) 50%, var(--primary-hover) 100%);
+}
+
+.pdf-body {
+    padding: 14mm 16mm 4mm 16mm;
+    box-sizing: border-box;
+}
+
+.pdf-title {
+    font-family: 'PT Serif', serif;
+    font-size: 26px;
+    font-weight: 700;
+    margin: 0 0 6px 0;
+    color: var(--growth-green);
+}
+
+.pdf-slogan {
+    font-family: 'PT Serif', serif;
+    font-style: italic;
+    font-size: 14px;
+    color: var(--text-muted);
+    margin: 0 0 28px 0;
+}
+
+.pdf-declarations {
+    border-top: 1px solid var(--border-color);
+}
+
+.pdf-decl-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border-color);
+    gap: 24px;
+}
+
+.pdf-decl-label {
+    font-size: 13px;
+    color: var(--text-muted);
+    flex-shrink: 0;
+}
+
+.pdf-decl-value {
+    font-size: 15px;
+    font-weight: 700;
+    text-align: right;
+    color: var(--text-main);
+}
+
+.pdf-schedule {
+    margin-top: 30px;
+}
+
+.pdf-schedule-header {
+    font-family: 'PT Serif', serif;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--growth-green);
+    margin: 0 0 12px 0;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.pdf-schedule-list {
+    margin: 0;
+    padding-left: 22px;
+    font-size: 13px;
+    line-height: 2;
+    color: var(--text-main);
+}
+
+.pdf-schedule-list li::marker {
+    color: var(--primary-red);
+    font-weight: 700;
+}
+
+.pdf-premium {
+    margin-top: 28px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #ffffff;
+    border: 1.5px solid var(--primary-red);
+    padding: 14px 18px;
+    box-sizing: border-box;
+}
+
+.pdf-premium-label {
+    font-size: 13px;
+    color: var(--text-muted);
+    font-weight: 600;
+}
+
+.pdf-premium-value {
+    font-size: 19px;
+    font-weight: 800;
+    color: #e65100;
+}
+
+.pdf-signature-row {
+    margin-top: 42px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+}
+
+.pdf-seal {
+    width: 94px;
+    height: 94px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    border: 1.5px solid var(--primary-red);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    position: relative;
+}
+
+.pdf-seal::before {
+    content: "";
+    position: absolute;
+    top: 6px; right: 6px; bottom: 6px; left: 6px;
+    border: 1px solid var(--growth-green);
+    border-radius: 50%;
+    box-sizing: border-box;
+}
+
+.pdf-seal span {
+    font-family: 'PT Serif', serif;
+    font-size: 9.5px;
+    letter-spacing: 0.05em;
+    text-align: center;
+    color: var(--sea-blue-deep);
+    padding: 0 12px;
+    line-height: 1.5;
+}
+
+.pdf-signature-block {
+    width: 180px;
+    text-align: center;
+}
+
+.pdf-signature-line {
+    border-bottom: 1px solid var(--text-main);
+    height: 32px;
+}
+
+.pdf-signature-label {
+    font-size: 10.5px;
+    color: var(--text-muted);
+    margin-top: 6px;
+}
+
+.pdf-barcode {
+    height: 26px;
+    margin: 32px 16mm 0 16mm;
+    display: flex;
+    align-items: stretch;
+    gap: 2px;
+}
+
+.pdf-barcode span {
+    display: block;
+    background: var(--text-main);
+}
+
+.pdf-footer-text {
+    font-size: 9.5px;
+    color: var(--text-muted);
+    padding: 8px 16mm 0 16mm;
+    line-height: 1.5;
+    box-sizing: border-box;
+}
+
+.pdf-happening-note {
+    font-size: 9px;
+    font-style: italic;
+    color: var(--text-muted);
+    padding: 10px 16mm 14mm 16mm;
+    line-height: 1.5;
+    border-top: 1px dashed var(--border-color);
+    margin: 10px 16mm 0 16mm;
+    box-sizing: border-box;
 }

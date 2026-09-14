@@ -6,6 +6,9 @@
     <title>Форма 404-Алеф</title>
     
     <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=PT+Serif:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <script type="text/javascript">
@@ -198,44 +201,70 @@
     <div class="disclaimer" id="t-thanks-disclaimer" style="margin-top: 20px;"></div>
 </div>
 
-<!-- МАКЕТ PDF -->
-<div id="pdf-template" style="position: absolute; left: -9999px; top: 0; width: 210mm; background-color: #fdfbf7; color: #2b3a4a; font-family: 'Roboto', sans-serif; opacity: 0; pointer-events: none;">
-    <div style="border: 4px double #4caf50; padding: 20mm; margin: 0; background: #ffffff; box-sizing: border-box; position: relative;">
-        
-        <!-- Печать/Штамп -->
-        <div style="position: absolute; top: 15mm; right: 15mm; width: 35mm; height: 35mm; border: 2px solid #ff9800; border-radius: 50%; text-align: center; transform: rotate(-15deg); color: #ff9800; font-weight: bold; font-size: 11px; background: rgba(255, 152, 0, 0.05); line-height: 35mm;">
-            ВЕЧНЫЙ АРХИВ
-        </div>
-        
-        <h1 id="pdf-title-text" style="color: #4caf50; border-bottom: 2px solid #d1e8e2; padding-bottom: 10px; font-size: 26px; text-transform: uppercase; letter-spacing: 2px; margin: 0 0 10px 0;"></h1>
-        <h3 style="color: #8fa3b3; font-style: italic; font-size: 16px; margin: 0 0 30px 0; font-weight: 400;" id="pdf-slogan"></h3>
-        
-        <div style="font-size: 15px; line-height: 2;">
-            <p style="margin: 0 0 15px 0;"><strong><span id="pdf-name-label">Идентификатор субъекта:</span></strong> <span id="pdf-name" style="border-bottom: 1px dashed #ccc; padding-bottom: 2px; font-weight: 600;"></span></p>
-            <p style="margin: 0 0 15px 0;"><strong><span id="pdf-anxiety-label">Уровень тревожности (0-10):</span></strong> <span id="pdf-anxiety" style="font-weight: 600;"></span></p>
-            <p style="margin: 0 0 15px 0;"><strong><span id="pdf-payment-label">Метод списания премии:</span></strong> <span id="pdf-payment" style="font-weight: 600;"></span></p>
-            <p style="background: #f1f8e9; padding: 10px 15px; border-radius: 8px; margin: 0;">
-                <span id="pdf-cost-label" style="font-weight: bold;">Итого:</span> 
-                <span id="pdf-cost-value" style="color: #e65100; font-weight: bold; font-size: 18px;"></span>
-            </p>
-        </div>
+<!-- МАКЕТ PDF: полис -->
+<div id="pdf-template">
+    <div class="pdf-sheet">
 
-        <div style="margin-top: 35px; padding: 20px; background: #faf8f3; border-left: 4px solid #4caf50; border-radius: 0 12px 12px 0;">
-            <strong id="pdf-risks-header" style="font-size: 15px; text-transform: uppercase; letter-spacing: 1px;">Объекты покрытия:</strong>
-            <ul id="pdf-risks-list" style="font-size: 13px; margin: 15px 0 0 0; padding-left: 20px; line-height: 1.8; color: #2b3a4a;"></ul>
+        <!-- Верхняя полоса: бренд + номер полиса -->
+        <div class="pdf-band">
+            <div class="pdf-band-brand">
+                <span class="pdf-band-mark">A</span>
+                <span class="pdf-band-name">АЛЕФ-404</span>
+            </div>
+            <div class="pdf-band-meta">
+                <div class="pdf-band-meta-row"><span id="pdf-policy-number-label">№ полиса</span><span id="pdf-policy-number">—</span></div>
+                <div class="pdf-band-meta-row"><span id="pdf-issue-date-label">Дата выдачи</span><span id="pdf-issue-date">—</span></div>
+            </div>
         </div>
-        
-        <!-- Блок подписи художника -->
-        <div style="margin-top: 50px; text-align: right; padding-right: 10mm;">
-            <div style="display: inline-block; text-align: center; width: 50mm;">
-                <div style="border-bottom: 1px solid #2b3a4a; height: 25px; margin-bottom: 8px;"></div>
-                <div id="pdf-signature-label" style="font-size: 11px; color: #8fa3b3; font-weight: 500; text-transform: uppercase; letter-spacing: 1px;">Подпись художника</div>
+        <div class="pdf-rule-gold"></div>
+
+        <div class="pdf-body">
+            <h1 id="pdf-title-text" class="pdf-title"></h1>
+            <p id="pdf-slogan" class="pdf-slogan"></p>
+
+            <!-- Раздел с данными застрахованного -->
+            <div class="pdf-declarations">
+                <div class="pdf-decl-row">
+                    <span class="pdf-decl-label" id="pdf-name-label"></span>
+                    <span class="pdf-decl-value" id="pdf-name"></span>
+                </div>
+                <div class="pdf-decl-row">
+                    <span class="pdf-decl-label" id="pdf-anxiety-label"></span>
+                    <span class="pdf-decl-value" id="pdf-anxiety"></span>
+                </div>
+                <div class="pdf-decl-row">
+                    <span class="pdf-decl-label" id="pdf-payment-label"></span>
+                    <span class="pdf-decl-value" id="pdf-payment"></span>
+                </div>
+            </div>
+
+            <!-- Перечень объектов покрытия -->
+            <div class="pdf-schedule">
+                <div class="pdf-schedule-header" id="pdf-risks-header"></div>
+                <ol class="pdf-schedule-list" id="pdf-risks-list"></ol>
+            </div>
+
+            <!-- Премия -->
+            <div class="pdf-premium">
+                <span class="pdf-premium-label" id="pdf-cost-label"></span>
+                <span class="pdf-premium-value" id="pdf-cost-value"></span>
+            </div>
+
+            <!-- Печать и подпись -->
+            <div class="pdf-signature-row">
+                <div class="pdf-seal">
+                    <span id="pdf-seal-text"></span>
+                </div>
+                <div class="pdf-signature-block">
+                    <div class="pdf-signature-line"></div>
+                    <div id="pdf-signature-label" class="pdf-signature-label"></div>
+                </div>
             </div>
         </div>
 
-        <div id="pdf-footer-text" style="margin-top: 40px; font-size: 10px; color: #8fa3b3; text-align: left; border-top: 1px solid #eee; padding-top: 5mm; line-height: 1.4;">
-            Данный документ подтверждает защиту от экзистенциальных угроз в рамках симуляции. Сгенерировано системой Алеф-404.
-        </div>
+        <div class="pdf-barcode" id="pdf-barcode"></div>
+        <div id="pdf-footer-text" class="pdf-footer-text"></div>
+        <div id="pdf-happening-note" class="pdf-happening-note"></div>
     </div>
 </div>
     
