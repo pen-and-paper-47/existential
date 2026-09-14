@@ -377,62 +377,281 @@ function collectFinalData() {
     });
 
     const pdfElement = document.getElementById('pdf-template');
-    // делаем непрозрачным, но оставляем за пределами экрана
-    pdfElement.style.opacity = '1';
-    
-    const opt = { 
-        margin: 0, 
-        filename: 'Form_404_Aleph.pdf', 
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2, useCORS: true, logging: false }, 
-        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } 
-    };
 
-    // Конвертируем в PDF и отправляем в облако без скачивания на устройство
-    html2pdf().set(opt).from(pdfElement).outputPdf('datauristring').then(function(pdfBase64) {
-          pdfElement.style.opacity = '0'; // прячем обратно
-    // ...остальной код (отправка в GAS, EmailJS)...
-        const base64Data = pdfBase64.split(',')[1];
-        
-        fetch(GAS_URL, {
+const opt = {
+    margin: 0,
+
+    filename: 'Form_404_Aleph.pdf',
+
+    image: {
+        type: 'jpeg',
+        quality: 0.98
+    },
+
+    html2canvas: {
+        scale: 2,
+        useCORS: true,
+        logging: false,
+        backgroundColor: '#ffffff',
+        scrollX: 0,
+        scrollY: 0,
+        windowWidth: 794,
+        windowHeight: 1123,
+
+        /*
+         * html2canvas создаёт техническую копию страницы.
+         * Показываем шаблон только внутри этой копии.
+         * На настоящей странице он остаётся скрытым.
+         */
+        onclone: function(clonedDocument) {
+            const clonedTemplates =
+                clonedDocument.querySelectorAll('#pdf-template');
+
+            clonedTemplates.forEach(function(clonedTemplate) {
+                clonedTemplate.style.setProperty(
+                    'position',
+                    'relative',
+                    'important'
+                );
+
+                clonedTemplate.style.setProperty(
+                    'left',
+                    '0',
+                    'important'
+                );
+
+                clonedTemplate.style.setProperty(
+                    'top',
+                    '0',
+                    'important'
+                );
+
+                clonedTemplate.style.setProperty(
+                    'display',
+                    'block',
+                    'important'
+                );
+
+                clonedTemplate.style.setProperty(
+                    'visibility',
+                    'visible',
+                    'important'
+                );
+
+                clonedTemplate.style.setProperty(
+                    'opacity',
+                    '1',
+                    'important'
+                );
+
+                clonedTemplate.style.setProperty(
+                    'transform',
+                    'none',
+                    'important'
+                );
+
+                clonedTemplate.style.setProperty(
+                    'animation',
+                    'none',
+                    'important'
+                );
+
+                clonedTemplate.style.setProperty(
+                    'width',
+                    '210mm',
+                    'important'
+                );
+
+                clonedTemplate.style.setProperty(
+                    'min-height',
+                    '297mm',
+                    'important'
+                );
+
+                clonedTemplate.style.setProperty(
+                    'overflow',
+                    'visible',
+                    'important'
+                );
+
+                clonedTemplate.style.setProperty(
+                    'background-color',
+                    '#ffffff',
+                    'important'
+                );
+            });
+        }
+    },
+
+    jsPDF: {
+        unit: 'mm',
+        format: 'a4',
+        orientation: 'portrait',
+        compress: true
+    }
+};
+
+html2pdf()
+    .set(opt)
+    .from(pdfElement)
+    .outputPdf('datauristring')
+
+    .then(function(pdfBase64) {
+        if (
+            !pdfBase64 ||
+            typeof pdfBase64 !== 'string' ||
+            !pdfBase64.includes(',')
+        ) {
+            throw new Error('Не удалось сформировать PDF');
+        }
+
+        const base64Data = pdfBase64.substring(
+            pdfBase64.indexOf(',') + 1
+        );
+
+        // Приблизительный размер сгенерированного PDF
+        const approximateSize =
+            Math.floor(base64Data.length * 0.75);
+
+        console.log(
+            'Размер PDF перед отправкой:',
+            approximateSize,
+            'байт'
+        );
+
+        /*
+         * Пустой PDF сейчас весит около 3 КБ.
+         * Документ с изображением страницы обычно будет
+         * весить намного больше.
+         */
+        if (approximateSize < 10000) {
+            throw new Error(
+                'PDF получился подозрительно маленьким: ' +
+                approximateSize +
+                ' байт'
+            );
+        }
+
+        return fetch(GAS_URL, {
             method: 'POST',
-            body: JSON.stringify({ base64: base64Data, filename: 'Form_404_Aleph.pdf' }),
-            headers: { "Content-Type": "text/plain;charset=utf-8" }
-        })
-        .then(res => res.json())
-        .then(data => {
-            loader.style.display = 'none';
-            clearInterval(loaderInterval);
 
-            if (data.status === 'success') {
-                // УБРАНО: window.open(data.url, '_blank') — файл больше не скачивается принудительно!
-                
-                emailjs.send('service_kluawpl', 'template_34kowi9', {
-                    email_to: email,
-                    pdf_link: data.url,
-                    email_subject: dict['email-sub'] || "Форма 404-Алеф: Ваш План Защиты",
-                    email_greeting: (dict['email-greet'] || "Идентификатор субъекта:") + " " + (document.getElementById('t-name-placeholder').value || "Аноним"),
-                    email_message: dict['email-msg'] || "Ваша экзистенциальная фиксация успешно завершена. Цифровой след учтен, а документ помещен в Вечный Архив.",
-                    email_btn: dict['email-btn'] || "Открыть Сертификат",
-                    email_header: dict['window-title'] || "ФОРМА 404-АЛЕФ",
-                    email_direct_link_text: dict['email-direct-link'] || "Если кнопка не открывается, перейдите по прямой ссылке:",
-                    email_footer: dict['email-footer'] || "Данное уведомление сформировано в рамках симуляции художественного бюрократического процесса."
-                }).then(() => {
-                    showThankYouScreen(email);
-                });
-            } else {
-                throw new Error("Drive error");
+            body: JSON.stringify({
+                base64: base64Data,
+                filename: 'Form_404_Aleph.pdf'
+            }),
+
+            headers: {
+                'Content-Type': 'text/plain;charset=utf-8'
             }
-        })
-        .catch(err => {
-            pdfElement.style.opacity = '0'; // ← добавить
-            loader.style.display = 'none';
-            clearInterval(loaderInterval);
-            
-            alephAlert(dict['error-archive'] || "Ошибка Вечного Архива. Бюрократическая сингулярность.");
-            finishBtn.innerText = dict['finish-btn'] || "Получить План Защиты";
-            finishBtn.disabled = false;
         });
+    })
+
+    .then(function(response) {
+        if (!response.ok) {
+            throw new Error(
+                'Ошибка Google Apps Script: HTTP ' +
+                response.status
+            );
+        }
+
+        return response.text();
+    })
+
+    .then(function(responseText) {
+        let data;
+
+        try {
+            data = JSON.parse(responseText);
+        } catch (error) {
+            throw new Error(
+                'Google Apps Script вернул некорректный ответ: ' +
+                responseText
+            );
+        }
+
+        if (data.status !== 'success' || !data.url) {
+            throw new Error(
+                data.message ||
+                'Не удалось сохранить PDF на Google Drive'
+            );
+        }
+
+        return emailjs.send(
+            'service_kluawpl',
+            'template_34kowi9',
+            {
+                email_to: email,
+
+                // Ссылка на созданный файл Google Drive
+                pdf_link: data.url,
+
+                email_subject:
+                    dict['email-sub'] ||
+                    'Форма 404-Алеф: Ваш План Защиты',
+
+                email_greeting:
+                    (
+                        dict['email-greet'] ||
+                        'Идентификатор субъекта:'
+                    ) +
+                    ' ' +
+                    (
+                        document.getElementById(
+                            't-name-placeholder'
+                        ).value ||
+                        'Аноним'
+                    ),
+
+                email_message:
+                    dict['email-msg'] ||
+                    'Ваша экзистенциальная фиксация успешно завершена. Цифровой след учтен, а документ помещен в Вечный Архив.',
+
+                email_btn:
+                    dict['email-btn'] ||
+                    'Открыть Сертификат',
+
+                email_header:
+                    dict['window-title'] ||
+                    'ФОРМА 404-АЛЕФ',
+
+                email_direct_link_text:
+                    dict['email-direct-link'] ||
+                    'Если кнопка не открывается, перейдите по прямой ссылке:',
+
+                email_footer:
+                    dict['email-footer'] ||
+                    'Данное уведомление сформировано в рамках симуляции художественного бюрократического процесса.'
+            }
+        );
+    })
+
+    .then(function() {
+        loader.style.display = 'none';
+        clearInterval(loaderInterval);
+
+        showThankYouScreen(email);
+    })
+
+    .catch(function(err) {
+        console.error(
+            'Ошибка генерации или отправки PDF:',
+            err
+        );
+
+        loader.style.display = 'none';
+        clearInterval(loaderInterval);
+
+        alephAlert(
+            dict['error-archive'] ||
+            'Ошибка Вечного Архива. Бюрократическая сингулярность.'
+        );
+
+        finishBtn.innerText =
+            dict['finish-btn'] ||
+            'Получить План Защиты';
+
+        finishBtn.disabled = false;
+    });
     });
 }
 
