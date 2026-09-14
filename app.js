@@ -652,7 +652,6 @@ html2pdf()
 
         finishBtn.disabled = false;
     });
-    });
 }
 
 function showThankYouScreen(email) {
