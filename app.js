@@ -334,7 +334,9 @@ function collectFinalData() {
     const cleanSlogan = rawSlogan.replace(/<br\s*\/?>/gi, ' ');
 
     // Заполняем тексты сертификата с учетом текущего языка
-    document.getElementById('pdf-title-text').innerText = dict['window-title'] || (currentLang === 'ru' ? "Форма 404" : "Tofes 404");
+    const pdfDocName = dict['window-title'] || (currentLang === 'ru' ? "Форма 404" : "Tofes 404");
+    document.getElementById('pdf-title-text').innerText = pdfDocName;
+    document.getElementById('pdf-band-name').innerText = pdfDocName;
     document.getElementById('pdf-slogan').innerText = cleanSlogan; 
     
     // Переводы статичных надписей внутри PDF
@@ -384,7 +386,9 @@ function collectFinalData() {
 
     document.getElementById('pdf-name').innerText = document.getElementById('t-name-placeholder').value || (currentLang === 'ru' ? "Аноним" : "Anonymous");
     document.getElementById('pdf-anxiety').innerText = document.getElementById('anxietySlider').value;
-    document.getElementById('pdf-payment').innerText = selectedPayment.nextElementSibling.innerText;
+    const paymentLabelIds = { nerves: 't-pay-1', sleep: 't-pay-2', oblivion: 't-pay-3', data: 't-pay-4' };
+    const paymentLabelEl = document.getElementById(paymentLabelIds[selectedPayment.value]);
+    document.getElementById('pdf-payment').innerText = paymentLabelEl ? paymentLabelEl.innerText : selectedPayment.nextElementSibling.innerText;
 
     let finalCost = "";
     if (selectedPayment.value === 'nerves') finalCost = document.getElementById('calc-nerves').innerText;

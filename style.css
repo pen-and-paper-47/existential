@@ -929,13 +929,13 @@ body.landing-body {
 }
 
 .pdf-signature-block {
-    width: 180px;
+    width: 300px;
     text-align: center;
 }
 
 .pdf-signature-line {
     border-bottom: 1px solid var(--text-main);
-    height: 32px;
+    height: 42px;
 }
 
 .pdf-signature-label {
