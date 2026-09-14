@@ -377,6 +377,8 @@ function collectFinalData() {
     });
 
     const pdfElement = document.getElementById('pdf-template');
+    // делаем непрозрачным, но оставляем за пределами экрана
+    pdfElement.style.opacity = '1';
     
     const opt = { 
         margin: 0, 
@@ -388,6 +390,8 @@ function collectFinalData() {
 
     // Конвертируем в PDF и отправляем в облако без скачивания на устройство
     html2pdf().set(opt).from(pdfElement).outputPdf('datauristring').then(function(pdfBase64) {
+          pdfElement.style.opacity = '0'; // прячем обратно
+    // ...остальной код (отправка в GAS, EmailJS)...
         const base64Data = pdfBase64.split(',')[1];
         
         fetch(GAS_URL, {
@@ -421,6 +425,7 @@ function collectFinalData() {
             }
         })
         .catch(err => {
+            pdfElement.style.opacity = '0'; // ← добавить
             loader.style.display = 'none';
             clearInterval(loaderInterval);
             
