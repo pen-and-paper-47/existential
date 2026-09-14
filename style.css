@@ -710,7 +710,8 @@ body.landing-body {
 #pdf-template {
     position: absolute;
     left: -9999px;
-    top: -9999px;
+    top: 0;
+    width: 210mm;
     opacity: 0;
     pointer-events: none;
 }
