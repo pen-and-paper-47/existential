@@ -425,96 +425,44 @@ function collectFinalData() {
     console.log('ТЕКСТ В ШАБЛОНЕ:', pdfElement.innerText.slice(0, 120));
     
         // Даём браузеру время отрисовать шаблон под полноэкранным лоадером.
+    const opt = {
+        margin: 0,
+        filename: 'Form_404_Aleph.pdf',
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: {
+            scale: 2,
+            useCORS: true,
+            logging: false,
+            backgroundColor: '#ffffff'
+        },
+        jsPDF: {
+            unit: 'mm',
+            format: 'a4',
+            orientation: 'portrait',
+            compress: true
+        }
+    };
+
+    // Пауза, чтобы браузер успел полностью отрисовать видимый шаблон.
     new Promise(function(resolve) {
         setTimeout(resolve, 500);
     })
     .then(function() {
         console.log(
-            'Размер PDF-шаблона:',
+            'Размер шаблона перед снимком:',
             pdfElement.offsetWidth,
             'x',
             pdfElement.offsetHeight
         );
 
-        console.log(
-            'Текст PDF-шаблона:',
-            pdfElement.innerText.slice(0, 200)
-        );
-
-        // Напрямую создаём изображение шаблона.
-        return html2canvas(pdfElement, {
-            scale: 2,
-            useCORS: true,
-            logging: true,
-            backgroundColor: '#ffffff',
-            scrollX: 0,
-            scrollY: 0
-        });
+        // Используем готовую библиотеку html2pdf (она подключена на странице).
+        return html2pdf()
+            .set(opt)
+            .from(pdfElement)
+            .outputPdf('datauristring');
     })
-    .then(function(canvas) {
-        console.log(
-            'Размер полученного canvas:',
-            canvas.width,
-            'x',
-            canvas.height
-        );
-
-        if (!canvas.width || !canvas.height) {
-            throw new Error('html2canvas создал пустое изображение');
-        }
-
-        const imageData = canvas.toDataURL('image/jpeg', 0.98);
-
-        if (!imageData || imageData.length < 10000) {
-            throw new Error(
-                'Изображение PDF получилось пустым или слишком маленьким'
-            );
-        }
-
-        // Создаём PDF вручную.
-        const jsPDFClass = window.jspdf.jsPDF;
-
-        const pdf = new jsPDFClass({
-            orientation: 'portrait',
-            unit: 'mm',
-            format: 'a4',
-            compress: true
-        });
-
-        const pageWidth = 210;
-        const pageHeight = 297;
-
-        const imageWidth = pageWidth;
-        const calculatedHeight =
-            canvas.height * imageWidth / canvas.width;
-
-        /*
-         * Если макет выше A4, уменьшаем его пропорционально,
-         * чтобы весь сертификат уместился на одной странице.
-         */
-        let finalWidth = imageWidth;
-        let finalHeight = calculatedHeight;
-
-        if (finalHeight > pageHeight) {
-            finalHeight = pageHeight;
-            finalWidth =
-                canvas.width * finalHeight / canvas.height;
-        }
-
-        const offsetX = (pageWidth - finalWidth) / 2;
-
-        pdf.addImage(
-            imageData,
-            'JPEG',
-            offsetX,
-            0,
-            finalWidth,
-            finalHeight
-        );
-
-        const pdfBase64 = pdf.output('datauristring');
-
-        // Снимок уже создан — снова прячем HTML-шаблон.
+    .then(function(pdfBase64) {
+        // Снимок сделан — прячем шаблон обратно.
         hidePdfTemplate();
 
         if (
@@ -529,14 +477,8 @@ function collectFinalData() {
             pdfBase64.indexOf(',') + 1
         );
 
-        const approximateSize =
-            Math.floor(base64Data.length * 0.75);
-
-        console.log(
-            'Размер PDF перед отправкой:',
-            approximateSize,
-            'байт'
-        );
+        const approximateSize = Math.floor(base64Data.length * 0.75);
+        console.log('Размер PDF перед отправкой:', approximateSize, 'байт');
 
         if (approximateSize < 10000) {
             console.warn(
@@ -548,12 +490,10 @@ function collectFinalData() {
 
         return fetch(GAS_URL, {
             method: 'POST',
-
             body: JSON.stringify({
                 base64: base64Data,
                 filename: 'Form_404_Aleph.pdf'
             }),
-
             headers: {
                 'Content-Type': 'text/plain;charset=utf-8'
             }
