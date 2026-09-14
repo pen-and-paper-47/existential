@@ -380,7 +380,7 @@ function collectFinalData() {
 
     // Временно помещаем PDF-шаблон в область экрана, но под полноэкранным лоадером.
     // Лоадер имеет z-index 10000, а шаблон — 9998, поэтому пользователь его не увидит.
-    pdfElement.style.setProperty('position', 'fixed', 'important');
+    pdfElement.style.setProperty('position', 'static', 'important');
     pdfElement.style.setProperty('left', '0', 'important');
     pdfElement.style.setProperty('top', '0', 'important');
     pdfElement.style.setProperty('width', '210mm', 'important');
@@ -424,50 +424,141 @@ function collectFinalData() {
     console.log('РАЗМЕР ШАБЛОНА:', pdfElement.offsetWidth, 'x', pdfElement.offsetHeight);
     console.log('ТЕКСТ В ШАБЛОНЕ:', pdfElement.innerText.slice(0, 120));
     
-    html2pdf()
-        .set(opt)
-        .from(pdfElement)
-        .outputPdf('datauristring')
-        .then(function(pdfBase64) {
-            // Снимок уже сделан — снова прячем шаблон.
-            hidePdfTemplate();
+        // Даём браузеру время отрисовать шаблон под полноэкранным лоадером.
+    new Promise(function(resolve) {
+        setTimeout(resolve, 500);
+    })
+    .then(function() {
+        console.log(
+            'Размер PDF-шаблона:',
+            pdfElement.offsetWidth,
+            'x',
+            pdfElement.offsetHeight
+        );
 
-            if (
-                !pdfBase64 ||
-                typeof pdfBase64 !== 'string' ||
-                !pdfBase64.includes(',')
-            ) {
-                throw new Error('Не удалось сформировать PDF');
-            }
+        console.log(
+            'Текст PDF-шаблона:',
+            pdfElement.innerText.slice(0, 200)
+        );
 
-            const base64Data = pdfBase64.substring(
-                pdfBase64.indexOf(',') + 1
+        // Напрямую создаём изображение шаблона.
+        return html2canvas(pdfElement, {
+            scale: 2,
+            useCORS: true,
+            logging: true,
+            backgroundColor: '#ffffff',
+            scrollX: 0,
+            scrollY: 0
+        });
+    })
+    .then(function(canvas) {
+        console.log(
+            'Размер полученного canvas:',
+            canvas.width,
+            'x',
+            canvas.height
+        );
+
+        if (!canvas.width || !canvas.height) {
+            throw new Error('html2canvas создал пустое изображение');
+        }
+
+        const imageData = canvas.toDataURL('image/jpeg', 0.98);
+
+        if (!imageData || imageData.length < 10000) {
+            throw new Error(
+                'Изображение PDF получилось пустым или слишком маленьким'
             );
+        }
 
-            const approximateSize = Math.floor(base64Data.length * 0.75);
-            console.log('Размер PDF перед отправкой:', approximateSize, 'байт');
+        // Создаём PDF вручную.
+        const jsPDFClass = window.jspdf.jsPDF;
 
-            // На время проверки не блокируем отправку маленького PDF,
-            // а только выводим предупреждение в консоль.
-            if (approximateSize < 10000) {
-                console.warn(
-                    'PDF получился подозрительно маленьким:',
-                    approximateSize,
-                    'байт'
-                );
+        const pdf = new jsPDFClass({
+            orientation: 'portrait',
+            unit: 'mm',
+            format: 'a4',
+            compress: true
+        });
+
+        const pageWidth = 210;
+        const pageHeight = 297;
+
+        const imageWidth = pageWidth;
+        const calculatedHeight =
+            canvas.height * imageWidth / canvas.width;
+
+        /*
+         * Если макет выше A4, уменьшаем его пропорционально,
+         * чтобы весь сертификат уместился на одной странице.
+         */
+        let finalWidth = imageWidth;
+        let finalHeight = calculatedHeight;
+
+        if (finalHeight > pageHeight) {
+            finalHeight = pageHeight;
+            finalWidth =
+                canvas.width * finalHeight / canvas.height;
+        }
+
+        const offsetX = (pageWidth - finalWidth) / 2;
+
+        pdf.addImage(
+            imageData,
+            'JPEG',
+            offsetX,
+            0,
+            finalWidth,
+            finalHeight
+        );
+
+        const pdfBase64 = pdf.output('datauristring');
+
+        // Снимок уже создан — снова прячем HTML-шаблон.
+        hidePdfTemplate();
+
+        if (
+            !pdfBase64 ||
+            typeof pdfBase64 !== 'string' ||
+            !pdfBase64.includes(',')
+        ) {
+            throw new Error('Не удалось сформировать PDF');
+        }
+
+        const base64Data = pdfBase64.substring(
+            pdfBase64.indexOf(',') + 1
+        );
+
+        const approximateSize =
+            Math.floor(base64Data.length * 0.75);
+
+        console.log(
+            'Размер PDF перед отправкой:',
+            approximateSize,
+            'байт'
+        );
+
+        if (approximateSize < 10000) {
+            console.warn(
+                'PDF получился подозрительно маленьким:',
+                approximateSize,
+                'байт'
+            );
+        }
+
+        return fetch(GAS_URL, {
+            method: 'POST',
+
+            body: JSON.stringify({
+                base64: base64Data,
+                filename: 'Form_404_Aleph.pdf'
+            }),
+
+            headers: {
+                'Content-Type': 'text/plain;charset=utf-8'
             }
-
-            return fetch(GAS_URL, {
-                method: 'POST',
-                body: JSON.stringify({
-                    base64: base64Data,
-                    filename: 'Form_404_Aleph.pdf'
-                }),
-                headers: {
-                    'Content-Type': 'text/plain;charset=utf-8'
-                }
-            });
-        })
+        });
+    })
         .then(function(response) {
             if (!response.ok) {
                 throw new Error(
