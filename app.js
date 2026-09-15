@@ -93,7 +93,7 @@ function applyLanguage() {
     const risksContainer = document.getElementById('risks-container');
     if (risksContainer) {
         risksContainer.innerHTML = '';
-        for (let i = 1; i <= 9; i++) {
+        for (let i = 1; i <= 25; i++) {
             if (dict[`risk${i}`]) {
                 risksContainer.innerHTML += `
                     <label class="risk-card">
