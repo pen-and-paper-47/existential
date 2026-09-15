@@ -110,8 +110,9 @@ function applyLanguage() {
     setElText('t-pay-1', dict['pay-1']);
     setElText('t-pay-2', dict['pay-2']);
     setElText('t-pay-3', dict['pay-3']);
-    setElText('t-pay-4', dict['pay-4']); 
-    
+    setElText('t-pay-4', dict['pay-4']);
+    setElText('t-installments-label', dict['installments-label'] || (currentLang === 'ru' ? 'Разбить на платежи (Ташлумим)' : 'Split into payments (Tashlumim)'));
+
     setElText('t-info-nerves', dict['info-nerves']);
     setElText('t-info-sleep', dict['info-sleep']);
     setElText('t-info-oblivion', dict['info-oblivion']);
@@ -141,6 +142,7 @@ function applyLanguage() {
     if (anxietySlider) enforceMinAnxiety(anxietySlider);
     
     populateConflictSelect(currentLang);
+    populateInstallmentsSelect(currentLang);
     updateNewsSlider();
     calculatePremiums();
 }
@@ -169,6 +171,31 @@ function populateConflictSelect(lang) {
         if (i.toString() === cur) opt.selected = true;
         select.appendChild(opt);
     }
+}
+
+function populateInstallmentsSelect(lang) {
+    const select = document.getElementById('installmentsSelect');
+    if (!select) return;
+    const cur = select.value || "1";
+    select.innerHTML = '';
+    const getRuWord = (num) => {
+        const n = Math.abs(num) % 100;
+        const n1 = n % 10;
+        if (n > 10 && n < 20) return 'платежей';
+        if (n1 > 1 && n1 < 5) return 'платежа';
+        if (n1 === 1) return 'платёж';
+        return 'платежей';
+    };
+    [1, 2, 3, 6, 12].forEach((n) => {
+        const label = n === 1
+            ? (lang === 'ru' ? '1 платёж (без рассрочки)' : '1 payment (no installments)')
+            : (lang === 'ru' ? `${n} ${getRuWord(n)}` : `${n} payments`);
+        const opt = document.createElement('option');
+        opt.value = n;
+        opt.innerText = label;
+        if (n.toString() === cur) opt.selected = true;
+        select.appendChild(opt);
+    });
 }
 
 function updateNewsSlider() {
@@ -206,6 +233,7 @@ function calculatePremiums() {
     const news = parseInt(document.getElementById('newsSlider').value) || 0;
     const risks = document.querySelectorAll('input[name="risks"]:checked').length || 0;
     const dict = translations[currentLang] || {};
+    const installments = parseInt(document.getElementById('installmentsSelect')?.value) || 1;
 
     const nervesCost = Math.floor((anxiety * 1.5 + conflicts * 0.8 + news * 2.5) * (risks * 1.2 + 1) * 1420);
     const sleepCost = Math.floor(anxiety * 12 + conflicts * 18 + news * 9 + risks * 32);
@@ -221,31 +249,53 @@ function calculatePremiums() {
     }
 
     const totalLabel = currentLang === 'ru' ? 'Итого: ' : 'Total: ';
-    document.getElementById('calc-nerves').innerText = `${totalLabel}${nervesCost.toLocaleString()} ${dict['unit-nerves'] || 'клеток'}`;
-    document.getElementById('calc-sleep').innerText = `${totalLabel}${sleepCost.toLocaleString()} ${dict['unit-sleep'] || 'часов'}`;
-    document.getElementById('calc-oblivion').innerText = `${totalLabel}${dict['unit-oblivion'] || '100% истории'}`;
-    
+
+    // Суффикс "N × сумма/мес" для разбивки на Ташлумим (только если выбрано больше 1 платежа)
+    function installmentSuffix(total, unit, decimals) {
+        if (installments <= 1) return '';
+        const per = total / installments;
+        const perStr = decimals ? per.toFixed(decimals) : Math.ceil(per).toLocaleString();
+        return currentLang === 'ru'
+            ? ` (${installments} × ${perStr} ${unit}/мес)`
+            : ` (${installments} × ${perStr} ${unit}/mo)`;
+    }
+
+    const unitNerves = dict['unit-nerves'] || 'клеток';
+    const unitSleep = dict['unit-sleep'] || 'часов';
+    const unitData = dict['unit-data'] || 'ТБ';
+
+    document.getElementById('calc-nerves').innerText = `${totalLabel}${nervesCost.toLocaleString()} ${unitNerves}${installmentSuffix(nervesCost, unitNerves, 0)}`;
+    document.getElementById('calc-sleep').innerText = `${totalLabel}${sleepCost.toLocaleString()} ${unitSleep}${installmentSuffix(sleepCost, unitSleep, 0)}`;
+
+    const oblivionSuffix = installments > 1
+        ? (currentLang === 'ru'
+            ? ` (${installments} × ${(100 / installments).toFixed(1)}% истории/мес)`
+            : ` (${installments} × ${(100 / installments).toFixed(1)}% history/mo)`)
+        : '';
+    document.getElementById('calc-oblivion').innerText = `${totalLabel}${dict['unit-oblivion'] || '100% истории'}${oblivionSuffix}`;
+
     const dataBadge = document.getElementById('calc-data');
     const oldValMatch = dataBadge.innerText.match(/[\d\.]+/);
     const oldVal = oldValMatch ? parseFloat(oldValMatch[0]) : 0;
-    const unitData = dict['unit-data'] || 'ТБ';
+    const dataSuffix = installmentSuffix(dataCost, unitData, 1);
 
     if (dobStr && oldVal !== dataCost && document.getElementById('block3').classList.contains('active')) {
-        animateValue(dataBadge, oldVal, dataCost, 1000, unitData, totalLabel);
+        animateValue(dataBadge, oldVal, dataCost, 1000, unitData, totalLabel, dataSuffix);
     } else {
-        dataBadge.innerText = `${totalLabel}${dataCost.toFixed(1)} ${unitData}`;
+        dataBadge.innerText = `${totalLabel}${dataCost.toFixed(1)} ${unitData}${dataSuffix}`;
     }
 }
 
-function animateValue(obj, start, end, duration, unit, prefix) {
+function animateValue(obj, start, end, duration, unit, prefix, suffix) {
+    suffix = suffix || '';
     let startTimestamp = null;
     const step = (timestamp) => {
         if (!startTimestamp) startTimestamp = timestamp;
         const progress = Math.min((timestamp - startTimestamp) / duration, 1);
         const current = (start + (end - start) * progress).toFixed(1);
-        obj.innerText = `${prefix}${current} ${unit}`;
+        obj.innerText = `${prefix}${current} ${unit}${suffix}`;
         if (progress < 1) window.requestAnimationFrame(step);
-        else obj.innerText = `${prefix}${end.toFixed(1)} ${unit}`;
+        else obj.innerText = `${prefix}${end.toFixed(1)} ${unit}${suffix}`;
     };
     window.requestAnimationFrame(step);
 }
@@ -719,6 +769,7 @@ document.getElementById('anxietySlider')?.addEventListener('change', function() 
 document.getElementById('conflictSelect')?.addEventListener('change', function() {
     document.getElementById('field-news').style.display = 'block';
 });
+document.getElementById('installmentsSelect')?.addEventListener('change', calculatePremiums);
 
 // Управление тултипами (инфо-иконки)
 document.addEventListener('click', function(e) {
@@ -741,12 +792,20 @@ document.addEventListener('keydown', function(event) {
     }
 });
 
-// Жесткое снятие фокуса со слайдеров и дропдаунов после взаимодействия
-document.querySelectorAll('input[type="range"], select').forEach(el => {
+// Жесткое снятие фокуса со слайдеров после взаимодействия
+document.querySelectorAll('input[type="range"]').forEach(el => {
     const removeFocus = function() { this.blur(); };
     el.addEventListener('pointerup', removeFocus);
     el.addEventListener('touchend', removeFocus);
     el.addEventListener('change', removeFocus);
+});
+
+// Для <select> снимаем фокус только после того, как значение уже выбрано —
+// blur() на pointerup/touchend закрывал нативный список раньше, чем пользователь
+// успевал отпустить палец/кнопку мыши на нужном пункте (список "открывался только
+// при зажатой мышке").
+document.querySelectorAll('select').forEach(el => {
+    el.addEventListener('change', function() { this.blur(); });
 });
 
 // ==========================================
