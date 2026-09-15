@@ -1,0 +1,48 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>АЛЕФ-404 — Экран у входа (стрелка вправо)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=PT+Serif:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="screens.css?v=3">
+</head>
+<body class="screen-outdoor dir-right">
+
+    <div class="video-bg">
+        <video autoplay loop muted playsinline src="bg-video.mp4"></video>
+        <div class="video-scrim"></div>
+    </div>
+
+    <div id="outdoorContent" class="lang-swap">
+        <div class="outdoor-topbar">
+            <div class="brand-mark"><span class="brand-circle">א</span><span class="brand-name"><span class="brand-name-ru">Форма 404 Алеф</span><span class="brand-name-en">Tofes 404 Aleph</span></span></div>
+            <div class="outdoor-eyebrow" id="eyebrowText"></div>
+        </div>
+
+        <div class="outdoor-center" id="outdoorCenter">
+            <div class="headline-swap">
+                <h1 class="headline" id="headlineText"></h1>
+            </div>
+            <p class="outdoor-slogan" id="sloganText"></p>
+        </div>
+
+        <div class="outdoor-seal">
+            <div class="seal-ring"></div>
+            <div class="seal-text" id="sealText"></div>
+        </div>
+
+        <div class="outdoor-cta">
+            <div class="cta-arrow-track"></div>
+            <div class="cta-text">
+                <div class="cta-main" id="ctaMainText"></div>
+                <div class="cta-sub" id="ctaSubText"></div>
+            </div>
+        </div>
+    </div>
+
+<script src="screen-outdoor.js?v=3"></script>
+</body>
+</html>

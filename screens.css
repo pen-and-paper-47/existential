@@ -1,0 +1,447 @@
+:root {
+    --bg-color: #fdfbf7;
+    --text-main: #2b3a4a;
+    --text-muted: #8fa3b3;
+    --border-color: #d1e8e2;
+    --primary-red: #ff9800;
+    --primary-hover: #f57c00;
+    --growth-green: #4caf50;
+    --sea-blue: #1f7d96;
+    --sea-blue-deep: #155a6e;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+    margin: 0;
+    padding: 0;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    font-family: 'Inter', 'Roboto', sans-serif;
+    background: var(--bg-color);
+    color: var(--text-main);
+}
+
+/* Общий плавный кроссфейд всего экрана при смене языка */
+.lang-swap {
+    transition: opacity 0.45s ease;
+}
+.lang-swap.fading {
+    opacity: 0;
+}
+
+/* ==========================================================
+   ЭКРАН 1 — У ВХОДА (завлекающий, полноэкранное видео-фон)
+   ========================================================== */
+body.screen-outdoor {
+    position: relative;
+    background: #101820;
+}
+
+.video-bg {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+}
+
+.video-bg video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.video-scrim {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg,
+        rgba(16, 24, 32, 0.55) 0%,
+        rgba(16, 24, 32, 0.25) 30%,
+        rgba(16, 24, 32, 0.35) 65%,
+        rgba(16, 24, 32, 0.88) 100%);
+}
+
+.outdoor-topbar {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    z-index: 5;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: clamp(16px, 2.2vh, 40px) clamp(24px, 3vw, 64px);
+}
+
+.brand-mark {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    color: #ffffff;
+    font-weight: 800;
+    font-size: clamp(16px, 1.8vh, 26px);
+    text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+    letter-spacing: 0.01em;
+}
+
+.brand-mark.light { color: #ffffff; }
+
+.brand-name {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.18;
+}
+
+.brand-name-en {
+    font-weight: 600;
+    font-style: italic;
+    font-size: 0.56em;
+    opacity: 0.82;
+    letter-spacing: 0.01em;
+}
+
+.brand-circle {
+    font-family: 'Arial Hebrew', 'Noto Sans Hebrew', 'PT Serif', serif;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: clamp(30px, 3.2vh, 46px);
+    height: clamp(30px, 3.2vh, 46px);
+    border-radius: 50%;
+    background: var(--primary-red);
+    border: 2px solid #ffffff;
+    color: #ffffff;
+    font-size: clamp(16px, 1.7vh, 24px);
+    flex-shrink: 0;
+}
+
+.outdoor-eyebrow {
+    color: rgba(255,255,255,0.75);
+    font-size: clamp(12px, 1.15vh, 18px);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.5);
+    text-align: right;
+}
+
+/* Позиция текстового блока подбирается под конкретный кадр фона, чтобы не закрывать лица */
+.outdoor-center {
+    position: absolute;
+    left: 0;
+    right: 0;
+    z-index: 5;
+    text-align: center;
+    padding: 0 clamp(24px, 6vw, 120px);
+    transition: none;
+}
+
+.outdoor-center.pos-top {
+    top: clamp(60px, 9vh, 120px);
+}
+
+.outdoor-center.pos-bottom {
+    bottom: clamp(150px, 21vh, 210px);
+}
+
+.headline-swap {
+    position: relative;
+    width: 100%;
+    height: clamp(140px, 24vh, 320px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.headline {
+    margin: 0;
+    color: #ffffff;
+    font-weight: 900;
+    font-size: clamp(40px, 7.5vh, 130px);
+    line-height: 1.05;
+    letter-spacing: -0.01em;
+    text-shadow: 0 4px 24px rgba(0,0,0,0.55);
+}
+
+.outdoor-slogan {
+    margin: clamp(20px, 3vh, 48px) 0 0 0;
+    color: rgba(255,255,255,0.92);
+    font-family: 'PT Serif', serif;
+    font-style: italic;
+    font-size: clamp(16px, 2.3vh, 34px);
+    line-height: 1.5;
+    text-shadow: 0 2px 12px rgba(0,0,0,0.5);
+}
+
+.outdoor-cta {
+    position: absolute;
+    left: 0; right: 0; bottom: 0;
+    z-index: 6;
+    overflow: hidden;
+    padding: clamp(22px, 3.4vh, 48px) clamp(24px, 4vw, 90px);
+    background: linear-gradient(90deg, rgba(255,152,0,0.94), rgba(245,124,0,0.94));
+}
+
+/* Сплошная лента жирных движущихся стрелок на всю ширину полосы */
+.cta-arrow-track {
+    position: absolute;
+    inset: 0;
+    background-repeat: repeat-x;
+    background-position: center left;
+    background-size: clamp(60px, 7vw, 110px) 62%;
+    opacity: 0.35;
+    pointer-events: none;
+}
+
+body.dir-right .cta-arrow-track {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 160'%3E%3Cpath d='M20 18 L78 80 L20 142' stroke='white' stroke-width='18' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    animation: arrows-right 1.6s linear infinite;
+}
+body.dir-left .cta-arrow-track {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 160'%3E%3Cpath d='M80 18 L22 80 L80 142' stroke='white' stroke-width='18' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    animation: arrows-left 1.6s linear infinite;
+}
+
+@keyframes arrows-right {
+    from { background-position-x: 0; }
+    to { background-position-x: clamp(60px, 7vw, 110px); }
+}
+@keyframes arrows-left {
+    from { background-position-x: 0; }
+    to { background-position-x: calc(-1 * clamp(60px, 7vw, 110px)); }
+}
+
+.cta-text {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+}
+
+.cta-main {
+    color: #ffffff;
+    font-weight: 800;
+    font-size: clamp(20px, 3.2vh, 46px);
+    letter-spacing: 0.01em;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+}
+
+.cta-sub {
+    color: rgba(255,255,255,0.92);
+    font-size: clamp(12px, 1.4vh, 20px);
+    margin-top: 6px;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.25);
+}
+
+.outdoor-seal {
+    position: absolute;
+    right: clamp(20px, 3vw, 60px);
+    bottom: clamp(120px, 16vh, 200px);
+    z-index: 6;
+    width: clamp(70px, 9vh, 130px);
+    height: clamp(70px, 9vh, 130px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: spin-slow 22s linear infinite;
+}
+
+.seal-ring {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    border: 2px dashed rgba(255,255,255,0.75);
+}
+
+.seal-text {
+    font-family: 'PT Serif', serif;
+    color: #ffffff;
+    text-align: center;
+    font-size: clamp(9px, 1vh, 13px);
+    letter-spacing: 0.08em;
+    line-height: 1.4;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.6);
+}
+
+@keyframes spin-slow {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* ==========================================================
+   ЭКРАН 2 — В ОФИСЕ (инструкция и обзор процесса)
+   ========================================================== */
+body.screen-office {
+    background: var(--bg-color);
+    background-image: linear-gradient(120deg, #fdfbf7 0%, #eef7ee 100%);
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Обёртка для кроссфейда языка должна сама быть flex-контейнером,
+   иначе дочерние элементы (например .office-steps с flex:1) не растягиваются */
+body.screen-office #officeContent {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.office-band {
+    display: flex;
+    align-items: center;
+    gap: clamp(20px, 3vw, 50px);
+    background: var(--sea-blue);
+    color: #ffffff;
+    padding: clamp(18px, 2.8vh, 42px) clamp(28px, 4vw, 72px);
+    flex-shrink: 0;
+}
+
+.office-titles h1 {
+    margin: 0 0 6px 0;
+    font-family: 'PT Serif', serif;
+    font-weight: 700;
+    font-size: clamp(26px, 4.4vh, 58px);
+    line-height: 1.1;
+}
+
+.office-slogan {
+    margin: 0;
+    font-family: 'PT Serif', serif;
+    font-style: italic;
+    font-size: clamp(13px, 1.7vh, 22px);
+    color: rgba(255,255,255,0.8);
+}
+
+.office-steps {
+    flex: 1;
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+    gap: clamp(14px, 2.2vh, 30px) clamp(14px, 1.8vw, 32px);
+    padding: clamp(18px, 3vh, 46px) clamp(24px, 3.5vw, 64px);
+    min-height: 0;
+}
+
+/* Слой линий-коннекторов между карточками (рисуется поверх сетки, под карточками) */
+.connector-layer {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.connector-seg {
+    position: absolute;
+    height: clamp(3px, 0.5vh, 6px);
+    left: 0;
+    top: 0;
+    background: var(--primary-red);
+    border-radius: 4px;
+    transform-origin: left center;
+    opacity: 0.9;
+    box-shadow: 0 0 10px rgba(255, 152, 0, 0.5);
+}
+
+.step-card {
+    position: relative;
+    z-index: 2;
+    background: #ffffff;
+    border: 2px solid var(--border-color);
+    border-radius: clamp(12px, 1.4vw, 22px);
+    padding: clamp(14px, 2vh, 28px) clamp(12px, 1.4vw, 22px);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: clamp(10px, 1.8vh, 20px);
+    transition: all 0.5s ease;
+    min-width: 0;
+}
+
+.step-card.final {
+    background: #f4fbf4;
+    border-color: var(--growth-green);
+}
+
+/* Пройденный шаг */
+.step-card.completed {
+    border-color: var(--growth-green);
+    background: #f4fbf4;
+}
+.step-card.completed .step-num {
+    background: var(--growth-green);
+}
+
+/* Текущий активный шаг (без сдвига/масштаба, чтобы кроссфейд между кадрами не давал "призрак" текста) */
+.step-card.active {
+    border-color: var(--primary-red);
+    border-width: 3px;
+    box-shadow: 0 14px 32px rgba(255, 152, 0, 0.28);
+    background: #fffaf3;
+}
+
+.step-num {
+    width: clamp(30px, 4vh, 52px);
+    height: clamp(30px, 4vh, 52px);
+    border-radius: 50%;
+    background: var(--primary-red);
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: clamp(14px, 2vh, 24px);
+    flex-shrink: 0;
+}
+
+.step-card.final .step-num {
+    background: var(--growth-green);
+}
+
+.step-title {
+    font-weight: 700;
+    font-size: clamp(15px, 2.1vh, 28px);
+    color: var(--sea-blue-deep);
+    line-height: 1.25;
+}
+
+.step-desc {
+    font-size: clamp(12px, 1.6vh, 21px);
+    color: var(--text-muted);
+    line-height: 1.45;
+}
+
+.office-ticker {
+    flex-shrink: 0;
+    background: var(--text-main);
+    overflow: hidden;
+    padding: clamp(8px, 1.3vh, 16px) 0;
+}
+
+.ticker-track {
+    display: flex;
+    white-space: nowrap;
+    width: max-content;
+    animation: ticker-scroll 26s linear infinite;
+}
+
+.ticker-track span {
+    color: rgba(255,255,255,0.85);
+    font-size: clamp(11px, 1.35vh, 18px);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 0 clamp(20px, 3vw, 50px);
+    border-right: 1px solid rgba(255,255,255,0.2);
+}
+
+@keyframes ticker-scroll {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+}
+
+.office-disclaimer {
+    flex-shrink: 0;
+    text-align: center;
+    font-size: clamp(9px, 1.05vh, 14px);
+    color: var(--text-muted);
+    padding: clamp(6px, 1vh, 12px) 20px;
+    background: var(--bg-color);
+}
+

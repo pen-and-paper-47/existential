@@ -49,7 +49,7 @@ async function loadDataFromCloud() {
         applyLanguage();
     } catch (error) {
         console.error('Loading error:', error);
-        document.getElementById('t-window-title').innerText = currentLang === 'en' ? "Form 404-Aleph" : "Форма 404-Алеф";
+        document.getElementById('t-window-title').innerText = "Форма 404 Алеф / Tofes 404 Aleph";
     }
 }
 
@@ -334,7 +334,7 @@ function collectFinalData() {
     const cleanSlogan = rawSlogan.replace(/<br\s*\/?>/gi, ' ');
 
     // Заполняем тексты сертификата с учетом текущего языка
-    const pdfDocName = dict['window-title'] || (currentLang === 'ru' ? "Форма 404" : "Tofes 404");
+    const pdfDocName = dict['window-title'] || "Форма 404 Алеф / Tofes 404 Aleph";
     document.getElementById('pdf-title-text').innerText = pdfDocName;
     document.getElementById('pdf-band-name').innerText = pdfDocName;
     document.getElementById('pdf-slogan').innerText = cleanSlogan; 
@@ -352,8 +352,8 @@ function collectFinalData() {
     // Примечание о хеппенинге — берём перевод из той же таблицы (Google Sheet), что и остальные тексты.
     // Ключ в таблице: happening-note (колонки RU / EN). Если ключа нет — используется запасной текст ниже.
     document.getElementById('pdf-happening-note').innerText = dict['happening-note'] || (currentLang === 'ru'
-        ? 'Проект «Форма 404» — часть бюрократического хеппенинга Теодора Иванова «Machine of Interrupted Dreams».'
-        : '"Tofes 404" is part of Theodor Ivanov\'s bureaucratic happening "Machine of Interrupted Dreams".');
+        ? 'Проект «Форма 404 Алеф» — часть бюрократического хеппенинга Теодора Иванова «Machine of Interrupted Dreams».'
+        : '"Форма 404 Алеф / Tofes 404 Aleph" is part of Theodor Ivanov\'s bureaucratic happening "Machine of Interrupted Dreams".');
 
     // Шапка полиса: номер, дата выдачи, текст печати
     document.getElementById('pdf-policy-number-label').innerText = currentLang === 'ru' ? "№ полиса" : "Policy No.";
@@ -566,7 +566,7 @@ function collectFinalData() {
                         'Открыть Сертификат',
                     email_header:
                         dict['window-title'] ||
-                        'ФОРМА 404-АЛЕФ',
+                        'Форма 404 Алеф / Tofes 404 Aleph',
                     email_direct_link_text:
                         dict['email-direct-link'] ||
                         'Если кнопка не открывается, перейдите по прямой ссылке:',

@@ -59,10 +59,10 @@ function applyInitialLoadingState(lang) {
     // 1. ПЕРЕВОД ЗАГОЛОВКА СЛЕВА
     const titleEl = document.getElementById('t-window-title');
     if (titleEl) {
-        titleEl.innerText = dict['window-title'] || (lang === 'en' ? "Form 404-Aleph" : "Форма 404-Алеф");
+        titleEl.innerText = dict['window-title'] || "Форма 404 Алеф / Tofes 404 Aleph";
     }
 
-    document.title = (lang === 'en' ? "Home - " : "Стартовая страница - ") + (dict['window-title'] || "Форма 404-Алеф");
+    document.title = (lang === 'en' ? "Home - " : "Стартовая страница - ") + (dict['window-title'] || "Форма 404 Алеф / Tofes 404 Aleph");
     
     // 2. ПЕРЕВОД СЛОГАНА И КНОПКИ
     const sloganEl = document.getElementById('t-slogan');
